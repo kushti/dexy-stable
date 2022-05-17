@@ -1,0 +1,23 @@
+% !TEX root = laws.tex
+
+\newcommand{\avector}[2]{(#1_1,#1_2,\ldots,#1_{#2})}
+\newcommand{\aDEFvector}[2][a]{(#1_1,#1_2,\ldots,#1_{#2})}
+
+\subsection{Property-Based Testing}
+In this section, we give a formal definition of a property followed by a discussion on property-based testing in contrast to conventional testing methodologies.
+
+Within the scope of a data domain $\mathbb{D}$, a property can be seen as a collective abstract behavior which has to be followed by every valid member of the data domain. More precisely, a property is a predicate $P: \mathbb{D} \rightarrow \{true, false\}$ and it is desirable that it be \emph{valid}: 
+\begin{center}
+$\forall X \in \mathbb{D}, P(X) = true$
+\end{center}
+To illustrate, an example of a property $P$ over the domain of pairs of strings $\mathbb{S} \times \mathbb{S}$ is shown below:
+\begin{center}
+$P((s_1, s_2)) = \#(s_1::s_2) > \#s_1$
+\end{center}
+where $::$ denotes string concatenation and $\#s$ denotes the length of string $s$. This property is false for any $(s_1, \varepsilon)$, where $\varepsilon$ is the empty string. Therefore, it is not valid.
+
+In contrast to conventional testing methods, where the behavior of a program is only tested on some pre-determined cases, property-based testing \cite{ron2001property} emphasizes defining properties and then testing their validity against randomly sampled data points. As property-based testing uses a small number of randomly sampled data points, it still provides only an approximate answer to the question of whether a property is satisfied on all data points. However, it may provide more confidence than conventional unit testing, because the randomly sampled data points may cover problematic cases that were not foreseen by the developers. There are various popular libraries available for property testing including QuickCheck for Haskell \cite{claessen2011quickcheck}, JUnit-QuickCheck for Java \cite{jung2015quickcheck}, theft for C, ScalaTest \cite{venners2009scalatest} and ScalaCheck \cite{nilsson2014scalacheck} for Scala.
+
+Property-based testing is also advantageous when testing an application developed on top of a general framework, as is the case of blockchain systems developed on top of Scorex, because the framework may provide pre-implemented properties that the application should satisfy and the application developer just needs to implement application-specific generators of random data points.
+\nocite{holzmann1995improvement}
+\nocite{zaki2008formal}

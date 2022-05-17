@@ -1,0 +1,128 @@
+\documentclass[conference]{IEEEtran}   % list options between brackets
+
+\usepackage{color}
+\usepackage{graphicx}
+%% The amssymb package provides various useful mathematical symbols
+\usepackage{amssymb}
+%% The amsthm package provides extended theorem environments
+%\usepackage{amsthm}
+\usepackage{amsmath}
+
+\usepackage{listings}
+
+\usepackage{hyperref}
+
+\usepackage{systeme}
+
+\def\shownotes{1}
+\def\notesinmargins{0}
+
+\ifnum\shownotes=1
+\ifnum\notesinmargins=1
+\newcommand{\authnote}[2]{\marginpar{\parbox{\marginparwidth}{\tiny %
+  \textsf{#1 {\textcolor{blue}{notes: #2}}}}}%
+  \textcolor{blue}{\textbf{\dag}}}
+\else
+\newcommand{\authnote}[2]{
+  \textsf{#1 \textcolor{blue}{: #2}}}
+\fi
+\else
+\newcommand{\authnote}[2]{}
+\fi
+
+\newcommand{\knote}[1]{{\authnote{\textcolor{green}{Alex notes}}{#1}}}
+\newcommand{\mnote}[1]{{\authnote{\textcolor{red}{Amitabh notes}}{#1}}}
+
+\usepackage[dvipsnames]{xcolor}
+\usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
+
+%\newcommand{\bruno}[1]{\todo[linecolor=OliveGreen,backgroundcolor=OliveGreen!25,bordercolor=OliveGreen]{#1}}
+
+% type user-defined commands here
+\usepackage[T1]{fontenc}
+
+\usepackage{flushend}
+
+%\usepackage{xcolor}
+
+\newcommand{\bc}{ERG}
+\newcommand{\dx}{Dexy}
+
+\newcommand{\ma}{\mathcal{A}}
+\newcommand{\mb}{\mathcal{B}}
+\newcommand{\he}{\hat{e}}
+\newcommand{\sr}{\stackrel}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\la}{\leftarrow}
+\newcommand{\state}{state}
+
+\newcommand{\ignore}[1]{} 
+\newcommand{\full}[1]{}
+\newcommand{\notfull}[1]{#1}
+\newcommand{\rand}{\stackrel{R}{\leftarrow}}
+\newcommand{\mypar}[1]{\smallskip\noindent\textbf{#1.}}
+
+\begin{document}
+
+\title{Dexy - A Stablecoin With Algorithmic Bank Interventions}
+\author{\IEEEauthorblockN{Alexander Chepurnoy\IEEEauthorrefmark{1}, Amitabh Saxena\IEEEauthorrefmark{2}}
+\IEEEauthorblockA{\IEEEauthorrefmark{1} Ergo Platform\\
+Sestroretsk, Russia}
+\IEEEauthorblockA{\IEEEauthorrefmark{2} Ergo Platform\\
+Bangalore, India}}
+
+\maketitle
+
+\begin{abstract}
+Inspired by the success of Bitcoin, many clients for the Bitcoin protocol as well as for alternative blockchain protocols have been implemented. However, implementations may contain errors, and the cost of an error in the case of a cryptocurrency can be extremely high. 
+
+We propose to tackle this problem with a suite of abstract property tests that check whether a blockchain system satisfies laws that most blockchain and blockchain-like systems should satisfy. To test a new blockchain system, its developers need to instantiate generators of random objects to be used by the tests. The test suite then checks the satisfaction of the laws over many random cases. We provide examples of laws in the paper.
+\end{abstract}
+
+\input{intro}
+
+\section{General Design}
+
+Unlike popular algorithmic stablecoins based on two tokens (instruments), \dx{} is based on one token but two protocols. In the first place, 
+there is market where trading of \dx{} vs the base currency (\bc{}) happens. In the second place, if market price is way too different from target price (reported by an oracle), there is an algorithmic central bank which makes interventions. The central bank can also mint new \dx{} tokens, selling them for \bc{}. The bank is using reserves in \bc{} it is buying for interventions then. 
+
+As a simple solution for the market, we are using constant-factor Automated Market Maker (CF-AMM) liquidity pool, similar to ErgoDEX and UniSwap. The pool has \bc{} on one side and \dx{} on another. For CF-AMM pool, multiplication of \bc{} and \dx{} amounts before and after a trade should be preserved, so $e * u = e' * u'$, where $e$ and $u$ are amounts of \bc{} and \dx{} in the pool before the trade, and $e'$ and $u'$ are amounts of \bc{} and \dx{} in the pool after the trade. It is also possible to put liquidity into the pool, and remove liquidity from it. 
+
+The bank has two basic operations. It can mint new \dx{} tokens and 
+
+Now we are going to consider how to put restrictions and design rules for the system to have stable price of \dx{}. 
+
+\section{Worst Attack}
+
+\section{Implementation}
+
+\section{Simulations}
+
+\section{Extensions}
+
+
+%\input{intro-props}
+%\input{intro-scorex}
+%\input{intro-contrib}
+%\input{related-work}
+%\input{intro-org}
+%\input{sec-scorex}
+%\input{sec-props}
+%\input{sec-examples}
+%\input{conclusion}
+
+\section*{Acknowledgments}
+
+Authors would like to thank.
+
+\bibliographystyle{IEEEtran}
+\bibliography{sources, ref}
+
+%Appendices
+
+%\newpage
+%\appendix
+%\input{apx-tests}
+
+
+\end{document}

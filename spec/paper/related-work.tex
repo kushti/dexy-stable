@@ -1,0 +1,55 @@
+% !TEX root = laws.tex
+\raggedbottom
+\subsection{Related Work}
+
+Verification and testing of software systems \cite{myers2011art} is an integral part of a software development lifecycle. Immediately after the implementation of the software, and before its deployment, it has to be verified and tested extensively enough to ensure that all the functional requirements have been properly met. Over the course of time, both testing and verification methods have been becoming increasingly formal, sophisticated and automated. 
+
+%Formal verification methods \cite{wang2004formal}\bruno{is this citation appropriate?} have been gaining popularity and acceptance \cite{LiquidHaskell,Stainless,Coq}. 
+Formal verification usually involves constructing an abstract mathematical model (a.k.a. specification) of the system's desired behavior. From a logical perspective, the specification can be regarded as a collection of properties that ought to hold for the system, although often the specification is not described directly in logical form, but rather using various mathematical modeling frameworks, such as finite state machines \cite{chow1978testing}, Petri Nets, process algebra and timed automata \cite{clarke1996formal}. Once both the specification and the system are ready, the actual verification that the program satisfies the specification can be attempted. If successful, the verification proves that the properties of the specification are valid for the program. This is a starkly stronger result than what can be achieved through testing, where the properties are only checked on a few samples. However, full verification is hard to achieve automatically, and expensive to do manually or interactively.
+
+Testing (either conventional or property-based) remains a less costly and hence more prevalent approach. Since a software program is developed at module or class level and is integrated with other modules or classes along the development cycle, testing is done at unit level, integration level and system level \cite{myers2011art}, before the software is deployed. End-to-end testing \cite{tsai2001end} is also performed, usually after system testing, %~(sometimes it is seen as a kind of system testing as well), 
+to validate correct flow spanning different components of the software in real world use cases. Unit tests target individual modules, methods or classes and have a small coverage compared to integration tests which aim towards checking the behavior of modules when combined together. The two main approaches to unit testing are black box testing and white box testing. The former one focuses on designing test instances without looking inside the code or design, in other words, the black box testing focuses only on the extensional functionality of the unit under testing, while the white box testing approach is more inclined towards code coverage (i.e. ensuring that test instances execute as many different paths of the code as possible).
+
+Although initially white box testing was considered only as a method for unit testing, recently it has emerged as a popular method for integration testing as well. Integration testing is usually done by one or a combination of the following approaches: 
+\begin{enumerate}[\IEEEsetlabelwidth{Z}]
+\item \textit{Big-Bang approach:} all the components are integrated together at once and then tested. This method works well for comparatively smaller systems, but is not well suited for larger systems. One obvious disadvantage is that the testing can only begin after all the individual components have been built.
+\item \textit{Top-Down approach:} the modules at upper level are tested first and then we move down until we test the lowest level modules at the end. Since lower level modules might not be developed when the upper ones are being tested, stubs are used in place of such modules. The stubs try to simulate behaviour of the modules not yet implemented.
+\item \textit{Bottom-Up approach:} in contrast to the top-down approach, here the lower level modules are tested first and then we iteratively move upwards in the hierarchy until we reach the highest level module. Now as we are testing lower level modules first, stubs are used to simulate the behaviour of not yet implemented higher level modules, in case any sibling interaction is required.
+\item \textit{Sandwich approach:} this combines the Bottom-Up and Top-Down approaches.
+\end{enumerate}
+
+Going beyond conventional unit testing methods, which do not take any input parameters, parameterized unit tests~\cite{tillmann2010parameterized} are generalized tests that have an encapsulated collection of test methods whose invocation and behaviour is controlled by a set of input parameters giving more flexibility and automation to unit testing as a whole.
+
+The final full scale testing that a software product undergoes is called the system testing, which includes tests like security test, compatibility test, exceptions handling, scalability tests, stress tests and performance tests.
+
+Stress tests are particularly important for electronic payment systems, even conventional ones that are not based on cryptocurrencies. Visa, for instance, performed an annual stress test in 2013 to prepare their VisaNet system for the peak traffic of the upcoming holiday season. The test results showed that the system was able to handle 47,000 transactions per second, a 56\% improvement compared to the system's capacity in the previous year. %[https://www.visa.com/blogarchives/us/2013/10/10/stress-test-prepares-visanet-for-the-most-wonderful-time-of-the-year/index.html].
+Within cryptocurrencies, the Bitcoin network experienced a spam campaign called \textit{"stress test"}~\cite{baqer2016stressing}, which caused the network's performance to degrade and essentially resulted in a denial-of-service attack~\footnote{a cyber-attack on a system where the attack makes the system's resources unavailable or degrades their quality to a point where it becomes difficult or sometimes impossible for honest users to avail the resource}. The intention behind this campaign was to expose vulnerabilities of the network, particularly when facing spam attacks. The maximum transaction verification rate of a network under spam can be improved through clustering of transactions to differentiate spam and genuine transactions~\cite{baqer2016stressing} or through $UTXO$-cleanup transactions, a new special type of transaction created by miners to combine spam transactions together, thereby reducing the $UTXO$ set size and the impact of the spam attack on the network.
+
+% ignored text begins
+% \ignore{ Similar to this, another vulnerability in the Bitcoin system caused MtGox Bitcoin exchange to close in February 2014 [?https://www.businessinsider.in/Bitcoin-Just-Completely-Crashed-As-Major-Exchange-Says-Withdrawals-Remain-Halted/articleshow/30165462.cms]. The exchange announced that close to 850,000 bitcoins were stolen by an attacker who exploited the vulnerability that causes bitcoin transactions to be malleable. Let us denote a bitcoin transaction as the tuple $T = (M, sig$) where $M$ is the message content of transaction and $sig$ is a valid signature on $M$. If a transaction is non-malleable, then it is not viable to construct another transaction $T' = (M, sig')$ such that $sig'$ is also a valid signature on $M$, without the knowledge of the secret key. Due to the fact that in bitcoin a transaction is identified by its unique $id = \mathbb{H}(M, sig)$, where $\mathbb{H}$ is a hash function, and not just $id = \mathbb{H}(M)$ means that $T$ and $T'$ as mentioned above will be treated as different transactions since they will have different $id$, despite the fact that their transaction content is exactly same. The above malleability is possible due to the fact that signature schemes used in bitcoin can be malleable. The way this attack was used to steal money, as claimed by the exchange, is the following:
+% \begin{enumerate}[\IEEEsetlabelwidth{Z}]
+% \item A user begins by depositing a certain amount $a$ into exchange's account.
+% \item He then asks the exchange to transfer his money back to him.
+% \item The exchange issues a transaction $T$ to transfer $a$ bitcoins to the user's account.
+% \item The user constructs another transaction $T'$ by exploiting the malleability of transactions.
+% \item Suppose that somehow $T'$ gets included in the blockchain instead of $T$.
+% \item This ensures that the user gets $a$ bitcoins in his account. But after this, the user files a request for resending the money claiming that he didn't receive it.
+% \item To respond to this request, the exchange checks that no transaction with $id = id_T$ ($=\mathbb{H}(T)$) is present and reissues another transaction sending $a$ to the user. This way the user was able to receive double that coins that he were to receive without the vulnerability.
+% \end{enumerate}
+% A very intuitive solution [?https://eprint.iacr.org/2013/837.pdf] to this problem is to change bitcoin such that transactions are identified only with $M$ and not the input scripts (signatures). This would mean that even if a signature is forged, the new transaction will hash to the same $id$ as the previous transaction and would eliminate this issue. There is also another solution [?%https://fc15.ifca.ai/preproceedings/bitcoin/paper_9.pdf
+% ] where malleability of bitcoin transaction is dealt-with specific to bitcoin contracts. }
+% % ignored text ends
+
+
+%Some papers to use for references particular to property testing - http://www.wisdom.weizmann.ac.il/~oded/test.html.%
+%Integration testing papers for references - https://www.researchgate.net/profile/Xiaoying_Bai/publication/221028427_End-To-End_Integration_Testing_Design/links/02e7e516cabf5c969d000000.pdf%
+%Formal verification - http://www.cerc.utexas.edu/~jay/fv_surveys/zaki-AMS-survey-FULL.pdf%
+%Formal verification - http://www.cerc.utexas.edu/~jay/fv_surveys/wang_fvsurvey_timed_systems_proc_ieee2004.pdf%
+%Unit testing - https://link.springer.com/article/10.1007/s10664-006-5964-9%
+%Integration testing - https://link.springer.com/chapter/10.1007/978-3-540-31862-0_18%
+%http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.93.7961&rep=rep1&type=pdf%
+%http://ieeexplore.ieee.org/document/1702519/%
+%https://dl.acm.org/citation.cfm?id=1767341%
+
+
+

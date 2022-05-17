@@ -1,0 +1,5 @@
+% !TEX root = laws.tex
+
+\subsection{Our Contribution}
+
+This paper reports on the design and implementation of a suite of abstract property tests which are implemented on top of the Scorex framework to ease checking whether a blockchain client satisfies the specified properties. A developer of a concrete blockchain system just needs to implement generators of random test inputs~(for example, random blocks and transactions for a Bitcoin-like system), and then the testing system will extensively check properties against multiple input objects. We have implemented 59 property tests, and integrated them into a prototype implementation of the TwinsCoin~\cite{cryptoeprint:2017:232} cryptocurrency.  
