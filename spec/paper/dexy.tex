@@ -1,4 +1,4 @@
-\documentclass[conference]{IEEEtran}   % list options between brackets
+\documentclass{article}   % list options between brackets
 
 \usepackage{color}
 \usepackage{graphicx}
@@ -46,6 +46,7 @@
 %\usepackage{xcolor}
 
 \newcommand{\bc}{ERG}
+\newcommand{\stc}{stablecoin}
 \newcommand{\dx}{Dexy}
 
 \newcommand{\ma}{\mathcal{A}}
@@ -65,11 +66,8 @@
 \begin{document}
 
 \title{Dexy - A Stablecoin With Algorithmic Bank Interventions}
-\author{\IEEEauthorblockN{Alexander Chepurnoy\IEEEauthorrefmark{1}, Amitabh Saxena\IEEEauthorrefmark{2}}
-\IEEEauthorblockA{\IEEEauthorrefmark{1} Ergo Platform\\
-Sestroretsk, Russia}
-\IEEEauthorblockA{\IEEEauthorrefmark{2} Ergo Platform\\
-Bangalore, India}}
+\author{Alexander Chepurnoy, Amitabh Saxena}
+
 
 \maketitle
 
@@ -92,7 +90,20 @@ The bank has two basic operations. It can mint new \dx{} tokens and
 
 Now we are going to consider how to put restrictions and design rules for the system to have stable price of \dx{}. 
 
-\section{Worst Attack}
+\section{Stability}
+
+What provides stability for the stablecoin when we have the design sketched in the previous section? 
+
+\section{Worst Scenario and Bank Reserves}
+
+The bank is doing interventions when the situation is far from normal on the markets, and enough time passed for markets to stabilize themselves with no interventions. In our case, the bank is doing interventions based on stablecoin price in the liquidity pool in comparison with oracle provided price~(we can assume that price on other markets is similar to liquidity pool\'s due to arbitrage). The bank\'s intervention then is about injecting its \bc{} reserves into the pool.  
+
+We start with introducing notation: 
+\begin{itemize}
+  \item{} $T$ - period before intervention starts. After one intervention the bank can start another one after $T$. 
+  \item{} $p$ - price reported by the oracle at the moment (for example, 20 USD per ERG)
+  \item{} $s$ - price which the bank should stand in case of price crash. For example, we can assume that $s = \frac{p}{4}$ (so if p is 20 USD per ERG, then $s$ is 5 USD per ERG, means the bank needs to have enough reserves to save the markets when the price is crashing from 20 to 5 USD per ERG)
+\end{itemize}  
 
 \section{Implementation}
 
