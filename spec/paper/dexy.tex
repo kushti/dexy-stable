@@ -72,12 +72,31 @@
 \maketitle
 
 \begin{abstract}
-Inspired by the success of Bitcoin, many clients for the Bitcoin protocol as well as for alternative blockchain protocols have been implemented. However, implementations may contain errors, and the cost of an error in the case of a cryptocurrency can be extremely high. 
-
-We propose to tackle this problem with a suite of abstract property tests that check whether a blockchain system satisfies laws that most blockchain and blockchain-like systems should satisfy. To test a new blockchain system, its developers need to instantiate generators of random objects to be used by the tests. The test suite then checks the satisfaction of the laws over many random cases. We provide examples of laws in the paper.
+In this paper, we consider a new stablecoin design called \em{Dexy}.
 \end{abstract}
 
-\input{intro}
+% \input{intro}
+
+\section{Introduction}
+
+Algorithmic stablecoins is a natural extension of cryptocurrencies, trying to 
+solve problems with volatility of their prices by pegging stablecoin price to an
+asset which price believed to be more or less stable with time (e.g. 1 gram of gold).  
+
+Stable pricing could be useful for:
+\begin{enumerate}
+\item securing fundraising; a project can be sure that funds collected during fundraising will have stable value in the mid- and long-term.
+\item doing business with predictable results. For example, a hosting provider can be sure that payments collected at the beginning of the month 
+      would be about the same at the end of the month when the provider will need to pay the bills. 
+\item shorting: when cryptocurrency prices are high, it is desirable for investors to rebalance their portfolio by increasing exposure to fiat currencies (or traditional
+ commodities). However, as KYC procedures are often cumbersome or not possible, it would be better to buy fiat and commodity substitues in form of stablecoins on decentralized exchanges.
+\item lending and other decentralized finance applications. Stability of asset value is critical for many applications.
+\end{enumerate}
+
+Algorithmic stablecoins are different from centralized stablecoins, such as USDT and USDC, which are 
+convertible into underlying (pegged asset) via a trusted party. In case of an algorithmic stablecoin, its 
+pegging is done via rebasement of total supply, or via imitating the trusted party, which holds. 
+
 
 \section{General Design}
 
@@ -103,7 +122,12 @@ We start with introducing notation:
   \item{} $T$ - period before intervention starts. After one intervention the bank can start another one after $T$. 
   \item{} $p$ - price reported by the oracle at the moment (for example, 20 USD per ERG)
   \item{} $s$ - price which the bank should stand in case of price crash. For example, we can assume that $s = \frac{p}{4}$ (so if p is 20 USD per ERG, then $s$ is 5 USD per ERG, means the bank needs to have enough reserves to save the markets when the price is crashing from 20 to 5 USD per ERG)
+  \item{} $e$ - amount of \bc{} in the liquidity pool 
+  \item{} $u$ - amount of \stc{} in the liquidity pool
+  \item{} $O$ - amount of \stc{} outside the liquidity pool. The distribution in $O$ is not known for the \dx{} protocol.
 \end{itemize}  
+
+First of all, let's assume that price crashed from $p$ to $s$ ...
 
 \section{Implementation}
 
