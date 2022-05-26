@@ -47,6 +47,7 @@
 
 \newcommand{\bc}{ERG}
 \newcommand{\stc}{stablecoin}
+\newcommand{\sct}{stablecoin}
 \newcommand{\dx}{Dexy}
 
 \newcommand{\ma}{\mathcal{A}}
@@ -122,12 +123,26 @@ We start with introducing notation:
   \item{} $T$ - period before intervention starts. After one intervention the bank can start another one after $T$. 
   \item{} $p$ - price reported by the oracle at the moment (for example, 20 USD per ERG)
   \item{} $s$ - price which the bank should stand in case of price crash. For example, we can assume that $s = \frac{p}{4}$ (so if p is 20 USD per ERG, then $s$ is 5 USD per ERG, means the bank needs to have enough reserves to save the markets when the price is crashing from 20 to 5 USD per ERG)
+  \item{} $R$ - ratio between $p$ and $s$, $R = \frac{p}{s}$
   \item{} $e$ - amount of \bc{} in the liquidity pool 
   \item{} $u$ - amount of \stc{} in the liquidity pool
   \item{} $O$ - amount of \stc{} outside the liquidity pool. The distribution in $O$ is not known for the \dx{} protocol.
 \end{itemize}  
 
-First of all, let's assume that price crashed from $p$ to $s$ ...
+Note that current price in the pool is defined at $\frac{u}{e}$. 
+
+First of all, let's assume that price crashed from $p$ to $s$ sharply and stands there, and before the crash there were $e$ of \bc{} and $u$ of \sct{}, respectively, with liquidity pool price being $p$. The worst case is when no liqudity put into the pool during the period $T$. With large enough $T$ and large enough $R$ this assumption is not very realistic probably: liquidity will be put into the pool by arbitrage players, price is failing with swings where traders will mint \sct{} by putting \bc{} into bank reserves, and so on. However, it would be reasonable to consider worst-case scenario, then in the real world \dx{} will be even more durable than in theory. 
+
+In this case, the bank must intervene after $T$ units of time, as the price differs significantly, and restore the price in the pool, so set it to $s$. We denote amounts of \bc{} and \sct{} in the pool after the intervention as $e'$ and $u'$, respectively. Then:
+
+\begin{itemize}
+  \item{} $e * u = e' * u'$
+  \item{} as the bank injects $E_1$ ergs into the pool, $e' = e + E_1$
+  \item{} $\frac{u'}{e'} = s$, thus $u' = s * (e + E_1)$ 
+  \item{} from above, $E_1 = \sqrt{\frac{e * u}{s}} - e$
+\end{itemize}
+
+So by injecting $E_1$ \bc{}, the bank recovers the price. However, this is not enough,
 
 \section{Implementation}
 
