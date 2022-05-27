@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="ivy-report.xsl"?>
+<ivy-report version="1.0">
+	<info
+		organisation="default"
+		module="simul$sources"
+		revision="0.1"
+		conf="scala-tool"
+		confs="compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, pom, scala-tool"
+		date="20220527213422"/>
+	<dependencies>
+		<module organisation="org.scala-lang" name="scala-compiler">
+			<revision name="2.13.8" status="release" pubdate="20220110210901" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://www.scala-lang.org/" extra-info.apiURL="https://www.scala-lang.org/api/2.13.8/scala-compiler/" downloaded="false" searched="false" default="false" conf="default, compile, runtime, optional, optional(default), master" position="1">
+				<license name="Apache-2.0" url="https://www.apache.org/licenses/LICENSE-2.0"/>
+				<metadata-artifact status="no" details="" size="3282" time="0" location="/home/kushti/.ivy2/cache/org.scala-lang/scala-compiler/ivy-2.13.8.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/scala-lang/scala-compiler/2.13.8/scala-compiler-2.13.8.pom"/>
+				<caller organisation="default" name="simul$sources" conf="scala-tool" rev="2.13.8" rev-constraint-default="2.13.8" rev-constraint-dynamic="2.13.8" callerrev="0.1" extra-info.apiURL="https://www.scala-lang.org/api/2.13.8/scala-compiler/"/>
+				<artifacts>
+					<artifact name="scala-compiler" type="src" ext="jar" extra-classifier="sources" status="successful" details="" size="2044006" time="2776" location="/home/kushti/.ivy2/cache/org.scala-lang/scala-compiler/srcs/scala-compiler-2.13.8-sources.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/scala-lang/scala-compiler/2.13.8/scala-compiler-2.13.8-sources.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.scala-lang" name="scala-reflect">
+			<revision name="2.13.8" status="release" pubdate="20220110210241" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://www.scala-lang.org/" extra-info.apiURL="https://www.scala-lang.org/api/2.13.8/scala-reflect/" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="3">
+				<license name="Apache-2.0" url="https://www.apache.org/licenses/LICENSE-2.0"/>
+				<metadata-artifact status="no" details="" size="2859" time="0" location="/home/kushti/.ivy2/cache/org.scala-lang/scala-reflect/ivy-2.13.8.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/scala-lang/scala-reflect/2.13.8/scala-reflect-2.13.8.pom"/>
+				<caller organisation="default" name="simul$sources" conf="scala-tool" rev="2.13.8" rev-constraint-default="2.13.8" rev-constraint-dynamic="2.13.8" callerrev="0.1" extra-info.apiURL="https://www.scala-lang.org/api/2.13.8/scala-reflect/"/>
+				<artifacts>
+					<artifact name="scala-reflect" type="src" ext="jar" extra-classifier="sources" status="successful" details="" size="648430" time="2767" location="/home/kushti/.ivy2/cache/org.scala-lang/scala-reflect/srcs/scala-reflect-2.13.8-sources.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/scala-lang/scala-reflect/2.13.8/scala-reflect-2.13.8-sources.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.scala-lang" name="scala-library">
+			<revision name="2.13.8" status="release" pubdate="20220110210228" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://www.scala-lang.org/" extra-info.apiURL="https://www.scala-lang.org/api/2.13.8/" downloaded="false" searched="false" default="false" conf="default, compile, runtime(*), master(compile), runtime, optional, optional(default), compile(*), master" position="2">
+				<license name="Apache-2.0" url="https://www.apache.org/licenses/LICENSE-2.0"/>
+				<metadata-artifact status="no" details="" size="2659" time="0" location="/home/kushti/.ivy2/cache/org.scala-lang/scala-library/ivy-2.13.8.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.13.8/scala-library-2.13.8.pom"/>
+				<caller organisation="default" name="simul$sources" conf="scala-tool" rev="2.13.8" rev-constraint-default="2.13.8" rev-constraint-dynamic="2.13.8" callerrev="0.1" extra-info.apiURL="https://www.scala-lang.org/api/2.13.8/"/>
+				<artifacts>
+					<artifact name="scala-library" type="src" ext="jar" extra-classifier="sources" status="successful" details="" size="1029527" time="2828" location="/home/kushti/.ivy2/cache/org.scala-lang/scala-library/srcs/scala-library-2.13.8-sources.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.13.8/scala-library-2.13.8-sources.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.jline" name="jline">
+			<revision name="3.21.0" status="release" pubdate="20211019092712" resolver="sbt-chain" artresolver="sbt-chain" homepage="" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="0">
+				<license name="The BSD License" url="https://opensource.org/licenses/BSD-3-Clause"/>
+				<metadata-artifact status="no" details="" size="11508" time="0" location="/home/kushti/.ivy2/cache/org.jline/jline/ivy-3.21.0.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/jline/jline/3.21.0/jline-3.21.0.pom"/>
+				<caller organisation="default" name="simul$sources" conf="scala-tool" rev="3.21.0" rev-constraint-default="3.21.0" rev-constraint-dynamic="3.21.0" callerrev="0.1"/>
+				<artifacts>
+					<artifact name="jline" type="src" ext="jar" extra-classifier="sources" status="successful" details="" size="534178" time="2462" location="/home/kushti/.ivy2/cache/org.jline/jline/srcs/jline-3.21.0-sources.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/jline/jline/3.21.0/jline-3.21.0-sources.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="net.java.dev.jna" name="jna">
+			<revision name="5.9.0" status="release" pubdate="20210822225159" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/java-native-access/jna" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="4">
+				<license name="LGPL-2.1-or-later" url="https://www.gnu.org/licenses/old-licenses/lgpl-2.1"/>
+				<license name="Apache-2.0" url="https://www.apache.org/licenses/LICENSE-2.0.txt"/>
+				<metadata-artifact status="no" details="" size="2568" time="0" location="/home/kushti/.ivy2/cache/net.java.dev.jna/jna/ivy-5.9.0.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/net/java/dev/jna/jna/5.9.0/jna-5.9.0.pom"/>
+				<caller organisation="default" name="simul$sources" conf="scala-tool" rev="5.9.0" rev-constraint-default="5.9.0" rev-constraint-dynamic="5.9.0" callerrev="0.1"/>
+				<artifacts>
+					<artifact name="jna" type="src" ext="jar" extra-classifier="sources" status="successful" details="" size="160909" time="2461" location="/home/kushti/.ivy2/cache/net.java.dev.jna/jna/srcs/jna-5.9.0-sources.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/net/java/dev/jna/jna/5.9.0/jna-5.9.0-sources.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+	</dependencies>
+</ivy-report>

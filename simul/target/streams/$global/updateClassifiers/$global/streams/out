@@ -1,0 +1,336 @@
+[debug] :: resolving dependencies :: default#simul$sources;0.1
+[debug] 	confs: [compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, pom, scala-tool]
+[debug] 	validate = true
+[debug] 	refresh = false
+[debug] resolving dependencies for configuration 'compile'
+[debug] == resolving dependencies for default#simul$sources;0.1 [compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->default]
+[debug] sbt-chain: Checking cache for: dependency: org.scala-lang#scala-library;2.13.8 {compile=[default, compile, runtime, default(compile), master], runtime=[default, compile, runtime, default(compile), master], test=[default, compile, runtime, default(compile), master], compile-internal=[default, compile, runtime, default(compile), master], runtime-internal=[default, compile, runtime, default(compile), master], test-internal=[default, compile, runtime, default(compile), master], scala-tool=[default, compile, runtime(*), master(compile), runtime, optional, optional(default), compile(*), master]}
+[debug] sbt-chain: module revision found in cache: org.scala-lang#scala-library;2.13.8
+[debug] 	found org.scala-lang#scala-library;2.13.8 in sbt-chain
+[debug] 	[2.13.8] org.scala-lang#scala-library;2.13.8
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->default(compile)]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->master]
+[debug] resolving dependencies for configuration 'runtime'
+[debug] == resolving dependencies for default#simul$sources;0.1 [runtime]
+[debug] == resolving dependencies for default#simul$sources;0.1 [compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->default]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->default(compile)]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->default]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->default(compile)]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->master]
+[debug] resolving dependencies for configuration 'test'
+[debug] == resolving dependencies for default#simul$sources;0.1 [test]
+[debug] == resolving dependencies for default#simul$sources;0.1 [runtime]
+[debug] == resolving dependencies for default#simul$sources;0.1 [compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->default]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->default(compile)]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->default]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->default(compile)]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test->default]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test->default(compile)]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test->master]
+[debug] resolving dependencies for configuration 'provided'
+[debug] == resolving dependencies for default#simul$sources;0.1 [provided]
+[debug] resolving dependencies for configuration 'optional'
+[debug] == resolving dependencies for default#simul$sources;0.1 [optional]
+[debug] resolving dependencies for configuration 'compile-internal'
+[debug] == resolving dependencies for default#simul$sources;0.1 [compile-internal]
+[debug] == resolving dependencies for default#simul$sources;0.1 [compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->default]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->default(compile)]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->master]
+[debug] == resolving dependencies for default#simul$sources;0.1 [optional]
+[debug] == resolving dependencies for default#simul$sources;0.1 [provided]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile-internal->default]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile-internal->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile-internal->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile-internal->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile-internal->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile-internal->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile-internal->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile-internal->default(compile)]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile-internal->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile-internal->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile-internal->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile-internal->master]
+[debug] resolving dependencies for configuration 'runtime-internal'
+[debug] == resolving dependencies for default#simul$sources;0.1 [runtime-internal]
+[debug] == resolving dependencies for default#simul$sources;0.1 [runtime]
+[debug] == resolving dependencies for default#simul$sources;0.1 [compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->default]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->default(compile)]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->default]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->default(compile)]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->master]
+[debug] == resolving dependencies for default#simul$sources;0.1 [optional]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime-internal->default]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime-internal->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime-internal->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime-internal->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime-internal->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime-internal->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime-internal->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime-internal->default(compile)]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime-internal->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime-internal->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime-internal->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime-internal->master]
+[debug] resolving dependencies for configuration 'test-internal'
+[debug] == resolving dependencies for default#simul$sources;0.1 [test-internal]
+[debug] == resolving dependencies for default#simul$sources;0.1 [test]
+[debug] == resolving dependencies for default#simul$sources;0.1 [runtime]
+[debug] == resolving dependencies for default#simul$sources;0.1 [compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->default]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->default(compile)]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [compile->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->default]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->default(compile)]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [runtime->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test->default]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test->default(compile)]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test->master]
+[debug] == resolving dependencies for default#simul$sources;0.1 [optional]
+[debug] == resolving dependencies for default#simul$sources;0.1 [provided]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test-internal->default]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test-internal->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test-internal->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test-internal->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test-internal->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test-internal->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test-internal->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test-internal->default(compile)]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test-internal->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test-internal->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test-internal->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [test-internal->master]
+[debug] resolving dependencies for configuration 'plugin'
+[debug] == resolving dependencies for default#simul$sources;0.1 [plugin]
+[debug] resolving dependencies for configuration 'pom'
+[debug] == resolving dependencies for default#simul$sources;0.1 [pom]
+[debug] resolving dependencies for configuration 'scala-tool'
+[debug] == resolving dependencies for default#simul$sources;0.1 [scala-tool]
+[debug] == resolving dependencies default#simul$sources;0.1->org.jline#jline;3.21.0 [scala-tool->compile]
+[debug] sbt-chain: Checking cache for: dependency: org.jline#jline;3.21.0 {scala-tool=[compile, runtime(*), master(compile), runtime, compile(*), master]}
+[debug] sbt-chain: module revision found in cache: org.jline#jline;3.21.0
+[debug] 	found org.jline#jline;3.21.0 in sbt-chain
+[debug] == resolving dependencies default#simul$sources;0.1->org.jline#jline;3.21.0 [scala-tool->runtime(*)]
+[debug] == resolving dependencies default#simul$sources;0.1->org.jline#jline;3.21.0 [scala-tool->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.jline#jline;3.21.0 [scala-tool->master(compile)]
+[debug] == resolving dependencies default#simul$sources;0.1->org.jline#jline;3.21.0 [scala-tool->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.jline#jline;3.21.0 [scala-tool->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.jline#jline;3.21.0 [scala-tool->compile(*)]
+[debug] == resolving dependencies default#simul$sources;0.1->org.jline#jline;3.21.0 [scala-tool->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-compiler;2.13.8 [scala-tool->default]
+[debug] sbt-chain: Checking cache for: dependency: org.scala-lang#scala-compiler;2.13.8 {scala-tool=[default, compile, runtime, optional, optional(default), master]}
+[debug] sbt-chain: module revision found in cache: org.scala-lang#scala-compiler;2.13.8
+[debug] 	found org.scala-lang#scala-compiler;2.13.8 in sbt-chain
+[debug] 	[2.13.8] org.scala-lang#scala-compiler;2.13.8
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-compiler;2.13.8 [scala-tool->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-compiler;2.13.8 [scala-tool->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-compiler;2.13.8 [scala-tool->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-compiler;2.13.8 [scala-tool->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-compiler;2.13.8 [scala-tool->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-compiler;2.13.8 [scala-tool->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-compiler;2.13.8 [scala-tool->optional]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-compiler;2.13.8 [scala-tool->optional(default)]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-compiler;2.13.8 [scala-tool->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [scala-tool->default]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [scala-tool->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [scala-tool->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [scala-tool->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [scala-tool->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [scala-tool->runtime(*)]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [scala-tool->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [scala-tool->master(compile)]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [scala-tool->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [scala-tool->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [scala-tool->optional]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [scala-tool->optional(default)]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [scala-tool->compile(*)]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-library;2.13.8 [scala-tool->master]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-reflect;2.13.8 [scala-tool->compile]
+[debug] sbt-chain: Checking cache for: dependency: org.scala-lang#scala-reflect;2.13.8 {scala-tool=[compile, runtime(*), master(compile), runtime, compile(*), master]}
+[debug] sbt-chain: module revision found in cache: org.scala-lang#scala-reflect;2.13.8
+[debug] 	found org.scala-lang#scala-reflect;2.13.8 in sbt-chain
+[debug] 	[2.13.8] org.scala-lang#scala-reflect;2.13.8
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-reflect;2.13.8 [scala-tool->runtime(*)]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-reflect;2.13.8 [scala-tool->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-reflect;2.13.8 [scala-tool->master(compile)]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-reflect;2.13.8 [scala-tool->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-reflect;2.13.8 [scala-tool->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-reflect;2.13.8 [scala-tool->compile(*)]
+[debug] == resolving dependencies default#simul$sources;0.1->org.scala-lang#scala-reflect;2.13.8 [scala-tool->master]
+[debug] == resolving dependencies default#simul$sources;0.1->net.java.dev.jna#jna;5.9.0 [scala-tool->compile]
+[debug] sbt-chain: Checking cache for: dependency: net.java.dev.jna#jna;5.9.0 {scala-tool=[compile, runtime(*), master(compile), runtime, compile(*), master]}
+[debug] sbt-chain: module revision found in cache: net.java.dev.jna#jna;5.9.0
+[debug] 	found net.java.dev.jna#jna;5.9.0 in sbt-chain
+[debug] == resolving dependencies default#simul$sources;0.1->net.java.dev.jna#jna;5.9.0 [scala-tool->runtime(*)]
+[debug] == resolving dependencies default#simul$sources;0.1->net.java.dev.jna#jna;5.9.0 [scala-tool->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->net.java.dev.jna#jna;5.9.0 [scala-tool->master(compile)]
+[debug] == resolving dependencies default#simul$sources;0.1->net.java.dev.jna#jna;5.9.0 [scala-tool->runtime]
+[debug] == resolving dependencies default#simul$sources;0.1->net.java.dev.jna#jna;5.9.0 [scala-tool->compile]
+[debug] == resolving dependencies default#simul$sources;0.1->net.java.dev.jna#jna;5.9.0 [scala-tool->compile(*)]
+[debug] == resolving dependencies default#simul$sources;0.1->net.java.dev.jna#jna;5.9.0 [scala-tool->master]
+[debug] 	resolved ivy file produced in cache
+[debug] :: downloading artifacts ::
+[debug] 		tried /home/kushti/.ivy2/local/org.jline/jline/3.21.0/srcs/jline-sources.jar
+[debug] 		tried /home/kushti/.ivy2/local/net.java.dev.jna/jna/5.9.0/srcs/jna-sources.jar
+[debug] 		tried /home/kushti/.ivy2/local/org.scala-lang/scala-reflect/2.13.8/srcs/scala-reflect-sources.jar
+[debug] 		tried /home/kushti/.ivy2/local/org.scala-lang/scala-compiler/2.13.8/srcs/scala-compiler-sources.jar
+[debug] 		tried /home/kushti/.ivy2/local/org.scala-lang/scala-library/2.13.8/srcs/scala-library-sources.jar
+[debug] 		tried https://repo1.maven.org/maven2/net/java/dev/jna/jna/5.9.0/jna-5.9.0-sources.jar
+[debug] 		tried https://repo1.maven.org/maven2/org/scala-lang/scala-reflect/2.13.8/scala-reflect-2.13.8-sources.jar
+[debug] 		tried https://repo1.maven.org/maven2/org/scala-lang/scala-compiler/2.13.8/scala-compiler-2.13.8-sources.jar
+[debug] 		tried https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.13.8/scala-library-2.13.8-sources.jar
+[debug] 		tried https://repo1.maven.org/maven2/org/jline/jline/3.21.0/jline-3.21.0-sources.jar
+[info] downloading https://repo1.maven.org/maven2/net/java/dev/jna/jna/5.9.0/jna-5.9.0-sources.jar ...
+[debug] 	public: downloading https://repo1.maven.org/maven2/net/java/dev/jna/jna/5.9.0/jna-5.9.0-sources.jar
+[info] downloading https://repo1.maven.org/maven2/org/jline/jline/3.21.0/jline-3.21.0-sources.jar ...
+[info] downloading https://repo1.maven.org/maven2/org/scala-lang/scala-compiler/2.13.8/scala-compiler-2.13.8-sources.jar ...
+[debug] 	public: downloading https://repo1.maven.org/maven2/org/jline/jline/3.21.0/jline-3.21.0-sources.jar
+[debug] 	public: downloading https://repo1.maven.org/maven2/org/scala-lang/scala-compiler/2.13.8/scala-compiler-2.13.8-sources.jar
+[info] downloading https://repo1.maven.org/maven2/org/scala-lang/scala-reflect/2.13.8/scala-reflect-2.13.8-sources.jar ...
+[info] downloading https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.13.8/scala-library-2.13.8-sources.jar ...
+[debug] 	public: downloading https://repo1.maven.org/maven2/org/scala-lang/scala-reflect/2.13.8/scala-reflect-2.13.8-sources.jar
+[debug] 	public: downloading https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.13.8/scala-library-2.13.8-sources.jar
+[debug] 	public: downloading https://repo1.maven.org/maven2/net/java/dev/jna/jna/5.9.0/jna-5.9.0-sources.jar.sha1
+[debug] 	public: downloading https://repo1.maven.org/maven2/org/jline/jline/3.21.0/jline-3.21.0-sources.jar.sha1
+[debug] 	public: downloading https://repo1.maven.org/maven2/org/scala-lang/scala-reflect/2.13.8/scala-reflect-2.13.8-sources.jar.sha1
+[debug] 	public: downloading https://repo1.maven.org/maven2/org/scala-lang/scala-compiler/2.13.8/scala-compiler-2.13.8-sources.jar.sha1
+[debug] sha1 OK for https://repo1.maven.org/maven2/net/java/dev/jna/jna/5.9.0/jna-5.9.0-sources.jar
+[info] 	[SUCCESSFUL ] net.java.dev.jna#jna;5.9.0!jna.jar(src) (2461ms)
+[debug] sha1 OK for https://repo1.maven.org/maven2/org/jline/jline/3.21.0/jline-3.21.0-sources.jar
+[info] 	[SUCCESSFUL ] org.jline#jline;3.21.0!jline.jar(src) (2462ms)
+[debug] 	public: downloading https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.13.8/scala-library-2.13.8-sources.jar.sha1
+[debug] sha1 OK for https://repo1.maven.org/maven2/org/scala-lang/scala-reflect/2.13.8/scala-reflect-2.13.8-sources.jar
+[info] 	[SUCCESSFUL ] org.scala-lang#scala-reflect;2.13.8!scala-reflect.jar(src) (2767ms)
+[debug] sha1 OK for https://repo1.maven.org/maven2/org/scala-lang/scala-compiler/2.13.8/scala-compiler-2.13.8-sources.jar
+[info] 	[SUCCESSFUL ] org.scala-lang#scala-compiler;2.13.8!scala-compiler.jar(src) (2776ms)
+[debug] sha1 OK for https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.13.8/scala-library-2.13.8-sources.jar
+[info] 	[SUCCESSFUL ] org.scala-lang#scala-library;2.13.8!scala-library.jar(src) (2828ms)
+[debug] :: resolution report :: resolve 91ms :: artifacts dl 2842ms
+[debug] 	report for default#simul$sources;0.1 compile produced in /home/kushti/ergo/defi/dexy/simul/target/scala-2.13/resolution-cache/reports/default-simul$sources-compile.xml
+[debug] 	report for default#simul$sources;0.1 runtime produced in /home/kushti/ergo/defi/dexy/simul/target/scala-2.13/resolution-cache/reports/default-simul$sources-runtime.xml
+[debug] 	report for default#simul$sources;0.1 test produced in /home/kushti/ergo/defi/dexy/simul/target/scala-2.13/resolution-cache/reports/default-simul$sources-test.xml
+[debug] 	report for default#simul$sources;0.1 provided produced in /home/kushti/ergo/defi/dexy/simul/target/scala-2.13/resolution-cache/reports/default-simul$sources-provided.xml
+[debug] 	report for default#simul$sources;0.1 optional produced in /home/kushti/ergo/defi/dexy/simul/target/scala-2.13/resolution-cache/reports/default-simul$sources-optional.xml
+[debug] 	report for default#simul$sources;0.1 compile-internal produced in /home/kushti/ergo/defi/dexy/simul/target/scala-2.13/resolution-cache/reports/default-simul$sources-compile-internal.xml
+[debug] 	report for default#simul$sources;0.1 runtime-internal produced in /home/kushti/ergo/defi/dexy/simul/target/scala-2.13/resolution-cache/reports/default-simul$sources-runtime-internal.xml
+[debug] 	report for default#simul$sources;0.1 test-internal produced in /home/kushti/ergo/defi/dexy/simul/target/scala-2.13/resolution-cache/reports/default-simul$sources-test-internal.xml
+[debug] 	report for default#simul$sources;0.1 plugin produced in /home/kushti/ergo/defi/dexy/simul/target/scala-2.13/resolution-cache/reports/default-simul$sources-plugin.xml
+[debug] 	report for default#simul$sources;0.1 pom produced in /home/kushti/ergo/defi/dexy/simul/target/scala-2.13/resolution-cache/reports/default-simul$sources-pom.xml
+[debug] 	report for default#simul$sources;0.1 scala-tool produced in /home/kushti/ergo/defi/dexy/simul/target/scala-2.13/resolution-cache/reports/default-simul$sources-scala-tool.xml
+[debug] 	resolve done (91ms resolve - 2842ms download)
