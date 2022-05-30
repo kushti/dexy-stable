@@ -105,8 +105,8 @@ object DexySimulation extends App {
     println("price: " + st.time.p + " safe E: " + safeE(st) + " bank: " + st.bank + " pool: " + st.liquidityPool)
 
     val direction = Random.nextBoolean()
-    val delta = Random.nextDouble() / 10 * st.time.p
-    val price = if(direction){st.time.p + delta * 1.08} else {st.time.p - delta}
+    val delta = Random.nextDouble() / 30 * st.time.p
+    val price = if(direction){st.time.p + delta * 1.06} else {st.time.p - delta}
 
     val newTime = Time(price, epoch)
 
