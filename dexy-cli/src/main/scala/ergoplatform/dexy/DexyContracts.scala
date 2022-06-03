@@ -19,6 +19,7 @@ case class DexyAddresses(emissionAddress: ErgoAddress, lpAddress: ErgoAddress, t
 
 object DexyContracts {
   var dexyAddresses: DexyAddresses = _
+
   private lazy val emissionScript =
     s"""{
        |  // This box: (dexyUSD emission box)
@@ -343,6 +344,7 @@ object DexyContracts {
       ConstantsBuilder.create()
         .item("oraclePoolNFTId", ErgoId.create(DexyToken.oraclePoolNFT).getBytes)
         .item("lpNFTId", ErgoId.create(DexyToken.lpNFT).getBytes)
+        .item("emissionNFTId", ErgoId.create(DexyToken.emissionNFT).getBytes)
         .item("trackingNFTId", ErgoId.create(DexyToken.trackingNFT).getBytes)
         .build(),
       swappingScript
