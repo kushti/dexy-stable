@@ -127,6 +127,8 @@ We start with introducing notation:
   \item{} $e$ - amount of \bc{} in the liquidity pool 
   \item{} $u$ - amount of \stc{} in the liquidity pool
   \item{} $O$ - amount of \stc{} outside the liquidity pool. The distribution in $O$ is not known for the \dx{} protocol.
+  \item{} $E$ - amount of \bc{} in the bank. 
+  \item{} $r$ - ratio between $p$, and price in the pool, which is $\frac{u}{e}$, thus $r = \frac{p}{\frac{u}{e}} = \frac{p*e}{u}$
 \end{itemize}  
 
 Note that current price in the pool is $\frac{u}{e}$. 
@@ -145,18 +147,44 @@ In this case, the bank must intervene after $T$ units of time, as the price diff
 So by injecting $E_1$ \bc{}, the bank recovers the price. However, this is not enough, as now there are $O$ \sct{} units which can be injected into the pool from outside. 
 Again, in the real life it is not realistic to assume that all the $O$ \sct{} would be injected, as some of them are simply lost. However, we need to assume worst-case scenario. We also assume that those $O$ tokens are being sold in very small batches not significantly affecting price in the pool, and after each batch seller of a new batch is waiting for a bank intervention to happen (so for $T$ units of time), and sells only after the intervention. In this case all the $O$ tokens are being sold at price close to $s$, so the bank should have $E_2 = \frac{O}{s}$. We note that this scenario is also not realistic and takes very long time. However, as before we assume the absolutely worst case.
 
-Summing up $E_1$ and $E_2$, we got \bc{} reserves the bank should have to be ready for worst-case scenario: $E = E_1 + E_2 = \sqrt{\frac{e * u}{s}} - e + \frac{O}{s}$.
+Summing up $E_1$ and $E_2$, we got \bc{} reserves the bank should have to be ready for worst-case scenario: $E_w = E_1 + E_2 = \sqrt{\frac{e * u}{s}} - e + \frac{O}{s}$.
 
 \section{Minting Rules}
 
+Based on needed reserves for worst-case scenario estimation, we can consider minting rules accordingly. Similarly to SigUSD~(a Djed instantiation), we can, for example, target for security in case of 
+4x price drop, so to consider $R = \frac{p}{s} = 4$, and allow to mint \sct{}~while there are enough \bc{}~in reserves, so while there are not less than $E_w$ \bc{} in reserves. However, in this case most of time \sct{} would be non-mintable, and only during moments of \bc{} price going up significantly it will be possible to mint. 
+
+Thus we leave worst-case scenario for UI, so dapps working with the \dx{} may show level of reserves, in comparison with worst-case scenario estimations. In this case, having on-chain data analysis, 
+more precise estimations of reserve quality can be made~(by considering \sct{} locked in DeFi protocols, likely forgotten, etc).
+
+We are proposing following minting rules.  
+
 \begin{itemize}
-  \item{Free mint}
-  \item{Arbitrage mint}
+  \item{Arbitrage mint: } if price reported by the oracle is higher than in the pool, i.e. $p > \frac{u}{e}$, we allow to print enough \sct{} to bring the price to $p$. That is, the bank allows to mint up to $\delta_u = \sqrt{p*e*u}-u$ \sct{} by accepting up to $\delta_e = \frac{\delta_u}{p}$ \bc{}s into reserves. 
+
+  \em{To instantiate the rule, we can allow for arbitrage minting if the price $p$ is more than $\frac{u}{e}$ by at least 1\% for time period $T_{arb}$ (e.g. 1 hour), also, the bank is chargin 1\% fee 
+  for the operation.} 
+
+  \item{Free mint: } we allow to mint up to $\frac{u}{100}$ \sct{}s within time period $T_{free}$. 
+  \em{To instantiate the rule, we propose to have bank fee of 1\%, and allow for free mint if $0.98 < r < 1.02$}.
 \end{itemize}  
+
+
+\begin{itemize}
+   \item{Intervention: } if reported by the oracle is lower than in the pool by significantly enough margin, i.e. $\frac{p*e}{u} < r$, where $r$ is some constant which is hard-wired into the protocol, e.g. $r = 0.95$, then the bank is providing \bc{} to restore the price
+   \item{Payout: }
+\end{itemize}
+
+\begin{itemize}
+   \item{Burn: } if the bank if empty, and $r$ is below threshold, it is allowed to burn \sct{}s in the pool. 
+\end{itemize}   
 
 \section{Implementation}
 
+\knote{put contracts here}
+
 \section{Simulations}
+We made simulations. \knote{finish}
 
 \section{Extensions}
 
