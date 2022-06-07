@@ -170,6 +170,8 @@ We are proposing following minting rules.
 \end{itemize}  
 
 
+In addition to minting actions, which increase bank reserves only, we define following two actions which decrease them: 
+
 \begin{itemize}
    \item{Intervention: } if reported by the oracle is lower than in the pool by significantly enough margin, i.e. $\frac{p*e}{u} < r$, where $r$ is some constant which is hard-wired into the protocol, then the bank is providing \bc{}s. to restore the price.
    \em{To instantiate the rule, we propose to allow the bank to intervene if $r <= 0.98$ for time period $T_{int}$}
@@ -177,10 +179,15 @@ We are proposing following minting rules.
    liquidity pool LP tokens.
 \end{itemize}
 
+
+We also state following rules for the liquidity pool (which, otherwise, acts as ordinary CP-AMM liquidity pool): 
+
 \begin{itemize}
-   \item{Burn: } if the bank if empty, and $r$ is below threshold, it is allowed to burn \sct{}s in the pool. 
-   \em{To instantiate the rule, we propose to \sct{} burn if $r <= 0.95$ for time period $T_{burn}$}
-\end{itemize}
+   \item{Stopping withdrawals: } if $r$ is below some threshold, withdrawals are stopped.  
+   \em{To instantiate the rule, we propose to stop withdrawals immediately if $r <= 0.98$.}
+   \item{Burn: } if the bank if empty, and $r$ is below some threshold, it is allowed to burn \sct{}s in the pool. 
+   \em{To instantiate the rule, we propose to \sct{} burn if $r <= 0.95$ for time period $T_{burn}$. $T_{burn}$ must be quite big}
+\end{itemize} 
 
 \section{Notes on stability}
  
