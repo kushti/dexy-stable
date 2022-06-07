@@ -171,13 +171,20 @@ We are proposing following minting rules.
 
 
 \begin{itemize}
-   \item{Intervention: } if reported by the oracle is lower than in the pool by significantly enough margin, i.e. $\frac{p*e}{u} < r$, where $r$ is some constant which is hard-wired into the protocol, e.g. $r = 0.95$, then the bank is providing \bc{} to restore the price
-   \item{Payout: }
+   \item{Intervention: } if reported by the oracle is lower than in the pool by significantly enough margin, i.e. $\frac{p*e}{u} < r$, where $r$ is some constant which is hard-wired into the protocol, then the bank is providing \bc{}s. to restore the price.
+   \em{To instantiate the rule, we propose to allow the bank to intervene if $r <= 0.98$ for time period $T_{int}$}
+   \item{Payout: } if bank has too much reserves, so $E > E_w$, we can allow for paying excess reserves out. There could be different ways to do this. E. g. extra reserves can be paid to holders of
+   liquidity pool LP tokens.
 \end{itemize}
 
 \begin{itemize}
    \item{Burn: } if the bank if empty, and $r$ is below threshold, it is allowed to burn \sct{}s in the pool. 
-\end{itemize}   
+   \em{To instantiate the rule, we propose to \sct{} burn if $r <= 0.95$ for time period $T_{burn}$}
+\end{itemize}
+
+\section{Notes on stability}
+ 
+\knote{fill the section}
 
 \section{Implementation}
 
