@@ -106,17 +106,11 @@ there is market where trading of \dx{} vs the base currency (\bc{}) happens. In 
 
 As a simple solution for the market, we are using constant-factor Automated Market Maker (CF-AMM) liquidity pool, similar to ErgoDEX and UniSwap. The pool has \bc{} on one side and \dx{} on another. For CF-AMM pool, multiplication of \bc{} and \dx{} amounts before and after a trade should be preserved, so $e * u = e' * u'$, where $e$ and $u$ are amounts of \bc{} and \dx{} in the pool before the trade, and $e'$ and $u'$ are amounts of \bc{} and \dx{} in the pool after the trade. It is also possible to put liquidity into the pool, and remove liquidity from it. 
 
-The bank has two basic operations. It can mint new \dx{} tokens and 
+The bank has two basic operations. It can mint new \sct{} tokens per request, by accepting \bc{} in its reserves. It also can intervene into markets by providing \bc{} from reserves when needed~(namely, when price in the pool \frac{u}{e} is significantly different from price on external markets $p$ which reported by oracle).
 
 Now we are going to consider how to put restrictions and design rules for the system to have stable price of \dx{}. 
 
-\section{Stability}
-
-What provides stability for the stablecoin when we have the design sketched in the previous section? 
-
-\section{Worst Scenario and Bank Reserves}
-
-The bank is doing interventions when the situation is far from normal on the markets, and enough time passed for markets to stabilize themselves with no interventions. In our case, the bank is doing interventions based on stablecoin price in the liquidity pool in comparison with oracle provided price~(we can assume that price on other markets is similar to liquidity pool\'s due to arbitrage). The bank\'s intervention then is about injecting its \bc{} reserves into the pool.  
+\section{Notation}
 
 We start with introducing notation: 
 \begin{itemize}
@@ -131,7 +125,9 @@ We start with introducing notation:
   \item{} $r$ - ratio between $p$, and price in the pool, which is $\frac{u}{e}$, thus $r = \frac{p}{\frac{u}{e}} = \frac{p*e}{u}$
 \end{itemize}  
 
-Note that current price in the pool is $\frac{u}{e}$. 
+\section{Worst Scenario and Bank Reserves}
+
+The bank is doing interventions when the situation is far from normal on the markets, and enough time passed for markets to stabilize themselves with no interventions. In our case, the bank is doing interventions based on stablecoin price in the liquidity pool in comparison with oracle provided price~(we can assume that price on other markets is similar to liquidity pool\'s due to arbitrage). The bank\'s intervention then is about injecting its \bc{} reserves into the pool.  
 
 First of all, let's assume that price crashed from $p$ to $s$ sharply and stands there, and before the crash there were $e$ of \bc{} and $u$ of \sct{}, respectively, with liquidity pool price being $p$. The worst case is when no liqudity put into the pool during the period $T$. With large enough $T$ and large enough $R$ this assumption is not very realistic probably: liquidity will be put into the pool by arbitrage players, price is failing with swings where traders will mint \sct{} by putting \bc{} into bank reserves, and so on. However, it would be reasonable to consider worst-case scenario, then in the real world \dx{} will be even more durable than in theory. 
 
@@ -149,7 +145,9 @@ Again, in the real life it is not realistic to assume that all the $O$ \sct{} wo
 
 Summing up $E_1$ and $E_2$, we got \bc{} reserves the bank should have to be ready for worst-case scenario: $E_w = E_1 + E_2 = \sqrt{\frac{e * u}{s}} - e + \frac{O}{s}$.
 
-\section{Minting Rules}
+\knote{Write down reasoning while this scenario is worst-case}
+
+\section{Bank and Pool Rules}
 
 Based on needed reserves for worst-case scenario estimation, we can consider minting rules accordingly. Similarly to SigUSD~(a Djed instantiation), we can, for example, target for security in case of 
 4x price drop, so to consider $R = \frac{p}{s} = 4$, and allow to mint \sct{}~while there are enough \bc{}~in reserves, so while there are not less than $E_w$ \bc{} in reserves. However, in this case most of time \sct{} would be non-mintable, and only during moments of \bc{} price going up significantly it will be possible to mint. 
@@ -168,7 +166,6 @@ We are proposing following minting rules.
   \item{Free mint: } we allow to mint up to $\frac{u}{100}$ \sct{}s within time period $T_{free}$. 
   \em{To instantiate the rule, we propose to have bank fee of 1\%, and allow for free mint if $0.98 < r < 1.02$}.
 \end{itemize}  
-
 
 In addition to minting actions, which increase bank reserves only, we define following two actions which decrease them: 
 
@@ -189,9 +186,11 @@ We also state following rules for the liquidity pool (which, otherwise, acts as 
    \em{To instantiate the rule, we propose to \sct{} burn if $r <= 0.95$ for time period $T_{burn}$. $T_{burn}$ must be quite big}
 \end{itemize} 
 
-\section{Notes on stability}
+\section{Stability}
+
+What provides stability for the stablecoin when we have the design sketched in the previous sections? 
  
-\knote{fill the section}
+\knote{finish the section}
 
 \section{Implementation}
 
