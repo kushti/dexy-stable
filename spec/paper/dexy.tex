@@ -106,7 +106,7 @@ there is market where trading of \dx{} vs the base currency (\bc{}) happens. In 
 
 As a simple solution for the market, we are using constant-factor Automated Market Maker (CF-AMM) liquidity pool, similar to ErgoDEX and UniSwap. The pool has \bc{} on one side and \dx{} on another. For CF-AMM pool, multiplication of \bc{} and \dx{} amounts before and after a trade should be preserved, so $e * u = e' * u'$, where $e$ and $u$ are amounts of \bc{} and \dx{} in the pool before the trade, and $e'$ and $u'$ are amounts of \bc{} and \dx{} in the pool after the trade. It is also possible to put liquidity into the pool, and remove liquidity from it. 
 
-The bank has two basic operations. It can mint new \sct{} tokens per request, by accepting \bc{} in its reserves. It also can intervene into markets by providing \bc{} from reserves when needed~(namely, when price in the pool \frac{u}{e} is significantly different from price on external markets $p$ which reported by oracle).
+The bank has two basic operations. It can mint new \sct{} tokens per request, by accepting \bc{} in its reserves. It also can intervene into markets by providing \bc{} from reserves when needed~(namely, when price in the pool $\frac{u}{e}$ is significantly different from price on external markets $p$ which reported by oracle).
 
 Now we are going to consider how to put restrictions and design rules for the system to have stable price of \dx{}. 
 
