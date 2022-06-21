@@ -96,7 +96,7 @@ Stable pricing could be useful for:
 
 Algorithmic stablecoins are different from centralized stablecoins, such as USDT and USDC, which are 
 convertible into underlying (pegged asset) via a trusted party. In case of an algorithmic stablecoin, its 
-pegging is done via rebasement of total supply, or via imitating the trusted party, which holds. 
+pegging is done via rebasement of total supply, or via imitating the trusted party, which holds reserves and doing market interventions when it is needed for getting exchange rate back to the peg. 
 
 
 \section{General Design}
@@ -145,7 +145,7 @@ Again, in the real life it is not realistic to assume that all the $O$ \sct{} wo
 
 Summing up $E_1$ and $E_2$, we got \bc{} reserves the bank should have to be ready for worst-case scenario: $E_w = E_1 + E_2 = \sqrt{\frac{e * u}{s}} - e + \frac{O}{s}$.
 
-\knote{Write down reasoning while this scenario is worst-case}
+It is simple to see why this scenario is worst-case for the bank. In this scenario, the bank is buying all the $O$ of external $\sct{}$ at the worst possible price $s$, and get to this price by burning its own reserves only.  
 
 \section{Bank and Pool Rules}
 

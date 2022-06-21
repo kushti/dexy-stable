@@ -75,10 +75,6 @@ object Functions {
     LiquidityPool(pool.e, oracle.p * pool.e)
   }
 
-  def freeMintAllowed(bank: Bank, oracle: Oracle) = {
-    bank.O / bank.E < oracle.p
-  }
-
   def freeMint(bank: Bank, liquidityPool: LiquidityPool, oracle: Oracle) = {
     val amtUSD = liquidityPool.u / 100
     val amtERG = amtUSD / oracle.p
@@ -106,7 +102,7 @@ object DexySimulation extends App {
 
     val direction = Random.nextBoolean()
     val delta = Random.nextDouble() / 30 * st.time.p
-    val price = if(direction){st.time.p + delta * 1.06} else {st.time.p - delta}
+    val price = if(direction){st.time.p + delta * 1.04} else {st.time.p - delta}
 
     val newTime = Time(price, epoch)
 
@@ -119,12 +115,12 @@ object DexySimulation extends App {
     } else if(burnNeeded(st.liquidityPool, newTime)) {
       println("BURN!!!")
       st.bank -> burn(st.liquidityPool, newTime)
-    } else if(freeMintAllowed(st.bank, newTime)) {
+    } else {
       println("Free mint!")
       freeMint(st.bank, st.liquidityPool, newTime) -> st.liquidityPool
-    } else {
-      (st.bank, st.liquidityPool)
     }
+
+    // todo: add random trades
 
     State(newBank, newPool, newTime)
   }
