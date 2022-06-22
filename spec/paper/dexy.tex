@@ -66,14 +66,15 @@
 
 \begin{document}
 
-\title{Dexy - A Stablecoin With Algorithmic Bank Interventions}
+\title{Dexy - A Stablecoin With Algorithmic Central Bank}
 \author{Alexander Chepurnoy, Amitabh Saxena}
 
 
 \maketitle
 
 \begin{abstract}
-In this paper, we consider a new stablecoin design called \em{Dexy}.
+In this paper, we consider a new stablecoin protocol design called \em{Dexy}. The protocol has two mandatory components, reference market~(in form of liquidity pool where anyone can 
+trade base currency against stable coins), and an algorithmic central bank, which is responsible for new stablecoins issuance, and also for stabilizing stablecoin price in the markets via interventions, as central banks are doing for fiat currencies. 
 \end{abstract}
 
 % \input{intro}
@@ -84,7 +85,7 @@ Algorithmic stablecoins is a natural extension of cryptocurrencies, trying to
 solve problems with volatility of their prices by pegging stablecoin price to an
 asset which price believed to be more or less stable with time (e.g. 1 gram of gold).  
 
-Stable pricing could be useful for:
+Having an asset with a stable value could be useful for:
 \begin{enumerate}
 \item securing fundraising; a project can be sure that funds collected during fundraising will have stable value in the mid- and long-term.
 \item doing business with predictable results. For example, a hosting provider can be sure that payments collected at the beginning of the month 
@@ -94,9 +95,9 @@ Stable pricing could be useful for:
 \item lending and other decentralized finance applications. Stability of asset value is critical for many applications.
 \end{enumerate}
 
-Algorithmic stablecoins are different from centralized stablecoins, such as USDT and USDC, which are 
-convertible into underlying (pegged asset) via a trusted party. In case of an algorithmic stablecoin, its 
+Algorithmic stablecoins are different from centralized stablecoins, such as USDT and USDC, for which there is a trusted party doing conversions to a pegged asset. In case of an algorithmic stablecoin, the 
 pegging is done via rebasement of total supply, or via imitating the trusted party, which holds reserves and doing market interventions when it is needed for getting exchange rate back to the peg. 
+
 
 
 \section{General Design}
