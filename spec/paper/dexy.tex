@@ -73,8 +73,8 @@
 \maketitle
 
 \begin{abstract}
-In this paper, we consider a new stablecoin protocol design called \em{Dexy}. The protocol has two mandatory components, reference market~(in form of liquidity pool where anyone can 
-trade base currency against stable coins), and an algorithmic central bank, which is responsible for new stablecoins issuance, and also for stabilizing stablecoin price in the markets via interventions, as central banks are doing for fiat currencies. 
+In this paper, we consider a new stablecoin protocol design called \dx. The protocol has two mandatory components, reference market~(in form of liquidity pool where anyone can 
+trade base currency against stable coins), and an algorithmic central bank, which is responsible for new stablecoins issuance, and also for stabilizing stablecoin price in the reference market. 
 \end{abstract}
 
 % \input{intro}
@@ -83,24 +83,27 @@ trade base currency against stable coins), and an algorithmic central bank, whic
 
 Algorithmic stablecoins is a natural extension of cryptocurrencies, trying to 
 solve problems with volatility of their prices by pegging stablecoin price to an
-asset which price believed to be more or less stable with time (e.g. 1 gram of gold).  
+asset which price is considered to be more or less stable with time (e.g. gold).  
 
 Having an asset with a stable value could be useful for:
-\begin{enumerate}
+\begin{itemize}
 \item securing fundraising; a project can be sure that funds collected during fundraising will have stable value in the mid- and long-term.
-\item doing business with predictable results. For example, a hosting provider can be sure that payments collected at the beginning of the month 
-      would be about the same at the end of the month when the provider will need to pay the bills. 
+\item doing business with predictable results. For example, a shop can be sure that funds collected from sales will be about the same when the shop is ordering goods from warehouses~(otherwise, the shop may go bankrupt if margin is not that big). 
 \item shorting: when cryptocurrency prices are high, it is desirable for investors to rebalance their portfolio by increasing exposure to fiat currencies (or traditional
- commodities). However, as KYC procedures are often cumbersome or not possible, it would be better to buy fiat and commodity substitues in form of stablecoins on decentralized exchanges.
-\item lending and other decentralized finance applications. Stability of asset value is critical for many applications.
-\end{enumerate}
+ commodities). However, as fiat currencies and centralized exchanges impose significant risks, it would be better to buy fiat and commodity substitues in form of stablecoins on decentralized exchanges.
+\item lending and other decentralized finance applications. Stability of collateral value is critical for many applications.
+\end{itemize}
 
 Algorithmic stablecoins are different from centralized stablecoins, such as USDT and USDC, for which there is a trusted party doing conversions to a pegged asset. In case of an algorithmic stablecoin, the 
-pegging is done via rebasement of total supply, or via imitating the trusted party, which holds reserves and doing market interventions when it is needed for getting exchange rate back to the peg. 
+pegging is done via rebasement of total supply~(as in Ampleforth), or via imitating the trusted party, which holds reserves and doing market interventions when it is needed for getting exchange rate back to the peg. Imititating the trusted party is usually done by allowing anyone on the blockchain creating over-collateralized financial instruments, such as collateralized debt positions~(as 
+in DAI) or zero-coupon bonds~(as in the Yield protocol).
+
+\knote{add links to the paragraph above}
+
+In this work we present \dx{}, a stablecoin protocol where the bank presented explicitly as a contract with few predefined rules. The bank is trying to stabilize stablecoin value on the markets, using a liquidity pool as a reference market, by providing stablecoin liquidity, when stablecoin is over the peg, or injecting base currency from its reserves, when the stablecoin is under the peg. In extreme case, when bank reserves are depleted and stablecoin is still under the peg, its value is restored by burning stablecoin in the liquidity pool.   
 
 
-
-\section{General Design}
+\section{\dx{} Design in General}
 
 Unlike popular algorithmic stablecoins based on two tokens (instruments), \dx{} is based on one token but two protocols. In the first place, 
 there is market where trading of \dx{} vs the base currency (\bc{}) happens. In the second place, if market price is way too different from target price (reported by an oracle), there is an algorithmic central bank which makes interventions. The central bank can also mint new \dx{} tokens, selling them for \bc{}. The bank is using reserves in \bc{} it is buying for interventions then. 
