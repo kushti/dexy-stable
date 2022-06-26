@@ -1,48 +1,50 @@
 package utils
 
-import ergoplatform.dexy.{DexyContracts, DexyToken}
-import org.ergoplatform.appkit.{Address, BlockchainContext, ErgoToken, InputBox}
+import ergoplatform.dexy.{DexyToken}
+import io.circe.Json
+import org.ergoplatform.appkit.{Address, BlockchainContext, InputBox}
+
 import scala.collection.JavaConverters._
 
 object OnChainData {
   def getLastOracleBox(ctx: BlockchainContext): InputBox = {
-    ctx.getCoveringBoxesFor(
-      Address.create(Configuration.serviceConf.network.oracleAddress),
-      (1e9 * 1e8).toLong,
-      List(new ErgoToken(DexyToken.oraclePoolNFT, 1L)).asJava
-    ).getBoxes.asScala.head
+    val oracleBoxJson = Explorer.getUnspentTokenBoxes(DexyToken.oraclePoolNFT)
+    val lastOracleBoxId = oracleBoxJson.hcursor.downField("items").as[List[Json]]
+      .getOrElse(throw new Exception("couldn't parse oracle box")).head
+      .hcursor.downField("boxId").as[String].getOrElse("")
+    ctx.getBoxesById(lastOracleBoxId).head
   }
 
-  def getLastEmissionBox(ctx: BlockchainContext): InputBox = {
-    ctx.getCoveringBoxesFor(
-      new Address(DexyContracts.dexyAddresses.emissionAddress),
-      (1e9 * 1e8).toLong,
-      List(new ErgoToken(DexyToken.emissionNFT, 1L)).asJava
-    ).getBoxes.asScala.head
+  def getLastBankBox(ctx: BlockchainContext): InputBox = {
+    val bankBoxJson = Explorer.getUnspentTokenBoxes(DexyToken.bankNFT)
+    val bankBoxId = bankBoxJson.hcursor.downField("items").as[List[Json]]
+      .getOrElse(throw new Exception("couldn't parse bank box")).head
+      .hcursor.downField("boxId").as[String].getOrElse("")
+    ctx.getBoxesById(bankBoxId).head
   }
 
-  def getLastSwappingBox(ctx: BlockchainContext): InputBox = {
-    ctx.getCoveringBoxesFor(
-      new Address(DexyContracts.dexyAddresses.swappingAddress),
-      (1e9 * 1e8).toLong,
-      List(new ErgoToken(DexyToken.swappingNFT, 1L)).asJava
-    ).getBoxes.asScala.head
+  def getLastFreeMintBox(ctx: BlockchainContext): InputBox = {
+    val freeMintBoxJson = Explorer.getUnspentTokenBoxes(DexyToken.freeMintNFT)
+    val freeMintBoxId = freeMintBoxJson.hcursor.downField("items").as[List[Json]]
+      .getOrElse(throw new Exception("couldn't free mint box")).head
+      .hcursor.downField("boxId").as[String].getOrElse("")
+    ctx.getBoxesById(freeMintBoxId).head
   }
 
-  def getLastTrackingBox(ctx: BlockchainContext): InputBox = {
-    ctx.getCoveringBoxesFor(
-      new Address(DexyContracts.dexyAddresses.trackingAddress),
-      (1e9 * 1e8).toLong,
-      List(new ErgoToken(DexyToken.trackingNFT, 1L)).asJava
-    ).getBoxes.asScala.head
+  def getLastInterventionBox(ctx: BlockchainContext): InputBox = {
+    val interventionBoxJson = Explorer.getUnspentTokenBoxes(DexyToken.interventionNFT)
+    val interventionBoxId = interventionBoxJson.hcursor.downField("items").as[List[Json]]
+      .getOrElse(throw new Exception("couldn't parse intervention box")).head
+      .hcursor.downField("boxId").as[String].getOrElse("")
+    ctx.getBoxesById(interventionBoxId).head
   }
 
   def getLastLPBox(ctx: BlockchainContext): InputBox = {
-    ctx.getCoveringBoxesFor(
-      new Address(DexyContracts.dexyAddresses.lpAddress),
-      (1e9 * 1e8).toLong,
-      List(new ErgoToken(DexyToken.lpNFT, 1L)).asJava
-    ).getBoxes.asScala.head
+    val lpBoxJson = Explorer.getUnspentTokenBoxes(DexyToken.lpNFT)
+    val lpBoxId = lpBoxJson.hcursor.downField("items").as[List[Json]]
+      .getOrElse(throw new Exception("couldn't parse lp box")).head
+      .hcursor.downField("boxId").as[String].getOrElse("")
+    ctx.getBoxesById(lpBoxId).head
   }
 
   def selectInputBoxForBuyer(ctx: BlockchainContext, neededErg: Long, userAddress: Address): Seq[InputBox] = {

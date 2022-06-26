@@ -2,7 +2,7 @@ package ergoplatform.dexy
 
 import org.ergoplatform.appkit.impl.ErgoTreeContract
 import utils.Configuration
-import org.ergoplatform.appkit.{Address, BlockchainContext, ContextVar, ErgoToken, ErgoValue, InputBox, SignedTransaction}
+import org.ergoplatform.appkit.{Address, BlockchainContext, ContextVar, ErgoToken, InputBox, SignedTransaction}
 import utils.OnChainData._
 
 import scala.collection.JavaConverters._
@@ -15,13 +15,13 @@ object DexyOffChain {
     (emissionNeededAmount, emissionNeededAmount + fee + Configuration.minErg)
   }
 
-  def buyDexyUSDFromEmissionBox(ctx: BlockchainContext, userAddress: Address, userValue: Long, userFee: Long): Unit = {
+  def buyDexyUSDFromBankBox(ctx: BlockchainContext, userAddress: Address, userValue: Long, userFee: Long): Unit = {
 
     val lastOPBox = getLastOracleBox(ctx)
     val neededErg = calculateNeededErg(lastOPBox, userValue, userFee)
 
     val selfOutIndex = 0
-    val lastEmissionBox = getLastEmissionBox(ctx).withContextVars(ContextVar.of(0.toByte, selfOutIndex))
+    val lastBankBox = getLastBankBox(ctx).withContextVars(ContextVar.of(0.toByte, selfOutIndex))
     val userInputBoxes = selectInputBoxForBuyer(ctx, neededErg._2, userAddress)
 
 
@@ -34,15 +34,15 @@ object DexyOffChain {
       .build()
 
     val newEmissionBox = txBuilderObj.outBoxBuilder()
-      .value(lastEmissionBox.getValue + neededErg._1)
+      .value(lastBankBox.getValue + neededErg._1)
       .tokens(
-        lastEmissionBox.getTokens.get(0),
-        new ErgoToken(lastEmissionBox.getTokens.get(1).getId, lastEmissionBox.getTokens.get(1).getValue - userValue)
+        lastBankBox.getTokens.get(0),
+        new ErgoToken(lastBankBox.getTokens.get(1).getId, lastBankBox.getTokens.get(1).getValue - userValue)
       )
-      .contract(new ErgoTreeContract(DexyContracts.dexyAddresses.emissionAddress.script))
+      .contract(new ErgoTreeContract(DexyContracts.dexyAddresses.bankAddress.script))
       .build()
 
-    val tx = txBuilderObj.boxesToSpend((lastEmissionBox +: userInputBoxes).asJava)
+    val tx = txBuilderObj.boxesToSpend((lastBankBox +: userInputBoxes).asJava)
       .outputs(newEmissionBox, userBox)
       .fee(userFee)
       .sendChangeTo(userAddress.getErgoAddress)

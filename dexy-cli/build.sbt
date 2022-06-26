@@ -12,7 +12,9 @@ resolvers += "Sonatype Releases" at "https://oss.sonatype.org/content/repositori
 
 libraryDependencies ++= Seq(
   "org.ergoplatform" %% "ergo-appkit" % "develop-def25122-SNAPSHOT",
-  "com.github.pureconfig" %% "pureconfig" % "0.16.0"
+  "com.github.pureconfig" %% "pureconfig" % "0.16.0",
+  "org.scalaj" %% "scalaj-http" % "2.3.0"
+
 )
 
 scalacOptions ++= Seq(
