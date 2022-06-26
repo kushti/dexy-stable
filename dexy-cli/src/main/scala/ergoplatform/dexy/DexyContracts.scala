@@ -7,43 +7,71 @@ import utils.Configuration
 
 object DexyToken {
   val oraclePoolNFT = "011d3364de07e5a26f0c4eef0852cddb387039a921b7154ef3cab22c6eda887f" // TODO replace with actual
+  val interventionNFT = "011d3364de07e5a26f0c4eef0852cddb387039a921b7154ef3cab22c6eda887f" // TODO replace with actual
+  val freeMintNFT = "011d3364de07e5a26f0c4eef0852cddb387039a921b7154ef3cab22c6eda887f" // TODO replace with actual
   val lpNFT = "361A3A5250655368566D597133743677397A24432646294A404D635166546A57" // TODO replace with actual
-  val trackingNFT = "261A3A5250655368566D597133743677397A24432646294A404D635166546A57" // TODO replace with actual
-  val swappingNFT = "161A3A5250655368566D597133743677397A24432646294A404D635166546A57" // TODO replace with actual
-  val emissionNFT = "061A3A5250655368566D597133743677397A24432646294A404D635166546A57" // TODO replace with actual
+  val bankNFT = "361A3A5250655368566D597133743677397A24432646294A404D635166546A57" // TODO replace with actual
+
   val dexyUSDToken = "061A3A5250655368566D597133743677397A24432646294A404D635166546A57" // TODO replace with actual
   val LPToken = "061A3A5250655368566D597133743677397A24432646294A404D635166546A57" // TODO replace with actual
 }
 
-case class DexyAddresses(emissionAddress: ErgoAddress, lpAddress: ErgoAddress, trackingAddress: ErgoAddress, swappingAddress: ErgoAddress)
+case class DexyAddresses(bankAddress: ErgoAddress, freeMintAddress: ErgoAddress, lpAddress: ErgoAddress, interventionAddress: ErgoAddress)
 
 object DexyContracts {
   var dexyAddresses: DexyAddresses = _
-
-  private lazy val emissionScript =
+  private lazy val bankScript =
     s"""{
-       |  // This box: (dexyUSD emission box)
-       |  //   tokens(0): emissionNFT identifying the box
+       |  // This box: (dexyUSD bank box)
+       |  //   tokens(0): bankNFT identifying the box
        |  //   tokens(1): dexyUSD tokens to be emitted
        |
+       |  // Usually bank box will be spent as follows
+       |  //
+       |  //   Mint
+       |  //   Input    |  Output
+       |  // 0 Bank     |  Bank
+       |  // 1 ...      |  ...
+       |  //
+       |  //   Intervention
+       |  //   Input    |  Output
+       |  // 0 LP       |  LP
+       |  // 1 Bank     |  Bank
+       |  // 2 ...      |  ...
+       |  //
        |  val selfOutIndex = getVar[Int](0).get
        |
        |  val oraclePoolNFT = oraclePoolNFTId // to identify oracle pool box
-       |  val swappingNFT = swappingNFTId // to identify LP box for future use
+       |  val interventionNFT = interventionNFTId // to identify intervention box for future use
+       |  val freeMintNFT = freeMintNFTId
+       |  val lpNFT = lpNFTId
        |
-       |  val validEmission = {
+       |  val validMint = {
        |    val oraclePoolBox = CONTEXT.dataInputs(0) // oracle-pool (v1 and v2) box containing rate in R4
+       |
+       |    val lpBox = CONTEXT.dataInputs(1)
        |
        |    val validOP = oraclePoolBox.tokens(0)._1 == oraclePoolNFT
        |
+       |    val validLP = lpBox.tokens(0)._1 == lpNFT
+       |
        |    val oraclePoolRate = oraclePoolBox.R4[Long].get // can assume always > 0 (ref oracle pool contracts) NanoErgs per USD
+       |
+       |    val lpReservesX = lpBox.value
+       |
+       |    val lpReservesY = lpBox.tokens(2)._2
+       |
+       |    val lpRate = lpReservesX / lpReservesY
+       |
+       |    val validRateFreeMint = 98 * lpRate < oraclePoolRate * 100 &&
+       |                            oraclePoolRate * 100 < 102 * lpRate
        |
        |    val selfOut = OUTPUTS(selfOutIndex)
        |
-       |    val validSelfOut = selfOut.tokens(0) == SELF.tokens(0) && // emissionNFT and quantity preserved
-       |                     selfOut.propositionBytes == SELF.propositionBytes && // script preserved
-       |                     selfOut.tokens(1)._1 == SELF.tokens(1)._1 && // dexyUSD tokenId preserved
-       |                     selfOut.value > SELF.value // can only purchase dexyUSD, not sell it
+       |    val validSelfOut = selfOut.tokens(0) == SELF.tokens(0) && // bankNFT and quantity preserved
+       |                       selfOut.propositionBytes == SELF.propositionBytes && // script preserved
+       |                       selfOut.tokens(1)._1 == SELF.tokens(1)._1 && // dexyUSD tokenId preserved
+       |                       selfOut.value > SELF.value // can only purchase dexyUSD, not sell it
        |
        |    val inTokens = SELF.tokens(1)._2
        |    val outTokens = selfOut.tokens(1)._2
@@ -54,12 +82,65 @@ object DexyContracts {
        |
        |    val validDelta = deltaErgs >= deltaTokens * oraclePoolRate // deltaTokens must be (+)ve, since both deltaErgs and oraclePoolRate are (+)ve
        |
-       |    validOP && validSelfOut && validDelta
+       |    val validFreeExtraLogic = INPUTS(1).tokens(0)._1 == freeMintNFT
+       |
+       |    validOP && validLP && validSelfOut && validDelta && validRateFreeMint && validFreeExtraLogic
        |  }
        |
-       |  val validTopping = INPUTS(0).tokens(0)._1 == swappingNFT
+       |  val validIntervention = INPUTS(2).tokens(0)._1 == interventionNFT
        |
-       |  sigmaProp(validEmission || validTopping)
+       |  sigmaProp(validMint || validIntervention)
+       |}
+       |""".stripMargin
+
+  // free mint box
+  private lazy val freeMintScript =
+    s"""{
+       |  // this box: (free-mint box)
+       |  //   tokens(0): Free-mint NFT
+       |  //
+       |  //   R4: (Int) height at which counter will reset
+       |  //   R5: (Long) remaining stablecoins available to be purchased before counter is reset
+       |
+       |  val bankNFT = bankNFTId
+       |  val lpNFT = lpNFTId
+       |  val tFree = 100
+       |
+       |  val bankBoxIn = INPUTS(0)
+       |  val lpBox = CONTEXT.dataInputs(1) // bank box requires dataInputs(0) to be oracle pool box, so 1 is LP box
+       |
+       |  val selfOutIndex = getVar[Int](0).get
+       |  val bankOutIndex = getVar[Int](1).get
+       |
+       |  val selfOut = OUTPUTS(selfOutIndex)
+       |  val bankBoxOut = OUTPUTS(bankOutIndex)
+       |
+       |  val selfInR4 = SELF.R4[Int].get
+       |  val selfInR5 = SELF.R5[Long].get
+       |  val selfOutR4 = selfOut.R4[Int].get
+       |  val selfOutR5 = selfOut.R5[Long].get
+       |
+       |  val isCounterReset = HEIGHT > selfInR4
+       |
+       |  val dexyReserves = lpBox.tokens(2)._2
+       |
+       |  val dexyMinted = bankBoxIn.tokens(1)._2 - bankBoxOut.tokens(1)._2
+       |
+       |  val availableToMint = if (isCounterReset) dexyReserves / 100 else selfInR5
+       |
+       |  val validAmount = dexyMinted <= availableToMint
+       |
+       |  val validSelfOutR4 = selfOutR4 == (if (isCounterReset) HEIGHT + tFree else selfInR4)
+       |  val validSelfOutR5 = selfOutR5 == availableToMint - dexyMinted
+       |
+       |  val validBankBoxInOut = bankBoxIn.tokens(0)._1 == bankNFT && bankBoxOut.tokens(0)._1 == bankNFT
+       |  val validLpBox = lpBox.tokens(0)._1 == lpNFT
+       |  val validSelfOut = selfOut.tokens == SELF.tokens && // NFT preserved
+       |                     selfOut.propositionBytes == SELF.propositionBytes && // script preserved
+       |                     selfOut.value > SELF.value && validSelfOutR5 && validSelfOutR4
+       |
+       |  sigmaProp(validAmount && validBankBoxInOut && validLpBox && validSelfOut)
+       |
        |}
        |""".stripMargin
 
@@ -75,7 +156,7 @@ object DexyContracts {
        |    // This box: (LP box)
        |    //   R1 (value): X tokens in NanoErgs
        |    //   R4: How many LP in circulation (long). This can be non-zero when bootstrapping, to consider the initial token burning in UniSwap v2
-       |    //   R5: Cross-counter. A counter to track how many times the rate has "crossed" the oracle pool rate. That is the oracle pool rate falls in between the before and after rates
+       |    //   R5: Stores the height where oracle pool rate becomes lower than LP rate. Reset to Long.MaxValue when rate crossed back. Called crossTracker below
        |    //   Tokens(0): LP NFT to uniquely identify NFT box. (Could we possibly do away with this?)
        |    //   Tokens(1): LP tokens
        |    //   Tokens(2): Y tokens (Note that X tokens are NanoErgs (the value)
@@ -85,6 +166,7 @@ object DexyContracts {
        |    //   Token(0): OP NFT to uniquely identify Oracle Pool
        |
        |    // constants
+       |    val threshold = 3 // error threshold in crossTracker
        |    val feeNum = 3 // 0.3 %
        |    val feeDenom = 1000
        |    val minStorageRent = 10000000L  // this many number of nanoErgs are going to be permanently locked
@@ -126,12 +208,18 @@ object DexyContracts {
        |    val lpRateXY1 = reservesX1 / reservesY1  // we can assume that reservesY1 > 0 (since at least one token must exist)
        |    val isCrossing = (lpRateXY0 - oraclePoolRateXY) * (lpRateXY1 - oraclePoolRateXY) < 0 // if (and only if) oracle pool rate falls in between, then this will be negative
        |
-       |    val crossCounterIn = SELF.R5[Int].get
-       |    val crossCounterOut = successor.R5[Int].get
+       |    val crossTrackerIn = SELF.R5[Int].get
+       |    val crossTrackerOut = successor.R5[Int].get
        |
-       |    val validCrossCounter = crossCounterOut == {if (isCrossing) crossCounterIn + 1 else crossCounterIn}
+       |    val validCrossCounter = {
+       |      if (isCrossing) {
+       |        if (lpRateXY1 > oraclePoolRateXY) {
+       |          crossTrackerOut >= HEIGHT - threshold
+       |        } else crossTrackerOut == ${Long.MaxValue}L
+       |      } else crossTrackerOut == crossTrackerIn
+       |    }
        |
-       |    val validRateForRedeemingLP = oraclePoolRateXY > lpRateXY0 * 9 / 10 // lpRate must be >= 0.9 oraclePoolRate // these parameters need to be tweaked
+       |    val validRateForRedeemingLP = oraclePoolRateXY > lpRateXY0 * 98 / 100 // lpRate must be >= 0.98 * oraclePoolRate // these parameters need to be tweaked
        |    // Do we need above if we also have the tracking contract?
        |
        |    val deltaSupplyLP  = supplyLP1 - supplyLP0
@@ -181,74 +269,25 @@ object DexyContracts {
        |}
        |""".stripMargin
 
-  private lazy val trackingScript =
+  private lazy val interventionScript =
     s"""{
-       |  // Tracking box
-       |  //   R4: Crossing Counter of LP box
-       |  //   tokens(0): TrackingNFT
+       |  val lastIntervention = SELF.creationInfo._1
+       |  val buffer = 3 // error margin in height
+       |  val T = 100 // from paper, gap between two interventions
+       |  val T_int = 20 // blocks after which a trigger swap event can be completed, provided rate has not crossed oracle pool rate
+       |  val bankNFT = bankNFTId
+       |  val lpNFT = lpNFTId
+       |  val oraclePoolNFT = oraclePoolNFTId
        |
-       |  val thresholdPercent = 90 // 90% or less value (of LP in terms of OraclePool) will trigger action (ensure less than 100)
-       |  val errorMargin = 3 // number of blocks where tracking error is allowed
-       |
-       |  val lpNFT = lpNFTId // to identify LP box for future use
-       |  val oraclePoolNFT = oraclePoolNFTId // to identify oracle pool box
-       |
-       |  val lpBox = CONTEXT.dataInputs(0)
-       |  val oraclePoolBox = CONTEXT.dataInputs(1)
-       |
-       |  val validLpBox = lpBox.tokens(0)._1 == lpNFT
-       |  val validOraclePoolBox = oraclePoolBox.tokens(0)._1 == oraclePoolNFT
-       |
-       |  val tokenY    = lpBox.tokens(2)
-       |
-       |  val reservesX = lpBox.value
-       |  val reservesY = tokenY._2
-       |
-       |  val lpRateXY  = reservesX / reservesY  // we can assume that reservesY > 0 (since at least one token must exist)
-       |
-       |  val oraclePoolRateXY = oraclePoolBox.R4[Long].get
-       |
-       |  val crossCounter = lpBox.R5[Int].get // stores how many times LP rate has crossed oracle pool rate (by cross, we mean going from above to below or vice versa)
-       |
-       |  val successor = OUTPUTS(0)
-       |
-       |  val validThreshold = lpRateXY * 100 < thresholdPercent * oraclePoolRateXY
-       |
-       |  val validSuccessor = successor.propositionBytes == SELF.propositionBytes &&
-       |                       successor.tokens == SELF.tokens &&
-       |                       successor.value >= SELF.value
-       |
-       |  val validTracking = successor.R4[Int].get == crossCounter &&
-       |                      successor.creationInfo._1 > (HEIGHT - errorMargin)
-       |
-       |  sigmaProp(
-       |    validLpBox &&
-       |    validOraclePoolBox &&
-       |    validThreshold &&
-       |    validSuccessor &&
-       |    validTracking
-       |  )
-       |}
-       |""".stripMargin
-
-  private lazy val swappingScript =
-    s"""{
-       |  val waitingPeriod = 20 // blocks after which a trigger swap event can be completed, provided rate has not crossed oracle pool rate
-       |  val emissionNFT = emissionNFTId // to identify LP box for future use
-       |  val lpNFT = lpNFTId // to identify LP box for future use
-       |  val trackingNFT = trackingNFTId // to identify LP box for future use
-       |  val oraclePoolNFT = oraclePoolNFTId // to identify oracle pool box
-       |
-       |  val thresholdPercent = 90 // 90% or less value (of LP in terms of OraclePool) will trigger action (ensure less than 100)
+       |  val thresholdPercent = 98 // 98% or less value (of LP in terms of OraclePool) will trigger action (ensure less than 100)
        |
        |  val oraclePoolBox = CONTEXT.dataInputs(0)
-       |  val trackingBox = CONTEXT.dataInputs(1)
        |
        |  val lpBoxIn = INPUTS(0)
-       |  val emissionBoxIn = INPUTS(1)
+       |  val bankBoxIn = INPUTS(1)
        |
        |  val lpBoxOut = OUTPUTS(0)
-       |  val emissionBoxOut = OUTPUTS(1)
+       |  val bankBoxOut = OUTPUTS(1)
        |
        |  val successor = OUTPUTS(2) // SELF should be INPUTS(2)
        |
@@ -268,56 +307,68 @@ object DexyContracts {
        |
        |  val validThreshold = lpRateXYIn * 100 < thresholdPercent * oraclePoolRateXY
        |
-       |  val validTrackingBox = trackingBox.tokens(0)._1 == trackingNFT
        |  val validOraclePoolBox = oraclePoolBox.tokens(0)._1 == oraclePoolNFT
        |  val validLpBox = lpBoxIn.tokens(0)._1 == lpNFT
        |
        |  val validSuccessor = successor.propositionBytes == SELF.propositionBytes &&
        |                       successor.tokens == SELF.tokens &&
-       |                       successor.value == SELF.value
+       |                       successor.value == SELF.value &&
+       |                       successor.creationInfo._1 >= HEIGHT - buffer
        |
-       |  val validEmissionBoxIn = emissionBoxIn.tokens(0)._1 == emissionNFT
-       |  val validEmissionBoxOut = emissionBoxOut.tokens(0) == emissionBoxIn.tokens(0) &&
-       |                            emissionBoxOut.tokens(1)._1 == emissionBoxIn.tokens(1)._1
+       |  val validBankBoxIn = bankBoxIn.tokens(0)._1 == bankNFT
+       |  val validBankBoxOut = bankBoxOut.tokens(0) == bankBoxIn.tokens(0) &&
+       |                        bankBoxOut.tokens(1)._1 == bankBoxIn.tokens(1)._1
        |
-       |  val deltaEmissionTokens =  emissionBoxOut.tokens(1)._2 - emissionBoxIn.tokens(1)._2
-       |  val deltaEmissionErgs = emissionBoxIn.value - emissionBoxOut.value
+       |  val validGap = lastIntervention < HEIGHT - T
+       |
+       |  val deltaBankTokens =  bankBoxOut.tokens(1)._2 - bankBoxIn.tokens(1)._2
+       |  val deltaBankErgs = bankBoxIn.value - bankBoxOut.value
        |  val deltaLpX = reservesXOut - reservesXIn
        |  val deltaLpY = reservesYIn - reservesYOut
        |
-       |  val validLpIn = lpBoxIn.R5[Int].get == trackingBox.R4[Int].get && // no change in cross-counter
-       |                  trackingBox.creationInfo._1 < HEIGHT - waitingPeriod // at least waitingPeriod blocks have passed since the tracking started
+       |  val validLpIn = lpBoxIn.R5[Int].get < HEIGHT - T_int // at least T_int blocks have passed since the tracking started
        |
        |  val lpRateXYOutTimes100 = lpRateXYOut * 100
        |
        |  val validSwap = lpRateXYOutTimes100 >= oraclePoolRateXY * 105 && // new rate must be >= 1.05 times oracle rate
        |                  lpRateXYOutTimes100 <= oraclePoolRateXY * 110 && // new rate must be <= 1.1 times oracle rate
-       |                  deltaEmissionErgs <= deltaLpX && // ergs reduced in emission box must be <= ergs gained in LP
-       |                  deltaEmissionTokens >= deltaLpY && // tokens gained in emission box must be >= tokens reduced in LP
-       |                  validEmissionBoxIn &&
-       |                  validEmissionBoxOut &&
+       |                  deltaBankErgs <= deltaLpX && // ergs reduced in bank box must be <= ergs gained in LP
+       |                  deltaBankTokens >= deltaLpY && // tokens gained in bank box must be >= tokens reduced in LP
+       |                  validBankBoxIn &&
+       |                  validBankBoxOut &&
        |                  validSuccessor &&
        |                  validLpBox &&
        |                  validOraclePoolBox &&
-       |                  validTrackingBox &&
        |                  validThreshold &&
-       |                  validLpIn
+       |                  validLpIn &&
+       |                  validGap
        |
        |  sigmaProp(validSwap)
        |}
        |""".stripMargin
 
   Configuration.ergoClient.execute(ctx => {
-    val emissionCon: ErgoContract = ctx.compileContract(
+    val bankCon: ErgoContract = ctx.compileContract(
     ConstantsBuilder.create()
       .item("oraclePoolNFTId", ErgoId.create(DexyToken.oraclePoolNFT).getBytes)
-      .item("swappingNFTId", ErgoId.create(DexyToken.trackingNFT).getBytes)
+      .item("interventionNFTId", ErgoId.create(DexyToken.interventionNFT).getBytes)
+      .item("freeMintNFTId", ErgoId.create(DexyToken.freeMintNFT).getBytes)
+      .item("lpNFTId", ErgoId.create(DexyToken.lpNFT).getBytes)
       .build(),
-    emissionScript
+      bankScript
     )
-    lazy val emissionErgoTree: ErgoTree = emissionCon.getErgoTree
-    lazy val emissionAddress: ErgoAddress = Configuration.addressEncoder.fromProposition(emissionErgoTree).get
+    lazy val bankErgoTree: ErgoTree = bankCon.getErgoTree
+    lazy val bankAddress: ErgoAddress = Configuration.addressEncoder.fromProposition(bankErgoTree).get
 
+    val freeMintCon: ErgoContract = ctx.compileContract(
+      ConstantsBuilder.create()
+        .item("bankNFTId", ErgoId.create(DexyToken.bankNFT).getBytes)
+        .item("lpNFTId", ErgoId.create(DexyToken.lpNFT).getBytes)
+        .build(),
+      freeMintScript
+    )
+    lazy val freeMintErgoTree: ErgoTree = freeMintCon.getErgoTree
+    lazy val freeMintAddress: ErgoAddress = Configuration.addressEncoder.fromProposition(freeMintErgoTree).get
 
     val lpCon: ErgoContract = ctx.compileContract(
       ConstantsBuilder.create()
@@ -328,31 +379,18 @@ object DexyContracts {
     lazy val lpErgoTree: ErgoTree = lpCon.getErgoTree
     lazy val lpAddress: ErgoAddress = Configuration.addressEncoder.fromProposition(lpErgoTree).get
 
-
-    val trackingCon: ErgoContract = ctx.compileContract(
-      ConstantsBuilder.create()
-        .item("lpNFTId", ErgoId.create(DexyToken.lpNFT).getBytes)
-        .item("oraclePoolNFTId", ErgoId.create(DexyToken.oraclePoolNFT).getBytes)
-        .build(),
-      trackingScript
-    )
-    lazy val trackingErgoTree: ErgoTree = trackingCon.getErgoTree
-    lazy val trackingAddress: ErgoAddress = Configuration.addressEncoder.fromProposition(trackingErgoTree).get
-
-
-    val swappingCon: ErgoContract = ctx.compileContract(
+    val interventionCon: ErgoContract = ctx.compileContract(
       ConstantsBuilder.create()
         .item("oraclePoolNFTId", ErgoId.create(DexyToken.oraclePoolNFT).getBytes)
         .item("lpNFTId", ErgoId.create(DexyToken.lpNFT).getBytes)
-        .item("emissionNFTId", ErgoId.create(DexyToken.emissionNFT).getBytes)
-        .item("trackingNFTId", ErgoId.create(DexyToken.trackingNFT).getBytes)
+        .item("bankNFTId", ErgoId.create(DexyToken.bankNFT).getBytes)
         .build(),
-      swappingScript
+      interventionScript
     )
-    lazy val swappingErgoTree: ErgoTree = swappingCon.getErgoTree
-    lazy val swappingAddress: ErgoAddress = Configuration.addressEncoder.fromProposition(swappingErgoTree).get
+    lazy val interventionErgoTree: ErgoTree = interventionCon.getErgoTree
+    lazy val interventionAddress: ErgoAddress = Configuration.addressEncoder.fromProposition(interventionErgoTree).get
 
-    dexyAddresses = DexyAddresses(emissionAddress, lpAddress, trackingAddress, swappingAddress)
+    dexyAddresses = DexyAddresses(bankAddress, freeMintAddress, lpAddress, interventionAddress)
   })
 
 }
