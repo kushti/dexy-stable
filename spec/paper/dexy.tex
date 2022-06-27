@@ -133,7 +133,7 @@ We start with introducing notation:
 
 The bank is doing interventions when the situation is far from normal in the markets, and enough time passed for markets to stabilize themselves with no interventions. In our case, the bank is doing interventions based on stablecoin price in the liquidity pool in comparison with oracle provided price. The bank's intervention then is about injecting its \bc{} reserves into the pool.  
 
-First of all, let's assume that price crashed from $p$ to $s$ sharply and stands there, and before the crash there were $e$ of \bc{} and $u$ of \sct{}, with liquidity pool price being $p$. The worst case is when no liqudity put into the pool during the period $T$. With large enough $T$ and large enough $R$ this assumption is not very realistic probably: liquidity will be put into the pool by arbitrage players, price is failing with swings where traders will mint \sct{} by putting \bc{} into bank reserves, and so on. However, it would be reasonable to consider worst-case scenario, then in the real world \dx{} will be even more durable than in theory. 
+First of all, let's assume that the oracle price crashed from $p$ to $s$ sharply and stands there, and before the crash there were $e$ of \bc{} and $u$ of \sct{} in the liquidity pool, with pool's price being $p$. The worst case is when no liqudity put into the pool during the period $T$. With large enough $T$ and large enough $R$ this assumption is not very realistic probably: some traders will buy \bc{}s with their \sct{}s anyway, price is failing with swings where traders will mint \sct{}s by while increasing \bc{} bank reserves, etc. However, it would be reasonable to consider worst-case scenario, then in the real world \dx{} will be even more durable than in theory. 
 
 In this case, the bank must intervene after $T$ units of time, as the price differs significantly, and restore the price in the pool, so set it to $s$. We denote amounts of \bc{} and \sct{} in the pool after the intervention as $e'$ and $u'$, respectively. Then:
 
@@ -145,54 +145,55 @@ In this case, the bank must intervene after $T$ units of time, as the price diff
 \end{itemize}
 
 So by injecting $E_1$ \bc{}, the bank recovers the price. However, this is not enough, as now there are $O$ \sct{} units which can be injected into the pool from outside. 
-Again, in the real life it is not realistic to assume that all the $O$ \sct{} would be injected, as some of them are simply lost. However, we need to assume worst-case scenario. We also assume that those $O$ tokens are being sold in very small batches not significantly affecting price in the pool, and after each batch seller of a new batch is waiting for a bank intervention to happen (so for $T$ units of time), and sells only after the intervention. In this case all the $O$ tokens are being sold at price close to $s$, so the bank should have $E_2 = \frac{O}{s}$. We note that this scenario is also not realistic and takes very long time. However, as before we assume the absolutely worst case.
+Again, in the real life it is not realistic to assume that all the $O$ \sct{} would be injected, as some of them are simply lost, some would be kept to buy cheap ERG at the bottom~(we remind that \sct{} often used as a bet for \bc{} price decline), etc. However, we need to assume worst-case scenario again. We also unrealistically assume that all the $O$ tokens are being sold in very small batches not significantly affecting price in the pool, and after each batch seller of a new batch is waiting for a bank intervention to happen (so for $T$ units of time), and sells only after the intervention. In this case all the $O$ tokens are being sold at price close to $s$, so the bank should have about $E_2 = \frac{O}{s}$ \bc{}s in reserve to buy the tokens back.
 
 Summing up $E_1$ and $E_2$, we got \bc{} reserves the bank should have to be ready for worst-case scenario: $E_w = E_1 + E_2 = \sqrt{\frac{e * u}{s}} - e + \frac{O}{s}$.
 
-It is simple to see why this scenario is worst-case for the bank. In this scenario, the bank is buying all the $O$ of external $\sct{}$ at the worst possible price $s$, and get to this price by burning its own reserves only.  
+It is simple to see why this scenario is worst-case for the bank. In this scenario, the bank~(and only the bank) is buying all the $O$ of external $\sct{}$ at the worst possible price $s$, and get to this price by burning its own reserves only.  
 
 \section{Bank and Pool Rules}
 
 Based on needed reserves for worst-case scenario estimation, we can consider minting rules accordingly. Similarly to SigUSD~(a Djed instantiation), we can, for example, target for security in case of 
-4x price drop, so to consider $R = \frac{p}{s} = 4$, and allow to mint \sct{}~while there are enough \bc{}~in reserves, so while there are not less than $E_w$ \bc{} in reserves. However, in this case most of time \sct{} would be non-mintable, and only during moments of \bc{} price going up significantly it will be possible to mint. 
+4x price drop, so to consider $R = \frac{p}{s} = 4$, and allow to mint \sct{}~while there are enough, so not less than $E_w$, \bc{}~in reserves. However, in this case most of time \sct{} would be non-mintable, and only during moments of \bc{} price going up significantly it will be possible to mint~(there are simulations showing that which can be found in the \dx{} repository). As worst-case scenario is based on unrealistic assumptions, unlikely a realistic protocol can be built on top of it.  
 
-Thus we leave worst-case scenario for UI, so dapps working with the \dx{} may show level of reserves, in comparison with worst-case scenario estimations. In this case, having on-chain data analysis, 
-more precise estimations of reserve quality can be made~(by considering \sct{} locked in DeFi protocols, likely forgotten, etc).
+Thus we leave worst-case scenario for UI, so dapps working with the \dx{} may show e.g. collateralization for the worst-case scenario. Having on-chain data analysis, 
+more precise estimations of reserve quality can be made~(by considering \sct{}s locked in DeFi protocols, likely forgotten, etc).
 
-We are proposing following minting rules.  
+We allow for cautios minting. That is, we whether allow minting when oracle price is above pool's price~(thus providing liquidity for arbitrage), or we allow to mint a little bit (per some time period) when liquidity pool is in good shape. In details, we have two following minting operations, with minting price being the oracle's price $p$:  
 
 \begin{itemize}
-  \item{Arbitrage mint: } if price reported by the oracle is higher than in the pool, i.e. $p > \frac{u}{e}$, we allow to print enough \sct{} to bring the price to $p$. That is, the bank allows to mint up to $\delta_u = \sqrt{p*e*u}-u$ \sct{} by accepting up to $\delta_e = \frac{\delta_u}{p}$ \bc{}s into reserves. 
+  \item{Arbitrage mint: } if price reported by the oracle is higher than in the pool, i.e. $p > \frac{u}{e}$, we allow to print enough \sct{} tokens to bring the price to $p$. That is, the bank allows to mint up to $\delta_u = \sqrt{p*e*u}-u$ \sct{} by accepting up to $\delta_e = \frac{\delta_u}{p}$ \bc{}s into reserves. 
 
-  \em{To instantiate the rule, we can allow for arbitrage minting if the price $p$ is more than $\frac{u}{e}$ by at least 1\% for time period $T_{arb}$ (e.g. 1 hour), also, the bank is chargin 1\% fee 
-  for the operation.} 
+  \em{To instantiate the rule, we can allow for arbitrage minting if the price $p$ is more than $\frac{u}{e}$ by at least $1\%$ for time period $T_{arb}$ (e.g. 1 hour), also, the bank is charging $0.5\%$ fee for the operation.} 
 
   \item{Free mint: } we allow to mint up to $\frac{u}{100}$ \sct{}s within time period $T_{free}$. 
-  \em{To instantiate the rule, we propose to have bank fee of 1\%, and allow for free mint if $0.98 < r < 1.02$}.
+  \em{To instantiate the rule, we propose to have bank fee of 1\%, and allow for free mint if $0.98 < r < 1.02$. Minting fee in this case is $0.5\%$. We propose to set $T_free$ to $1$ day, then bank reserves can grow by $1\%$ of LP volume per day when the price is flat.}. 
 \end{itemize}  
 
-In addition to minting actions, which increase bank reserves only, we define following two actions which decrease them: 
+In addition to minting actions, which increase bank reserves, we define following two actions which decrease them: 
 
 \begin{itemize}
-   \item{Intervention: } if reported by the oracle is lower than in the pool by significantly enough margin, i.e. $\frac{p*e}{u} < r$, where $r$ is some constant which is hard-wired into the protocol, then the bank is providing \bc{}s. to restore the price.
-   \em{To instantiate the rule, we propose to allow the bank to intervene if $r <= 0.98$ for time period $T_{int}$}
-   \item{Payout: } if bank has too much reserves, so $E > E_w$, we can allow for paying excess reserves out. There could be different ways to do this. E. g. extra reserves can be paid to holders of
-   liquidity pool LP tokens.
+   \item{Intervention: } if price reported by the oracle is lower than one in the pool by significantly enough margin, i.e. $\frac{p*e}{u} < r$, where $r$ is some constant which is hard-wired into the protocol, then the bank is providing \bc{}s. to restore the price.
+   \em{To instantiate the rule, we propose to allow the bank to intervene if $r <= 0.98$ for time period $T_{int} = 1 {\ day}$.}
+   \item{Payout: } if bank has too much reserves, so $E > E_w$, we can allow for paying excess reserves out. There could be different ways to do this. For example, extra reserves can be paid to holders of liquidity pool's LP tokens via staking (then LP participant has potential source of additional revenue).
 \end{itemize}
 
 
 We also state following rules for the liquidity pool (which, otherwise, acts as ordinary CP-AMM liquidity pool): 
 
 \begin{itemize}
-   \item{Stopping withdrawals: } if $r$ is below some threshold, withdrawals are stopped.  
+   \item{Stopping withdrawals: } if $r$ is below some threshold, withdrawals are stopped, so only trades are possible.  
    \em{To instantiate the rule, we propose to stop withdrawals immediately if $r <= 0.98$.}
    \item{Burn: } if the bank if empty, and $r$ is below some threshold, it is allowed to burn \sct{}s in the pool. 
-   \em{To instantiate the rule, we propose to \sct{} burn if $r <= 0.95$ for time period $T_{burn}$. $T_{burn}$ must be quite big}
+   \em{To instantiate the rule, we propose to burn \sct{} if $r <= 0.95$ for time period $T_{burn}$. $T_{burn}$ must be quite big, e.g. $1 {\ week}$.}
 \end{itemize} 
 
 \section{Stability}
 
-What provides stability for the stablecoin when we have the design sketched in the previous sections? 
+With burning in place, the price in the reference market will be eventually stabilized. However, for liquidity holders burning is painful, thus \dx{} protocol is trying to avoid it~(unlike other protocols, such as Gyroscope or Fei, where redemption rate fails below $1$ immediately as collateralization falls under $100\%$), by giving markets time to self-stabilize and then doing interventions. This could mean slower stabilization, in comparison with other protocols.
+
+\dx{} is also cautios about minting new \sct{}s, which could mean slow growth of number of tokens issued. This could be inconvient, especially for big players, but the protocol is focused on stability in the first place.   
+
  
 \knote{finish the section}
 
@@ -201,24 +202,11 @@ What provides stability for the stablecoin when we have the design sketched in t
 \knote{put contracts here}
 
 \section{Simulations}
-We made simulations. \knote{finish}
-
-\section{Extensions}
-
-
-%\input{intro-props}
-%\input{intro-scorex}
-%\input{intro-contrib}
-%\input{related-work}
-%\input{intro-org}
-%\input{sec-scorex}
-%\input{sec-props}
-%\input{sec-examples}
-%\input{conclusion}
+We made simulations, you can find them in \dx{} repository. \knote{finish}
 
 \section*{Acknowledgments}
 
-Authors would like to thank.
+Authors would like to thank Ile for his inspiring forum posts.
 
 \bibliographystyle{IEEEtran}
 \bibliography{sources, ref}
