@@ -189,25 +189,27 @@ We also state following rules for the liquidity pool (which, otherwise, acts as 
 
    \begin{enumerate}
    \item{Burn: } if the bank if empty, and $r$ is below some threshold, it is allowed to burn \sct{}s in the pool. 
-   \em{To instantiate the rule, we propose to burn \sct{} if $r <= 0.95$ for time period $T_{burn}$. $T_{burn}$ must be quite big, e.g. $1 {\ week}$.}
+   \em{To instantiate the rule, we propose to burn \sct{} if $r <= 0.95$ for time period $T_{burn}$. $T_{burn}$ must be quite big, e.g. $1 {\ week}$. We burn enough to return to the state of stopped withdrawals, so to $r = 0.95$.}
 
    \item{Extract for the future: } if the bank is empty and $r$ is below some threshold, it is allowed to extract \sct{}s from the pool and lock by a contract which is releasing \sct{}s in the future when \sct{} price is above the peg.
    \em{To instantiate the rule, we propose to extract \sct{} if $r <= 0.95$ for time period $T_{burn}$ (so the same as in burn). 
-   To prioritize extracted funds over arbitrage mint, we do not have delay in releasing contract}
+   To prioritize extracted funds over arbitrage mint, we do not have delay in releasing contract. We burn enough to return to the state of stopped withdrawals, so to $r = 0.95$.}
    \end{enumerate}
 \end{itemize} 
 
 \section{Stability}
 
-With burning in place, the price in the reference market will be eventually stabilized. However, for liquidity holders burning is painful, thus \dx{} protocol is trying to avoid it~(unlike other protocols, such as Gyroscope or Fei, where redemption rate fails below $1$ immediately as collateralization falls under $100\%$), by giving markets time to self-stabilize and then doing interventions. This could mean slower stabilization, in comparison with other protocols.
+With second stabilization mechanism~(burning or extraction) in place, the price in the reference market will be eventually stabilized. However, for liquidity holders burning is painful, extraction not so but still not desirable, thus \dx{} protocol is trying to avoid it~(unlike other protocols, such as Gyroscope or Fei, where redemption rate fails below $1$ immediately as collateralization falls under $100\%$), by giving markets time to self-stabilize and then doing interventions. This could mean slower stabilization, in comparison with other protocols.
 
-\dx{} is also cautios about minting new \sct{}s, which could mean slow growth of number of tokens issued. This could be inconvient, especially for big players, but the protocol is focused on stability in the first place.   
+\dx{} is also cautios about minting new \sct{}s, which could mean slow growth of number of tokens issued. This could be inconvient, especially for big players, but the protocol is focused on stability in the first place. 
 
+Please note, that liquidity pool is disincentivizing massive bank runs due to its constant-product nature. Massive bank runs are simpler for bank to resolve, in comparison with worst-case scenario. 
  
 \knote{finish the section}
 
 \section{Implementation}
 
+\subsection{Bank Contract}
 \knote{put contracts here}
 
 \section{Simulations}
@@ -225,6 +227,5 @@ Authors would like to thank Ile for his inspiring forum posts.
 %\newpage
 %\appendix
 %\input{apx-tests}
-
 
 \end{document}
