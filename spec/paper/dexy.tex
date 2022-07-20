@@ -184,8 +184,17 @@ We also state following rules for the liquidity pool (which, otherwise, acts as 
 \begin{itemize}
    \item{Stopping withdrawals: } if $r$ is below some threshold, withdrawals are stopped, so only trades are possible.  
    \em{To instantiate the rule, we propose to stop withdrawals immediately if $r <= 0.98$.}
+
+   \item{Second stabilization mechanism: } what if the bank is out of reserves, but \sct{} is still below the peg? In this case we restore price in the pool by removing liquidity, and there are two possible options here:
+
+   \begin{enumerate}
    \item{Burn: } if the bank if empty, and $r$ is below some threshold, it is allowed to burn \sct{}s in the pool. 
    \em{To instantiate the rule, we propose to burn \sct{} if $r <= 0.95$ for time period $T_{burn}$. $T_{burn}$ must be quite big, e.g. $1 {\ week}$.}
+
+   \item{Extract for the future: } if the bank is empty and $r$ is below some threshold, it is allowed to extract \sct{}s from the pool and lock by a contract which is releasing \sct{}s in the future when \sct{} price is above the peg.
+   \em{To instantiate the rule, we propose to extract \sct{} if $r <= 0.95$ for time period $T_{burn}$ (so the same as in burn). 
+   To prioritize extracted funds over arbitrage mint, we do not have delay in releasing contract}
+   \end{enumerate}
 \end{itemize} 
 
 \section{Stability}
