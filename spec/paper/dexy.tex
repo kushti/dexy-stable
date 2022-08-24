@@ -36,7 +36,6 @@
 \usepackage[dvipsnames]{xcolor}
 \usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
 
-%\newcommand{\bruno}[1]{\todo[linecolor=OliveGreen,backgroundcolor=OliveGreen!25,bordercolor=OliveGreen]{#1}}
 
 % type user-defined commands here
 \usepackage[T1]{fontenc}
@@ -164,7 +163,7 @@ We allow for cautios minting. That is, we whether allow minting when oracle pric
 \begin{itemize}
   \item{Arbitrage mint: } if price reported by the oracle is higher than in the pool, i.e. $p > \frac{u}{e}$, we allow to print enough \sct{} tokens to bring the price to $p$. That is, the bank allows to mint up to $\delta_u = \sqrt{p*e*u}-u$ \sct{} by accepting up to $\delta_e = \frac{\delta_u}{p}$ \bc{}s into reserves. 
 
-  \em{To instantiate the rule, we can allow for arbitrage minting if the price $p$ is more than $\frac{u}{e}$ by at least $1\%$ for time period $T_{arb}$ (e.g. 1 hour), also, the bank is charging $0.5\%$ fee for the operation.} 
+  \em{To instantiate the rule, we can allow for arbitrage minting if the price $p$ is more than $\frac{u}{e}$ by at least $1\%$ for time period $T_{arb}$ (e.g. 1 hour), also, the bank is charging $0.5\%$ fee for the operation. After arbitrage mint it is not possible to do another one within 30 minutes (to prevent aggressive liquidity minting via chained transctions etc).} 
 
   \item{Free mint: } we allow to mint up to $\frac{u}{100}$ \sct{}s within time period $T_{free}$. 
   \em{To instantiate the rule, we propose to have bank fee of 1\%, and allow for free mint if $0.98 < r < 1.02$. Minting fee in this case is $0.5\%$. We propose to set $T_free$ to $1$ day, then bank reserves can grow by $1\%$ of LP volume per day when the price is flat.}. 
@@ -174,7 +173,8 @@ In addition to minting actions, which increase bank reserves, we define followin
 
 \begin{itemize}
    \item{Intervention: } if price reported by the oracle is lower than one in the pool by significantly enough margin, i.e. $\frac{p*e}{u} < r$, where $r$ is some constant which is hard-wired into the protocol, then the bank is providing \bc{}s. to restore the price.
-   \em{To instantiate the rule, we propose to allow the bank to intervene if $r <= 0.98$ for time period $T_{int} = 1 {\ day}$.}
+   \em{To instantiate the rule, we propose to allow the bank to intervene if $r <= 0.98$ for time period $T_{int} = 1 {\ day}$.
+       During intervention tracker is reset, so another intervention will be after $T_{int} = 1 {\ day}$ at least. }
    \item{Payout: } if bank has too much reserves, so $E > E_w$, we can allow for paying excess reserves out. There could be different ways to do this. For example, extra reserves can be paid to holders of liquidity pool's LP tokens via staking (then LP participant has potential source of additional revenue).
 \end{itemize}
 
@@ -189,11 +189,11 @@ We also state following rules for the liquidity pool (which, otherwise, acts as 
 
    \begin{enumerate}
    \item{Burn: } if the bank if empty, and $r$ is below some threshold, it is allowed to burn \sct{}s in the pool. 
-   \em{To instantiate the rule, we propose to burn \sct{} if $r <= 0.95$ for time period $T_{burn}$. $T_{burn}$ must be quite big, e.g. $1 {\ week}$. We burn enough to return to the state of stopped withdrawals, so to $r = 0.95$.}
+   \em{To instantiate the rule, we propose to burn \sct{} if $r <= 0.95$ for time period $T_{burn}$. $T_{burn}$ must be quite big, e.g. $1 {\ week}$. We burn enough to return to the state of stopped withdrawals, so to $r = 0.98$. After burning the tracker is reset, so another burn will be done sfter $T_{burn}$ at least.}
 
    \item{Extract for the future: } if the bank is empty and $r$ is below some threshold, it is allowed to extract \sct{}s from the pool and lock by a contract which is releasing \sct{}s in the future when \sct{} price is above the peg.
    \em{To instantiate the rule, we propose to extract \sct{} if $r <= 0.95$ for time period $T_{burn}$ (so the same as in burn). 
-   To prioritize extracted funds over arbitrage mint, we do not have delay in releasing contract. We burn enough to return to the state of stopped withdrawals, so to $r = 0.95$.}
+   To prioritize extracted funds over arbitrage mint, we do not have delay in releasing contract. We burn enough to return to the state of stopped withdrawals, so to $r = 0.98$. After extraction the tracker is reset, so another burn will be done sfter $T_{burn}$ at least.}
    \end{enumerate}
 \end{itemize} 
 
