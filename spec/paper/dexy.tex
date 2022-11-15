@@ -65,7 +65,7 @@
 
 \begin{document}
 
-\title{Dexy - A Stablecoin With Algorithmic Central Bank}
+\title{Dexy - A Stablecoin Based On Algorithmic Central Bank}
 \author{Alexander Chepurnoy, Amitabh Saxena}
 
 
@@ -215,6 +215,15 @@ Please note, that liquidity pool is disincentivizing massive bank runs due to it
 \section{Simulations}
 We made simulations, you can find them in \dx{} repository. \knote{finish}
 
+\section{Trust Assumptions}
+
+It is important to explicitly state assumptions the protocol is based on, so a user can choose whether to trust it or not.
+
+\begin{itemize}
+  \item{Oracle: } the biggest trust issue in the protocol is oracle delivering gold price. This trust issue is unavoidable but can be relaxed by using not a single entity but a federation of oracles with an average price (after noise filtering) to be delivered to the Dexy central bank.
+  \item{No governance: } unlike most of stablecoin protocols, we do not consider governance, as usually it is another trust issue. Real world instantiations can consider governance, we suppose that such instantiations should clearly inform about governance-related trust assumptions.
+\end{itemize} 
+
 \section*{Acknowledgments}
 
 Authors would like to thank Ile for his inspiring forum posts.
@@ -222,10 +231,11 @@ Authors would like to thank Ile for his inspiring forum posts.
 \bibliographystyle{IEEEtran}
 \bibliography{sources, ref}
 
-%Appendices
+% Appendices
 
-%\newpage
-%\appendix
+% \newpage
+% \appendix
+
 %\input{apx-tests}
 
 \end{document}
