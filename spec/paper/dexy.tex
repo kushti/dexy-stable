@@ -171,7 +171,8 @@ In addition to minting actions, which increase bank reserves, we define followin
 \begin{itemize}
    \item{Intervention: } if price reported by the oracle is lower than one in the pool by significantly enough margin, i.e. $\frac{p*e}{u}$ is less than some constant which is hard-wired into the protocol, then the bank is providing \bc{}s. to restore the price.
    \em{To instantiate the rule, we propose to allow the bank to intervene if $r <= 0.98$ for time period $T_{int} = 1 {\ day}$.
-       During intervention tracker is reset, so another intervention will be after $T_{int} = 1 {\ day}$ at least. }
+       During intervention tracker is reset, so another intervention will be after $T_{int} = 1 {\ day}$ at least. The bank is getting 
+       price to 99.5\% of the oracle price max, but also spending no more than 2\% of its reserves for that.}
    \item{Payout: } if bank has too much reserves, so $E > E_w$, we can allow for paying excess reserves out. There could be different ways to do this. For example, extra reserves can be paid to holders of liquidity pool's LP tokens via staking (then LP participant has potential source of additional revenue).
 \end{itemize}
 
@@ -193,6 +194,8 @@ We also state following rules for the liquidity pool (which, otherwise, acts as 
    To prioritize extracted funds over arbitrage mint, we do not have delay in releasing contract. We burn enough to return to the state of stopped withdrawals, so to $r = 0.98$. After extraction the tracker is reset, so another burn will be done sfter $T_{burn}$ at least.}
    \end{enumerate}
 \end{itemize} 
+
+In addition, we introduce $2\%$ redemption fee to avoid excessive liquidity hopping.
 
 \section{Stability}
 
