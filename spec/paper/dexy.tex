@@ -125,7 +125,7 @@ We start by introducing notation:
   \item{} $E$ - amount of \bc{} in the bank. 
 \end{itemize}  
 
-\section{Worst Scenario and Bank Reserves}
+\section{Worst Case Scenario and Bank Reserves}
 
 The bank is doing interventions when the situation is far from normal in the markets, and enough time passed for markets to stabilize themselves with no interventions. In our case, the bank is doing interventions based on stablecoin price in the liquidity pool in comparison with oracle provided price. The bank's intervention then is about injecting its \bc{} reserves into the pool.  
 
@@ -150,7 +150,7 @@ It is simple to see why this scenario is worst-case for the bank. In this scenar
 \section{Bank and Pool Rules}
 
 Based on needed reserves for worst-case scenario estimation, we can consider minting rules accordingly. Similarly to SigUSD~(a Djed instantiation), we can, for example, target for security in case of 
-4x price drop, so to consider $R = \frac{p}{s} = 4$, and allow to mint \sct{}~while there are enough, so not less than $E_w$, \bc{}~in reserves. However, in this case most of time \sct{} would be non-mintable, and only during moments of \bc{} price going up significantly it will be possible to mint. As worst-case scenario is based on unrealistic assumptions, unlikely a realistic protocol can be built on top of it.  
+4x price drop, so to consider $R = \frac{p}{s} = 4$, and allow to mint \sct{}~while there are enough, so not less than $E_w$, \bc{}~in reserves. However, in this case most of time \sct{} would be non-mintable, and only during moments of \bc{} price going up significantly it will be possible to mint \dx{}. As worst-case scenario is based on unrealistic assumptions, unlikely a realistic protocol can be built on top of it.  
 
 Thus we leave worst-case scenario for UI, so dapps working with the \dx{} may show e.g. collateralization for the worst-case scenario. Having on-chain data analysis, 
 more precise estimations of reserve quality can be made~(by considering \sct{}s locked in DeFi protocols, likely forgotten, etc).
@@ -163,7 +163,7 @@ We allow for cautios minting. That is, we whether allow minting when oracle pric
   \em{To instantiate the rule, we can allow for arbitrage minting if the price $p$ is more than $\frac{u}{e}$ by at least $1\%$ for time period $T_{arb}$ (e.g. 1 hour), also, the bank is charging $0.5\%$ fee for the operation. After arbitrage mint it is not possible to do another one within 30 minutes (to prevent aggressive liquidity minting via chained transactions etc).} 
 
   \item{Free mint: } we allow to mint up to $\frac{u}{100}$ \sct{}s within time period $T_{free}$. 
-  \em{To instantiate the rule, we propose to allow for free mint if $0.98 < r < 1.02$. Minting fee in this case is $0.5\%$. We propose to set $T_free$ to $1$ day, then bank reserves can grow by $1\%$ of LP volume per day when the price is flat.}. 
+  \em{To instantiate the rule, we propose to allow for free mint if $0.98 < r < 1.02$. Minting fee in this case is also $0.5\%$. We propose to set $T_free$ to $1$ day, then bank reserves can grow by $1\%$ of LP volume per day when the peg is okay.}. 
 \end{itemize}  
 
 In addition to minting actions, which increase bank reserves, we define following two actions which decrease them: 
