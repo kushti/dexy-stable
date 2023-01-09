@@ -1,6 +1,6 @@
-package kiosk.dexy
+package dexy
 
-import kiosk.dexy.DexySpec._
+import dexy.DexySpec._
 import kiosk.ergo.{DhtData, KioskBoolean, KioskBox, KioskInt, KioskLong}
 import kiosk.tx.TxUtil
 import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoToken, HttpClientTesting}

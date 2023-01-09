@@ -1,4 +1,4 @@
-package kiosk.dexy
+package dexy
 
 import kiosk.ergo.{DhtData, KioskBoolean, KioskBox, KioskInt, KioskLong}
 import kiosk.tx.TxUtil

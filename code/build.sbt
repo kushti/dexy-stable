@@ -12,10 +12,8 @@ resolvers ++= Seq(
 
 updateOptions := updateOptions.value.withLatestSnapshots(false)
 
-
-libraryDependencies += "io.github.ergoplatform" %% "ergojde" % "1.0"
-
 libraryDependencies ++= Seq(
+  "io.github.ergoplatform" %% "ergojde" % "1.0",
   "com.squareup.okhttp3" % "mockwebserver" % "3.14.9",
   "org.scalatest" %% "scalatest" % "3.0.8" ,
   "org.scalacheck" %% "scalacheck" % "1.14.+" ,

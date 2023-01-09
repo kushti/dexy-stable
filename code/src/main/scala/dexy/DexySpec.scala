@@ -1,4 +1,4 @@
-package kiosk.dexy
+package dexy
 
 import kiosk.encoding.ScalaErgoConverters.{getAddressFromErgoTree, getStringFromAddress}
 import kiosk.ergo._
