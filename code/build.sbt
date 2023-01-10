@@ -10,8 +10,6 @@ resolvers ++= Seq(
   "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 )
 
-updateOptions := updateOptions.value.withLatestSnapshots(false)
-
 libraryDependencies ++= Seq(
   "io.github.ergoplatform" %% "ergojde" % "1.0",
   "com.squareup.okhttp3" % "mockwebserver" % "3.14.9",

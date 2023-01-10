@@ -7,12 +7,11 @@ import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoToken, 
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
-class InterventionSpec  extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with HttpClientTesting {
-  val lpToken = "4b2d8b7beb3eaac8234d9e61792d270898a43934d6a27275e4f3a044609c9f2a" // LP tokens
-  val dexyUSD = "4b2d8b7beb3eaac8234d9e61792d270898a43934d6a27275e4f3a044609c9f2b" // Dexy token
+class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks
+    with HttpClientTesting with Common {
 
   val dummyTokenId = "a1e5ce5aa0d95f5d54a7bc89c46730d9662397067250aa18a0039631c0f5b801"
-  lazy val minStorageRent = 100000L
+
 
   val ergoClient = createMockedErgoClient(MockData(Nil, Nil))
   val fakeNanoErgs = 10000000000000L
