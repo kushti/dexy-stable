@@ -7,7 +7,7 @@ import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import DexySpec._
 
-class TrackingSpec  extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with HttpClientTesting with Common {
+class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with HttpClientTesting with Common {
 
   val dummyTokenId = "a9e5ce5aa0d95f5d54a7bc89c46730d9662397067250aa18a0039631c0fad80a"
 
@@ -44,7 +44,6 @@ class TrackingSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
-
 
       val oracleBox =
         ctx
@@ -93,7 +92,9 @@ class TrackingSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
 
       // all ok, not triggered earlier, triggered now
       noException shouldBe thrownBy {
-        TxUtil.createTx(Array(tracking98Box, fundingBox), Array(oracleBox, lpBox),
+        TxUtil.createTx(
+          Array(tracking98Box, fundingBox),
+          Array(oracleBox, lpBox),
           Array(validTrackingOutBox),
           fee = 1000000L,
           changeAddress,
@@ -136,7 +137,6 @@ class TrackingSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
 
-
       val oracleBox =
         ctx
           .newTxBuilder()
@@ -153,7 +153,11 @@ class TrackingSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
           .newTxBuilder()
           .outBoxBuilder
           .value(reservesX)
-          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalance), new ErgoToken(dexyUSD, reservesY))
+          .tokens(
+            new ErgoToken(lpNFT, 1),
+            new ErgoToken(lpToken, lpBalance),
+            new ErgoToken(dexyUSD, reservesY)
+          )
           .registers(KioskLong(lpInCirc).getErgoValue)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
           .build()
@@ -184,7 +188,9 @@ class TrackingSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
 
       // all ok, not triggered earlier, triggered now
       the[Exception] thrownBy {
-        TxUtil.createTx(Array(tracking98Box, fundingBox), Array(oracleBox, lpBox),
+        TxUtil.createTx(
+          Array(tracking98Box, fundingBox),
+          Array(oracleBox, lpBox),
           Array(validTrackingOutBox),
           fee = 1000000L,
           changeAddress,
@@ -226,7 +232,6 @@ class TrackingSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
-
 
       val oracleBox =
         ctx
@@ -275,7 +280,9 @@ class TrackingSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
 
       // all ok, not triggered earlier, triggered now
       the[Exception] thrownBy {
-        TxUtil.createTx(Array(tracking98Box, fundingBox), Array(oracleBox, lpBox),
+        TxUtil.createTx(
+          Array(tracking98Box, fundingBox),
+          Array(oracleBox, lpBox),
           Array(validTrackingOutBox),
           fee = 1000000L,
           changeAddress,
@@ -318,7 +325,6 @@ class TrackingSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
 
-
       val oracleBox =
         ctx
           .newTxBuilder()
@@ -335,8 +341,11 @@ class TrackingSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
           .newTxBuilder()
           .outBoxBuilder
           .value(reservesX)
-          .tokens(new ErgoToken(dummyTokenId, 1), // <--------------- this value is changed
-            new ErgoToken(lpToken, lpBalance), new ErgoToken(dexyUSD, reservesY))
+          .tokens(
+            new ErgoToken(dummyTokenId, 1), // <--------------- this value is changed
+            new ErgoToken(lpToken, lpBalance),
+            new ErgoToken(dexyUSD, reservesY)
+          )
           .registers(KioskLong(lpInCirc).getErgoValue)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
           .build()
@@ -367,7 +376,9 @@ class TrackingSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
 
       // all ok, not triggered earlier, triggered now
       the[Exception] thrownBy {
-        TxUtil.createTx(Array(tracking98Box, fundingBox), Array(oracleBox, lpBox),
+        TxUtil.createTx(
+          Array(tracking98Box, fundingBox),
+          Array(oracleBox, lpBox),
           Array(validTrackingOutBox),
           fee = 1000000L,
           changeAddress,
@@ -401,7 +412,6 @@ class TrackingSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
-
 
       val oracleBox =
         ctx
@@ -456,7 +466,9 @@ class TrackingSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
       )
 
       the[Exception] thrownBy {
-        TxUtil.createTx(Array(tracking98Box, fundingBox), Array(oracleBox, lpBox),
+        TxUtil.createTx(
+          Array(tracking98Box, fundingBox),
+          Array(oracleBox, lpBox),
           Array(validTrackingOutBox),
           fee = 1000000L,
           changeAddress,
@@ -490,7 +502,6 @@ class TrackingSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
-
 
       val oracleBox =
         ctx
@@ -535,7 +546,7 @@ class TrackingSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
       val y = numIn * lpRateXY
 
       val toTrigger = x < y
-      assert(! toTrigger)
+      assert(!toTrigger)
 
       val validTrackingOutBox = KioskBox(
         trackingAddress,
@@ -545,7 +556,9 @@ class TrackingSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
       )
 
       the[Exception] thrownBy {
-        TxUtil.createTx(Array(tracking98Box, fundingBox), Array(oracleBox, lpBox),
+        TxUtil.createTx(
+          Array(tracking98Box, fundingBox),
+          Array(oracleBox, lpBox),
           Array(validTrackingOutBox),
           fee = 1000000L,
           changeAddress,
@@ -579,7 +592,6 @@ class TrackingSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
-
 
       val oracleBox =
         ctx
@@ -634,7 +646,9 @@ class TrackingSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
       )
 
       noException shouldBe thrownBy {
-        TxUtil.createTx(Array(tracking98Box, fundingBox), Array(oracleBox, lpBox),
+        TxUtil.createTx(
+          Array(tracking98Box, fundingBox),
+          Array(oracleBox, lpBox),
           Array(validTrackingOutBox),
           fee = 1000000L,
           changeAddress,
@@ -645,6 +659,7 @@ class TrackingSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
       }
     }
   }
+
   property("Reset 98% tracker should fail if condition not satisfied") {
     val lpInCirc = 10000L
     val oracleRateXY = 10000L
@@ -656,8 +671,10 @@ class TrackingSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
     val numIn = 50
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
-      val trackingHeightOut = Int.MaxValue // INF, implying tracker will be reset
-      val trackingHeightIn = 1234 // some non-INF value, implying that tracker is in triggered state
+      val trackingHeightOut =
+        Int.MaxValue // INF, implying tracker will be reset
+      val trackingHeightIn =
+        1234 // some non-INF value, implying that tracker is in triggered state
 
       val fundingBox =
         ctx
@@ -667,7 +684,6 @@ class TrackingSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
-
 
       val oracleBox =
         ctx
@@ -685,7 +701,11 @@ class TrackingSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
           .newTxBuilder()
           .outBoxBuilder
           .value(reservesX)
-          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalance), new ErgoToken(dexyUSD, reservesY))
+          .tokens(
+            new ErgoToken(lpNFT, 1),
+            new ErgoToken(lpToken, lpBalance),
+            new ErgoToken(dexyUSD, reservesY)
+          )
           .registers(KioskLong(lpInCirc).getErgoValue)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
           .build()
@@ -701,9 +721,16 @@ class TrackingSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
             KioskInt(denomIn).getErgoValue, // numerator for 98%
             KioskInt(numIn).getErgoValue, // denominator for 98%
             KioskBoolean(true).getErgoValue, // isBelow
-            KioskInt(trackingHeightIn).getErgoValue // currently set to INF (input box state is "notTriggeredEarlier")
+            KioskInt(
+              trackingHeightIn
+            ).getErgoValue // currently set to INF (input box state is "notTriggeredEarlier")
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(
+            ctx.compileContract(
+              ConstantsBuilder.empty(),
+              DexySpec.trackingScript
+            )
+          )
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -712,17 +739,24 @@ class TrackingSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
       val y = numIn * lpRateXY
 
       val toReset = x >= y
-      assert(! toReset)
+      assert(!toReset)
 
       val validTrackingOutBox = KioskBox(
         trackingAddress,
         minStorageRent,
-        registers = Array(KioskInt(denomIn), KioskInt(numIn), KioskBoolean(true), KioskInt(trackingHeightOut)),
+        registers = Array(
+          KioskInt(denomIn),
+          KioskInt(numIn),
+          KioskBoolean(true),
+          KioskInt(trackingHeightOut)
+        ),
         tokens = Array((tracking98NFT, 1))
       )
 
       the[Exception] thrownBy {
-        TxUtil.createTx(Array(tracking98Box, fundingBox), Array(oracleBox, lpBox),
+        TxUtil.createTx(
+          Array(tracking98Box, fundingBox),
+          Array(oracleBox, lpBox),
           Array(validTrackingOutBox),
           fee = 1000000L,
           changeAddress,
