@@ -1,4 +1,4 @@
-package simul
+package simulation
 
 import scala.util.Random
 
@@ -22,7 +22,7 @@ object Constants {
 
 object Functions {
 
-  def calcS(oracle: Oracle) = {
+  def calcS(oracle: Oracle): Double = {
     oracle.p / Constants.R
   }
 
@@ -46,7 +46,7 @@ object Functions {
 
   def arb(bank: Bank, liquidityPool: LiquidityPool, targetPrice: Double): (Bank, LiquidityPool) = {
     val amtUSD = Math.sqrt(targetPrice * liquidityPool.e * liquidityPool.u) - liquidityPool.u
-    val newBank = Bank(bank.E , bank.O - amtUSD)
+    val newBank = Bank(bank.E, bank.O - amtUSD)
     val newE = liquidityPool.e * liquidityPool.u / (liquidityPool.u + amtUSD)
     val newPool = LiquidityPool(newE, liquidityPool.u + amtUSD)
     newBank -> newPool
@@ -75,7 +75,7 @@ object Functions {
     LiquidityPool(pool.e, oracle.p * pool.e)
   }
 
-  def freeMint(bank: Bank, liquidityPool: LiquidityPool, oracle: Oracle) = {
+  def freeMint(bank: Bank, liquidityPool: LiquidityPool, oracle: Oracle): Bank = {
     val amtUSD = liquidityPool.u / 100
     val amtERG = amtUSD / oracle.p
     Bank(bank.E + amtERG, bank.O + amtUSD)
@@ -84,6 +84,7 @@ object Functions {
 
 
 object DexySimulation extends App {
+
   import Functions._
 
   val CoinsInOneErgo = 1000000000L
@@ -97,22 +98,26 @@ object DexySimulation extends App {
 
   val initialState = State(bank, lp, time)
 
-  (2 to 10000).foldLeft(initialState){case (st, epoch) =>
+  (2 to 10000).foldLeft(initialState) { case (st, epoch) =>
     println("price: " + st.time.p + " safe E: " + safeE(st) + " bank: " + st.bank + " pool: " + st.liquidityPool)
 
     val direction = Random.nextBoolean()
     val delta = Random.nextDouble() / 30 * st.time.p
-    val price = if(direction){st.time.p + delta * 1.04} else {st.time.p - delta}
+    val price = if (direction) {
+      st.time.p + delta * 1.04
+    } else {
+      st.time.p - delta
+    }
 
     val newTime = Time(price, epoch)
 
-    val (newBank, newPool) = if(arbMintPossible(st.liquidityPool, newTime)){
+    val (newBank, newPool) = if (arbMintPossible(st.liquidityPool, newTime)) {
       println("ARB, pool price: " + st.liquidityPool.poolPrice)
       arb(arbMint(st.bank, st.liquidityPool, newTime), st.liquidityPool, newTime.p)
-    } else if(ergInterventionNeeded(st.liquidityPool, st.bank, newTime)){
+    } else if (ergInterventionNeeded(st.liquidityPool, st.bank, newTime)) {
       println("INTERVENTION, pool price: " + st.liquidityPool.poolPrice)
       ergIntervention(st.bank, st.liquidityPool, newTime)
-    } else if(burnNeeded(st.liquidityPool, newTime)) {
+    } else if (burnNeeded(st.liquidityPool, newTime)) {
       println("BURN!!!")
       st.bank -> burn(st.liquidityPool, newTime)
     } else {

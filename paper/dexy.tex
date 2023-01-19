@@ -173,14 +173,15 @@ In addition to minting actions, which increase bank reserves, we define followin
    \em{To instantiate the rule, we propose to allow the bank to intervene if $r <= 0.98$ for time period $T_{int} = 1 {\ day}$.
        During intervention tracker is reset, so another intervention will be after $T_{int} = 1 {\ day}$ at least. The bank is getting 
        price to 99.5\% of the oracle price max, but also spending no more than 2\% of its reserves for that.}
-   \item{Payout: } if bank has too much reserves, so $E > E_w$, we can allow for paying excess reserves out. There could be different ways to do this. For example, extra reserves can be paid to holders of liquidity pool's LP tokens via staking (then LP participant has potential source of additional revenue).
+   \item{Payout: } if bank has too much reserves, in comparison with total \dx{} circulating supply expressed in base currency ($\frac{O + u}{p}$), we can allow for reserves to be used to buy LP shares, burn some of them (thus liquidity pool will get \bc{} and \dx{} tokens locked up forever in it), and time-lock the rest, with developers able to get LP tokens after lock time. There could be different ways to do this. Alternatively, LP tokens can be paid to LP ot other tokens vested.
+      \em{To instantiate the rule, we propose to allow for payouts once per 1 month if $E > 2 * (O + u) / p$, burn half of LP tokens and time-lock another help for 3 months, then if $E > 2 * (O + u) / p$ still , payout could be done, otherwise, LP tokens should be burnt.}
 \end{itemize}
 
 
 We also state following rules for the liquidity pool (which, otherwise, acts as ordinary CP-AMM liquidity pool): 
 
 \begin{itemize}
-   \item{Stopping withdrawals: } if $r$ is below some threshold, withdrawals are stopped, so only trades are possible.  
+   \item{Stopping withdrawals: } if $r$ is below some threshold, withdrawals are stopped, so only swaps are possible.  
    \em{To instantiate the rule, we propose to stop withdrawals immediately if $r <= 0.98$.}
 
    \item{Second stabilization mechanism: } what if the bank is out of reserves, but \sct{} is still below the peg? In this case we restore price in the pool by removing liquidity, and there are two possible options here:
