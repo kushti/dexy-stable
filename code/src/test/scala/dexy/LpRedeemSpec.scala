@@ -7,9 +7,8 @@ import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoToken, 
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
-
 // Test Lp contract for redeem Lp tokens
-class LpRedeemSpec  extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with HttpClientTesting with Common {
+class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with HttpClientTesting with Common {
 
   val ergoClient = createMockedErgoClient(MockData(Nil, Nil))
   val fakeNanoErgs = 10000000000000L
@@ -32,7 +31,6 @@ class LpRedeemSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
     val lpBalanceOut = lpBalanceIn + lpRedeemed
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
-
       val fundingBox =
         ctx
           .newTxBuilder()
@@ -88,17 +86,12 @@ class LpRedeemSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
         tokens = Array((lpRedeemNFT, 1))
       )
 
-      val dummyOutputBox = KioskBox(
-        changeAddress,
-        dummyNanoErgs,
-        registers = Array(),
-        tokens = Array((dexyUSD, withdrawY))
-      )
-
       // all ok, redeem should work
       noException shouldBe thrownBy {
-        TxUtil.createTx(Array(lpBox, redeemBox, fundingBox), Array(oracleBox),
-          Array(validLpOutBox, validRedeemOutBox, dummyOutputBox),
+        TxUtil.createTx(
+          Array(lpBox, redeemBox, fundingBox),
+          Array(oracleBox),
+          Array(validLpOutBox, validRedeemOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
@@ -126,7 +119,6 @@ class LpRedeemSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
     val lpBalanceOut = lpBalanceIn + lpRedeemed
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
-
       val fundingBox =
         ctx
           .newTxBuilder()
@@ -169,7 +161,7 @@ class LpRedeemSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
           .convertToInputWith(fakeTxId4, fakeIndex)
 
       val validLpOutBox = KioskBox(
-        changeAddress,  // <--------------- this value is changed
+        changeAddress, // <--------------- this value is changed
         reservesXOut,
         registers = Array(),
         tokens = Array((lpNFT, 1), (lpToken, lpBalanceOut), (dexyUSD, reservesYOut))
@@ -182,16 +174,11 @@ class LpRedeemSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
         tokens = Array((lpRedeemNFT, 1))
       )
 
-      val dummyOutputBox = KioskBox(
-        changeAddress,
-        dummyNanoErgs,
-        registers = Array(),
-        tokens = Array((dexyUSD, withdrawY))
-      )
-
       the[Exception] thrownBy {
-        TxUtil.createTx(Array(lpBox, redeemBox, fundingBox), Array(oracleBox),
-          Array(validLpOutBox, validRedeemOutBox, dummyOutputBox),
+        TxUtil.createTx(
+          Array(lpBox, redeemBox, fundingBox),
+          Array(oracleBox),
+          Array(validLpOutBox, validRedeemOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
@@ -219,7 +206,6 @@ class LpRedeemSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
     val lpBalanceOut = lpBalanceIn + lpRedeemed
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
-
       val fundingBox =
         ctx
           .newTxBuilder()
@@ -275,16 +261,11 @@ class LpRedeemSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
         tokens = Array((lpRedeemNFT, 1))
       )
 
-      val dummyOutputBox = KioskBox(
-        changeAddress,
-        dummyNanoErgs,
-        registers = Array(),
-        tokens = Array((dexyUSD, withdrawY))
-      )
-
       an[Exception] shouldBe thrownBy {
-        TxUtil.createTx(Array(lpBox, redeemBox, fundingBox), Array(oracleBox),
-          Array(validLpOutBox, validRedeemOutBox, dummyOutputBox),
+        TxUtil.createTx(
+          Array(lpBox, redeemBox, fundingBox),
+          Array(oracleBox),
+          Array(validLpOutBox, validRedeemOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
@@ -312,7 +293,6 @@ class LpRedeemSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
     val lpBalanceOut = lpBalanceIn + lpRedeemed
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
-
       val fundingBox =
         ctx
           .newTxBuilder()
@@ -368,16 +348,11 @@ class LpRedeemSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
         tokens = Array((lpRedeemNFT, 1))
       )
 
-      val dummyOutputBox = KioskBox(
-        changeAddress,
-        dummyNanoErgs,
-        registers = Array(),
-        tokens = Array((dexyUSD, withdrawY))
-      )
-
       an[Exception] shouldBe thrownBy {
-        TxUtil.createTx(Array(lpBox, redeemBox, fundingBox), Array(oracleBox),
-          Array(validLpOutBox, validRedeemOutBox, dummyOutputBox),
+        TxUtil.createTx(
+          Array(lpBox, redeemBox, fundingBox),
+          Array(oracleBox),
+          Array(validLpOutBox, validRedeemOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
@@ -405,7 +380,6 @@ class LpRedeemSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
     val lpBalanceOut = lpBalanceIn + lpRedeemed
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
-
       val fundingBox =
         ctx
           .newTxBuilder()
@@ -461,16 +435,11 @@ class LpRedeemSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
         tokens = Array((lpRedeemNFT, 1))
       )
 
-      val dummyOutputBox = KioskBox(
-        changeAddress,
-        dummyNanoErgs,
-        registers = Array(),
-        tokens = Array((dexyUSD, withdrawY))
-      )
-
       an[Exception] shouldBe thrownBy {
-        TxUtil.createTx(Array(lpBox, redeemBox, fundingBox), Array(oracleBox),
-          Array(validLpOutBox, validRedeemOutBox, dummyOutputBox),
+        TxUtil.createTx(
+          Array(lpBox, redeemBox, fundingBox),
+          Array(oracleBox),
+          Array(validLpOutBox, validRedeemOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
@@ -498,7 +467,6 @@ class LpRedeemSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
     val lpBalanceOut = lpBalanceIn + lpRedeemed
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
-
       val fundingBox =
         ctx
           .newTxBuilder()
@@ -554,16 +522,11 @@ class LpRedeemSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
         tokens = Array((lpRedeemNFT, 1))
       )
 
-      val dummyOutputBox = KioskBox(
-        changeAddress,
-        dummyNanoErgs,
-        registers = Array(),
-        tokens = Array((dexyUSD, withdrawY))
-      )
-
       an[Exception] shouldBe thrownBy {
-        TxUtil.createTx(Array(lpBox, redeemBox, fundingBox), Array(oracleBox),
-          Array(validLpOutBox, validRedeemOutBox, dummyOutputBox),
+        TxUtil.createTx(
+          Array(lpBox, redeemBox, fundingBox),
+          Array(oracleBox),
+          Array(validLpOutBox, validRedeemOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
@@ -591,7 +554,6 @@ class LpRedeemSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
     val lpBalanceOut = lpBalanceIn + lpRedeemed
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
-
       val fundingBox =
         ctx
           .newTxBuilder()
@@ -647,16 +609,11 @@ class LpRedeemSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
         tokens = Array((lpRedeemNFT, 1))
       )
 
-      val dummyOutputBox = KioskBox(
-        changeAddress,
-        dummyNanoErgs,
-        registers = Array(),
-        tokens = Array((dexyUSD, withdrawY))
-      )
-
       an[Exception] shouldBe thrownBy {
-        TxUtil.createTx(Array(lpBox, redeemBox, fundingBox), Array(oracleBox),
-          Array(validLpOutBox, validRedeemOutBox, dummyOutputBox),
+        TxUtil.createTx(
+          Array(lpBox, redeemBox, fundingBox),
+          Array(oracleBox),
+          Array(validLpOutBox, validRedeemOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
@@ -684,7 +641,6 @@ class LpRedeemSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
     val lpBalanceOut = lpBalanceIn + lpRedeemed
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
-
       val fundingBox =
         ctx
           .newTxBuilder()
@@ -740,16 +696,11 @@ class LpRedeemSpec  extends PropSpec with Matchers with ScalaCheckDrivenProperty
         tokens = Array((lpRedeemNFT, 1))
       )
 
-      val dummyOutputBox = KioskBox(
-        changeAddress,
-        dummyNanoErgs,
-        registers = Array(),
-        tokens = Array((dexyUSD, withdrawY))
-      )
-
       an[Exception] shouldBe thrownBy {
-        TxUtil.createTx(Array(lpBox, redeemBox, fundingBox), Array(oracleBox),
-          Array(validLpOutBox, validRedeemOutBox, dummyOutputBox),
+        TxUtil.createTx(
+          Array(lpBox, redeemBox, fundingBox),
+          Array(oracleBox),
+          Array(validLpOutBox, validRedeemOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
