@@ -21,31 +21,44 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   //  cannot change LP token amount
   //  cannot work when Bank has enough ergs
 
-  property("Redeem Lp (deposit Lp and withdraw Ergs + Dexy) should work") {
+  property("Extract to future (extract Dexy from Lp and store in extract box) should work") {
     val oracleRateXy = 10000L
     val lpBalanceIn = 100000000L
     val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
     val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 10000000000L
+    val lpReservesYIn = 100000000000L
+    // initial ratio of X/Y = 1000
+    assert(lpReservesXIn / lpReservesYIn == 1000)
 
-    val deltaDexy = 1234 // +ve that means we are extracting.
+    val deltaDexy = 90200000000L // +ve that means we are extracting.
+    // There is a certain value of deltaDexy above/below which it should fail. To test this
+
+    val lpReservesXOut = lpReservesXIn
+    val lpReservesYOut = lpReservesYIn - deltaDexy
+
+    // final ratio of X/Y = 10204
+    val lpRateXYOut = lpReservesXOut / lpReservesYOut
+    assert(lpRateXYOut == 10204)
+    assert(oracleRateXy * 100 > lpRateXYOut * 98 && oracleRateXy * 100 < lpRateXYOut * 101)
+
+    val lpBalanceOut = lpBalanceIn
 
     val extractBoxDexyIn = 100
     val extractBoxDexyOut = extractBoxDexyIn + deltaDexy
 
-    val lpReservesXOut = lpReservesXIn
-    val lpReservesYOut = lpReservesYIn - deltaDexy
-    val lpBalanceOut = lpBalanceIn
+    assert(extractBoxDexyOut == 90200000100L)
+    assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
     val bankReservesX = 10000000000L - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
+    // anything more than above should fail
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
-      val trackingHeight = ctx.getHeight - T_extract - 1
+      val trackingHeight = ctx.getHeight - T_extract - 1 // any bigger value should fail
 
-      val extractBoxCreationHeightIn = ctx.getHeight - T_delay - 1
+      val extractBoxCreationHeightIn = ctx.getHeight - T_delay - 1 // any bigger value should fail
 
       val fundingBox =
         ctx

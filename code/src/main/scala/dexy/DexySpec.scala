@@ -1154,13 +1154,11 @@ object DexySpec {
         |                        deltaDexy > 0                           &&
         |                        validExtractAmount                      &&
         |                        validTracking95Box
-        |                        // ToDo: do we need to check that output ratio is above certain value (to prevent "dust" extraction amount)
         |
         |    val validRelease  = HEIGHT - tracker101Height > T_release  && // at least T_release blocks have passed after crossing above 101%
         |                        deltaDexy < 0                          && 
         |                        validReleaseAmount                     &&
         |                        validTracking101Box
-        |                        // ToDo: do we need to check that input ratio is > 101%? (its already checked in tracker)
         |                         
         |    sigmaProp(validSuccessor && validDelay && validLpBox && validOracleBox && (validExtract || validRelease))
         |}
