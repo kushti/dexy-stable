@@ -36,7 +36,8 @@ object DexySpec {
 
   lazy val initialDexyTokens = 10000000000000L
 
-  val initialLp = 100000000000L // initially how many Lp minted (and we need to add that many to tokens(1), after removing some for token burning as in UniSwap v2)
+  val initialLp =
+    100000000000L // initially how many Lp minted (and we need to add that many to tokens(1), after removing some for token burning as in UniSwap v2)
 
   val feeNumLp = 3
   val feeDenomLp = 1000
@@ -502,7 +503,7 @@ object DexySpec {
        |
        |
        |    // inputs
-       |    val interventionBoxIndex = 2   // ToDo: fix if possible, otherwise each tx needs at least 3 inputs (add dummy inputs for now)
+       |    val interventionBoxIndex = 2   
        |    val extractBoxIndex = 1
        |    val lpActionBoxIndex = 1 // swap/redeem/mint
        |
@@ -527,7 +528,7 @@ object DexySpec {
        |    val validMint      = mintBox.tokens(0)._1 == mintNFT
        |    val validRedeem    = redeemBox.tokens(0)._1 == redeemNFT
        |
-       |    val validIntervention = interventionBox.tokens(0)._1 == interventionNFT
+       |    val validIntervention = interventionBox.tokens.size > 0 && interventionBox.tokens(0)._1 == interventionNFT
        |    val validExtraction   = extractBox.tokens(0)._1 == extractionNFT
        |    
        |    val lpNftIn      = SELF.tokens(0)
@@ -1107,7 +1108,7 @@ object DexySpec {
         |    val validSuccessor = successor.tokens(0)._1 == SELF.tokens(0)._1          &&  // NFT preserved
         |                         successor.tokens(1)._1 == SELF.tokens(1)._1          &&  // Dexy token id preserved
         |                         successor.propositionBytes == SELF.propositionBytes  &&
-        |                         successor.value == SELF.value                        &&
+        |                         successor.value >= SELF.value                        &&
         |                         successor.creationInfo._1 >= HEIGHT - buffer         
         |                            
         |    val deltaDexy = successor.tokens(1)._2 - SELF.tokens(1)._2 // can be +ve or -ve 
@@ -1129,7 +1130,7 @@ object DexySpec {
         |                     lpBoxOut.tokens(1) == lpBoxIn.tokens(1)                     && // LP tokens preserved
         |                     lpBoxOut.tokens(2)._1 == lpBoxIn.tokens(2)._1               && // Dexy token Id preserved
         |                     lpBoxOut.tokens(2)._1 == SELF.tokens(1)._1                  && // Dexy token Id is same as tokens stored here
-        |                     reservesYOut == (reservesYIn + deltaDexy)                   && // Dexy token qty preserved
+        |                     reservesYOut == reservesYIn - deltaDexy                     && // Dexy token qty preserved
         |                     reservesXOut == reservesXIn                                 &&
         |                     lpBoxOut.propositionBytes == lpBoxIn.propositionBytes  
         |     
@@ -1153,7 +1154,7 @@ object DexySpec {
         |                        deltaDexy > 0                           &&
         |                        validExtractAmount                      &&
         |                        validTracking95Box
-        |                        // ToDo: do we need to check that input ratio is < 95%? (its already checked in tracker)
+        |                        // ToDo: do we need to check that output ratio is above certain value (to prevent "dust" extraction amount)
         |
         |    val validRelease  = HEIGHT - tracker101Height > T_release  && // at least T_release blocks have passed after crossing above 101%
         |                        deltaDexy < 0                          && 
