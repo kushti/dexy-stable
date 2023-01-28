@@ -1046,8 +1046,8 @@ object DexySpec {
         |    //   Input         |  Output        |   Data-Input 
         |    // -----------------------------------------------
         |    // 0 LP            |  LP            |   Oracle
-        |    // 1 Extract       |  Extract       |   Bank   (to check that bank is empty)
-        |    // 2               |                |   Tracking (95%)
+        |    // 1 Extract       |  Extract       |   Tracking (95%)
+        |    // 2               |                |   Bank   (to check that bank is empty)
         |    // 
         |    // [2] Reverse Extract to future (release)
         |    //   Input         |  Output        |   Data-Input 
@@ -1069,8 +1069,8 @@ object DexySpec {
         |    
         |    // for data inputs
         |    val oracleBoxIndex = 0
-        |    val bankBoxIndex = 1
-        |    val tracking95BoxIndex = 2
+        |    val bankBoxIndex = 2
+        |    val tracking95BoxIndex = 1
         |    
         |    val tracking101BoxIndex = 1
         |    
@@ -1149,18 +1149,18 @@ object DexySpec {
         |                             // ToDo: possibly tweak the 104 requirement (or remove it?)
         |                             
         |    
-        |    val validExtract  = (HEIGHT - tracker95Height) > T_extract  && // at least T_extract blocks have passed after crossing below 95% 
+        |    val validExtract  = deltaDexy > 0                           &&
+        |                        validTracking95Box                      &&
+        |                        (HEIGHT - tracker95Height) > T_extract  && // at least T_extract blocks have passed after crossing below 95% 
         |                        validBankBox                            && 
-        |                        deltaDexy > 0                           &&
-        |                        validExtractAmount                      &&
-        |                        validTracking95Box
+        |                        validExtractAmount                      
         |
-        |    val validRelease  = HEIGHT - tracker101Height > T_release  && // at least T_release blocks have passed after crossing above 101%
-        |                        deltaDexy < 0                          && 
-        |                        validReleaseAmount                     &&
-        |                        validTracking101Box
+        |    val validRelease  = deltaDexy < 0                          &&
+        |                        validTracking101Box                    &&
+        |                        HEIGHT - tracker101Height > T_release  && 
+        |                        validReleaseAmount                     
         |                         
-        |    sigmaProp(validSuccessor && validDelay && validLpBox && validOracleBox && (validExtract || validRelease))
+        |    sigmaProp(validSuccessor && validDelay && validLpBox && validOracleBox && (validRelease || validExtract))
         |}
         |""".stripMargin
 
