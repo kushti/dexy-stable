@@ -137,6 +137,7 @@ object DexySpec {
        |  // ------------------------------------------------
        |  // 0 ArbitrageMint |  ArbitrageMint  |   Oracle
        |  // 1 Bank          |  Bank           |   LP
+       |  //                 |                 |   Tracking101box
        |
        |  // Oracle data:
        |  // R4 of the oracle contains the rate "nanoErgs per USD" in Long format
@@ -151,11 +152,14 @@ object DexySpec {
        |  // data input indices
        |  val oracleBoxIndex = 0
        |  val lpBoxIndex = 1
+       |  val tracking101BoxIndex = 2
        |
        |  val oracleNFT = fromBase64("${Base64.encode(oracleNFT.decodeHex)}") // to identify oracle pool box
        |  val bankNFT = fromBase64("${Base64.encode(bankNFT.decodeHex)}")
        |  val lpNFT = fromBase64("${Base64.encode(lpNFT.decodeHex)}")
-       |
+       |  val tracking101NFT = fromBase64("${Base64.encode(tracking101NFT.decodeHex)}") 
+       |  
+       |  
        |  val T_arb = 30 // 30 blocks = 1 hour
        |  val T_buffer = 5 // max delay permitted after broadcasting and confirmation of the tx spending this box
        |  val thresholdPercent = 101 // 101% or more value (of LP in terms of OraclePool) will trigger action
@@ -167,6 +171,10 @@ object DexySpec {
        |
        |  val oracleBox = CONTEXT.dataInputs(oracleBoxIndex) // oracle-pool (v1 and v2) box containing rate in R4
        |  val lpBox = CONTEXT.dataInputs(lpBoxIndex)
+       |  val tracking101Box = CONTEXT.dataInputs(tracking101BoxIndex)
+       |  
+       |  val tracking101Height = tracking101Box.R7[Int].get
+       |  
        |  val bankBoxIn = INPUTS(bankInIndex)
        |
        |  val successor = OUTPUTS(selfOutIndex)
@@ -222,7 +230,7 @@ object DexySpec {
        |                       validSuccessorR5                                    &&
        |                       validSuccessorR4
        |
-       |  val validDelay = lpBox.R5[Int].get < HEIGHT - T_arb // at least T_arb blocks have passed since the tracking started
+       |  val validDelay = tracking101Height < HEIGHT - T_arb // at least T_arb blocks have passed since the tracking started
        |  val validThreshold = lpRate * 100 > thresholdPercent * oracleRateWithFee
        |
        |  sigmaProp(validDelay && validThreshold && validAmount && validBankBoxInOut && validLpBox && validOracleBox && validSuccessor && validDelta)

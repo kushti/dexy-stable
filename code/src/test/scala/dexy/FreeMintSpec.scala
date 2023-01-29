@@ -30,7 +30,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
 
     assert(lpReservesX / lpReservesY == 10000)
     assert(oracleRateXyWithFee == 10100L)
-    val dexyMinted = 35000L // must be a +ve value
+    val dexyMinted = 35000L // must be a +ve value // ToDo: Test that negative value doesn't work
 
     val ergsAdded = oracleRateXyWithFee * dexyMinted
 
