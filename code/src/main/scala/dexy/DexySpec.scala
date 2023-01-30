@@ -223,6 +223,7 @@ object DexySpec {
        |
        |  val validBankBoxInOut = bankBoxIn.tokens(0)._1 == bankNFT
        |  val validLpBox = lpBox.tokens(0)._1 == lpNFT
+       |  val validTracking101Box = tracking101Box.tokens(0)._1 == tracking101NFT
        |  val validOracleBox = oracleBox.tokens(0)._1 == oracleNFT
        |  val validSuccessor = successor.tokens == SELF.tokens                     && // NFT preserved
        |                       successor.propositionBytes == SELF.propositionBytes && // script preserved
@@ -233,7 +234,7 @@ object DexySpec {
        |  val validDelay = tracking101Height < HEIGHT - T_arb // at least T_arb blocks have passed since the tracking started
        |  val validThreshold = lpRate * 100 > thresholdPercent * oracleRateWithFee
        |
-       |  sigmaProp(validDelay && validThreshold && validAmount && validBankBoxInOut && validLpBox && validOracleBox && validSuccessor && validDelta)
+       |  sigmaProp(validDelay && validThreshold && validAmount && validBankBoxInOut && validLpBox && validOracleBox && validTracking101Box && validSuccessor && validDelta)
        |}
        |""".stripMargin
 

@@ -128,6 +128,121 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     }
   }
 
+  property("Free mint should fail if Bank Dexy token id changed") {
+    val oracleRateXy = 10000L
+    val feeNum = 10 // implies 1 % fee
+    val feeDenom = 1000
+
+    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
+
+    val lpBalance = 100000000L
+    val lpReservesX = 100000000000000L
+    val lpReservesY = 10000000000L
+    // initial ratio of X/Y = 10000
+
+    assert(lpReservesX / lpReservesY == 10000)
+    assert(oracleRateXyWithFee == 10100L)
+    val dexyMinted = 35000L // must be a +ve value
+
+    val ergsAdded = oracleRateXyWithFee * dexyMinted
+
+    val bankReservesXIn = 100000000000000L
+    val bankReservesYIn = 90200000100L
+    val bankReservesYOut = bankReservesYIn - dexyMinted
+    val bankReservesXOut = bankReservesXIn + ergsAdded
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      val resetHeightIn = ctx.getHeight // counter is reset if the resetHeightIn is < HEIGHT. Hence it won't be reset here
+      // ToDo: add tests for reset
+      val resetHeightOut = resetHeightIn
+
+      val remainingDexyIn = 10000000L
+      val remainingDexyOut = remainingDexyIn - dexyMinted
+
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(dummyTokenId, bankReservesYOut))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val oracleBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(oracleNFT, 1))
+          .registers(KioskLong(oracleRateXy).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId2, fakeIndex)
+
+      val lpBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(lpReservesX)
+          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalance), new ErgoToken(dexyUSD, lpReservesY))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
+          .build()
+          .convertToInputWith(fakeTxId3, fakeIndex)
+
+      val freeMintBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(freeMintNFT, 1))
+          .registers(KioskInt(resetHeightIn).getErgoValue, KioskLong(remainingDexyIn).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), freeMintScript))
+          .build()
+          .convertToInputWith(fakeTxId4, fakeIndex)
+
+      val bankBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(bankReservesXIn)
+          .tokens(new ErgoToken(bankNFT, 1), new ErgoToken(dexyUSD, bankReservesYIn))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), bankScript))
+          .build()
+          .convertToInputWith(fakeTxId4, fakeIndex)
+
+      val validFreeMintOutBox = KioskBox(
+        freeMintAddress,
+        minStorageRent,
+        registers = Array(KioskInt(resetHeightOut), KioskLong(remainingDexyOut)),
+        tokens = Array((freeMintNFT, 1))
+      )
+
+      val validBankOutBox = KioskBox(
+        bankAddress,
+        bankReservesXOut,
+        registers = Array(),
+        tokens = Array(
+          (bankNFT, 1),
+          (dummyTokenId, bankReservesYOut) // <-- this value has changed
+        )
+      )
+
+      the[Exception] thrownBy {
+        TxUtil.createTx(
+          Array(freeMintBox, bankBox, fundingBox),
+          Array(oracleBox, lpBox),
+          Array(validFreeMintOutBox, validBankOutBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          false
+        )
+      } should have message "Script reduced to false"
+    }
+  }
+
   property("Free mint should fail if Bank box script changed") {
     val oracleRateXy = 10000L
     val feeNum = 10 // implies 1 % fee
