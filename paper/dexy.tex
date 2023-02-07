@@ -65,15 +65,15 @@
 
 \begin{document}
 
-\title{Dexy - A Stablecoin Based On Algorithmic Central Bank}
+\title{Dexy - Simple Stablecoin Design Based On Algorithmic Central Bank}
 \author{kushti, scalahub}
 
 
 \maketitle
 
 \begin{abstract}
-In this paper, we consider a new stablecoin protocol design called \dx. The protocol is operating with two assets only~(base currency and stablecoin), and two mandatory components, namely, a reference market~(in form of a liquidity pool where anyone can 
-trade base currency against stable coins), and an algorithmic central bank, which is responsible for new stablecoins issuance, and also for maintaining stablecoin peg in the reference market.
+In this paper, we consider a new stablecoin protocol design called \dx. The protocol is operating with two assets only~(base currency and stablecoin), and two components, namely, a reference market~(in form of a liquidity pool where anyone can
+trade base currency against stablecoins), and an algorithmic central bank, which is responsible for new stablecoins issuance, and also for maintaining stablecoin peg in the reference market.
 \end{abstract}
 
 
@@ -81,7 +81,7 @@ trade base currency against stable coins), and an algorithmic central bank, whic
 
 Algorithmic stablecoins is a natural extension of cryptocurrencies, trying to 
 solve problems with volatility of their prices by pegging stablecoin price to an
-asset which price is considered to be more or less stable with time (e.g. gold).  
+asset which price is considered to be more or less stable with time (e.g. gold). 
 
 Having an asset with a stable value could be useful in many scenarios, for example:
 \begin{itemize}
@@ -92,9 +92,9 @@ Having an asset with a stable value could be useful in many scenarios, for examp
 \item lending and other decentralized finance applications. Stability of collateral value is critical for many applications.
 \end{itemize}
 
-Algorithmic stablecoins are different from centralized stablecoins, such as USDT and USDC, for which there is a trusted party doing conversions to a pegged asset. In case of an algorithmic stablecoin, the 
-pegging is done via rebasement of total supply~(as in Ampleforth etc), or via imitating a trusted party which holds reserves and doing market interventions when it is needed for getting exchange rate back to the peg. Imititating the trusted party is usually done by allowing anyone on the blockchain creating over-collateralized financial instruments, such as collateralized debt positions~(as 
-in DAI) or zero-coupon bonds~(as in the Yield protocol), or buy having reserve asset (as in Djed), or by issuing stabilizing financial instruments in case of depeg~(as in Neutrino). \knote{add links to the paragraph above}
+Algorithmic stablecoins are different from centralized stablecoins, such as USDT and USDC, for which there is a trusted party which holds the peg. In case of an algorithmic stablecoin, the 
+pegging is done via rebasement of total supply~(as in Ampleforth etc), or via imitating a trusted party which holds reserves and doing market interventions when it is needed for getting exchange rate back to the peg. Imititating the trusted party is usually done by allowing anyone on the blockchain to create over-collateralized financial instruments, such as collateralized debt positions~(as 
+in DAI), zero-coupon bonds~(as in the Yield protocol), reserve asset~(as in Djed), or by issuing stabilizing financial instruments in case of depeg~(as in Neutrino). \knote{add links to the paragraph above}
 
 In this work we present \dx{}, a stablecoin protocol where an algorithmic central bank performing interventions in case of depeg is presented explicitly as a contract with few predefined rules. The bank is trying to stabilize stablecoin value on the markets, using a liquidity pool as a reference market, by providing stablecoin liquidity, when stablecoin price is over the peg, or injecting base currency from its reserves, when the stablecoin is under the peg. In extreme case, when bank reserves are depleted and stablecoin is still under the peg, its value is restored by extracting stablecoins from the liquidity pool~(to inject back when price will go above the peg again). In some aspects \dx{} could resemble Fei or Gyroscope. \knote{make comparison subsection}  
 
@@ -240,11 +240,10 @@ and also it will be able to get rewarded in payout tokens by locking reference p
 Distribution would be like~(not finalized!):
 
 \begin{itemize}
-\item{dev team} - 15\%
+\item{dev team} - 25\%
 \item{Spectrum} - 10\%
 \item{ecosystem devs (exchanges, wallets, payout distribution and staking solutions providers)} - 30\%
 \item{LP tokens staking rewards} - 25\%
-\item{miners} - 10\%
 \item{Sigmanauts Treasury} - 5\%
 \item{Ergo Foundation Treasury} - 5\%
 \end{itemize}
