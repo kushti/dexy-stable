@@ -98,11 +98,13 @@ in DAI), zero-coupon bonds~(as in the Yield protocol), reserve asset~(as in Djed
 
 In this work we present \dx{}, a stablecoin protocol where an algorithmic central bank performing interventions in case of depeg is presented explicitly as a contract with few predefined rules. The bank is trying to stabilize stablecoin value on the markets, using a liquidity pool as a reference market, by providing stablecoin liquidity, when stablecoin price is over the peg, or injecting base currency from its reserves, when the stablecoin is under the peg. In extreme case, when bank reserves are depleted and stablecoin is still under the peg, its value is restored by extracting stablecoins from the liquidity pool~(to inject back when price will go above the peg again). In some aspects \dx{} could resemble Fei or Gyroscope. \knote{make comparison subsection}  
 
+The paper is organized as follows... \knote{finish}
+
 
 \section{\dx{} Design in General}
 
 Unlike popular algorithmic stablecoins based on two tokens, \dx{} is based on one token but two protocols. In the first place, 
-there is reference market~(done as on-chain protocol, such as automated market maker), where trading of \dx{} vs the base currency (\bc{}) happens. In the second place, if market price is way too different from a target price (as reported by a trusted oracle), there is an algorithmic central bank which is doing interventions in order to readjust the market price~(so make it closer to the oracle's one). The central bank can also mint new \dx{} tokens by selling them for \bc{}. The bank is using reserves in \bc{} it is buying for interventions then. 
+there is a reference market~(done as on-chain protocol, such as automated market maker), where trading of \dx{} vs the base currency (\bc{}) happens. In the second place, to tackle with situations when the reference market price is way too different from a target price (price of a pegged asset, as reported by a trusted oracle), there is an algorithmic central bank which is doing interventions in order to readjust the market price~(so make it closer to the oracle's one). The central bank can also mint new \dx{} tokens by selling them for \bc{}. The bank is using reserves in \bc{} it is buying for interventions. 
 
 As a simple solution for the {\em reference market}, we are using constant-product Automated Market Maker (CP-AMM) liquidity pool, similar to Spectrum and UniSwap. The pool has \bc{} on one side and \dx{} on another. For CP-AMM pool, multiplication of \bc{} and \dx{} amounts before and after a trade should be preserved, so $e * u = e' * u'$, where $e$ and $u$ are amounts of \bc{} and \dx{} in the pool before the trade, and $e'$ and $u'$ are amounts of \bc{} and \dx{} in the pool after the trade, correspondingly. As for any CP-AMM pool, it is possible to put liquidity into the pool, and remove liquidity from it, however, there are some limitations here we are going to uncover further. 
 
