@@ -87,8 +87,7 @@ Having an asset with a stable value could be useful in many scenarios, for examp
 \begin{itemize}
 \item securing fundraising; a project can be sure that funds collected during fundraising will have stable value in the mid- and long-term.
 \item doing business with predictable results. For example, a shop can be sure that funds collected from sales will be about the same value when the shop is ordering goods from warehouses~(otherwise, the shop may go bankrupt if its margin is not that big to cover exchange rate fluctuations). 
-\item shorting: when cryptocurrency prices are high, it is desirable for investors to rebalance their portfolio by increasing exposure to fiat currencies (or traditional
- commodities). However, as fiat currencies and centralized exchanges impose significant risks, it would be better to buy fiat and commodity substitues in form of stablecoins on decentralized exchanges.
+\item shorting: when cryptocurrency prices are high, it is desirable for investors to rebalance their portfolio by increasing exposure to fiat currencies (or real-world commodities). However, as fiat currencies and centralized exchanges impose significant risks, it would be better to buy fiat and commodity substitues in form of stablecoins on decentralized exchanges.
 \item lending and other decentralized finance applications. Stability of collateral value is critical for many applications.
 \end{itemize}
 
@@ -104,13 +103,13 @@ The paper is organized as follows... \knote{finish}
 \section{\dx{} Design in General}
 
 Unlike popular algorithmic stablecoins based on two tokens, \dx{} is based on one token but two protocols. In the first place, 
-there is a reference market~(done as on-chain protocol, such as automated market maker), where trading of \dx{} vs the base currency (\bc{}) happens. In the second place, to tackle with situations when the reference market price is way too different from a target price (price of a pegged asset, as reported by a trusted oracle), there is an algorithmic central bank which is doing interventions in order to readjust the market price~(so make it closer to the oracle's one). The central bank can also mint new \dx{} tokens by selling them for \bc{}. The bank is using reserves in \bc{} it is buying for interventions. 
+there is a reference market~(done as on-chain protocol, such as automated market maker~\cite{xu2021sok}), where trading of \dx{} vs the base currency (\bc{}) happens. In the second place, to tackle with situations when the reference market price is way too different from a target price (price of a pegged asset, as reported by a trusted oracle), there is an algorithmic central bank which is doing interventions in order to readjust the market price~(so make it closer to the oracle's one). The central bank can also mint new \dx{} tokens by selling them for \bc{}. The bank is using reserves in \bc{} it is buying for interventions. 
 
 As a simple solution for the {\em reference market}, we are using constant-product Automated Market Maker (CP-AMM) liquidity pool, similar to Spectrum and UniSwap. The pool has \bc{} on one side and \dx{} on another. For CP-AMM pool, multiplication of \bc{} and \dx{} amounts before and after a trade should be preserved, so $e * u = e' * u'$, where $e$ and $u$ are amounts of \bc{} and \dx{} in the pool before the trade, and $e'$ and $u'$ are amounts of \bc{} and \dx{} in the pool after the trade, correspondingly. As for any CP-AMM pool, it is possible to put liquidity into the pool, and remove liquidity from it, however, there are some limitations here we are going to uncover further. 
 
 The bank has two basic operations. It can mint new \sct{} tokens per request, using trusted oracle's price, by accepting \bc{} in its reserves. It also can intervene into markets by providing \bc{} from reserves when needed~(namely, when price in the pool $\frac{u}{e}$ is significantly different from price on external markets $p$ which reported by oracle).
 
-Now we are going to consider how to put restrictions and design rules for the system to ensure stable pricing for \sct{} tokens. 
+Now we are going to consider what are possible failure scenarios for such design and how to put restrictions and design rules for the system to ensure stable pricing for \sct{} tokens. 
 
 \section{Notation}
 
@@ -118,7 +117,7 @@ We start by introducing notation:
 \begin{itemize}
   \item{} $T$ - period before intervention starts. After one intervention the bank can start another one only after $T$ time units passed. 
   \item{} $p$ - price reported by the oracle at the moment (for example, 20 USD per ERG)
-  \item{} $s$ - price which the bank should stand in case of price crash. For example, we can assume that $s = \frac{p}{4}$ (so if p is 20 USD per ERG, then $s$ is 5 USD per ERG, means the bank needs to have enough reserves to save the markets when the price is suddenly crashing from 20 to 5 USD per ERG)
+  \item{} $s$ - price which the bank should stand in case of sudden price crash. For example, we can assume that $s = \frac{p}{4}$ (so if p is 20 USD per ERG, then $s$ is 5 USD per ERG, means the bank needs to have enough reserves to save the markets when the price is suddenly crashing from 20 to 5 USD per ERG)
   \item{} $R$ - ratio between $p$ and $s$, $R = \frac{p}{s}$
   \item{} $r$ - ratio between $p$, and price in the pool, which is $\frac{u}{e}$, thus $r = \frac{p}{\frac{u}{e}} = \frac{p*e}{u}$
   \item{} $e$ - amount of \bc{} in the liquidity pool 
@@ -131,7 +130,7 @@ We start by introducing notation:
 
 The bank is doing interventions when the situation is far from normal in the markets, and enough time passed for markets to stabilize themselves with no interventions. In our case, the bank is doing interventions based on stablecoin price in the liquidity pool in comparison with oracle provided price. The bank's intervention then is about injecting its \bc{} reserves into the pool.  
 
-First of all, let's assume that the oracle price crashed from $p$ to $s$ sharply and stands there, and before the crash there were $e$ of \bc{} and $u$ of \sct{} in the liquidity pool, with pool's price being $p$. The worst case then is when no liqudity put into the pool during the period $T$. With large enough $T$ and large enough $R$ this assumption is not very realistic probably: some traders will buy \bc{}s with their \sct{}s anyway, price is failing with swings where traders could mint \sct{}s thus increasing \bc{} bank reserves, etc. However, it would be reasonable to consider worst-case scenario, then in the real world \dx{} will be even more durable than in theory. 
+First of all, let's assume that the oracle price crashed from $p$ to $s$ sharply and stands there, and before the crash there were $e$ of \bc{} and $u$ of \sct{} in the liquidity pool, with pool's price being $p$. The worst case then is when no liqudity put into the pool during the period $T$. With large enough $T$ and large enough $R$ this assumption is not very realistic probably: some traders will buy \bc{}s with their \sct{}s anyway, price is usually failing with swings where traders could mint \sct{}s thus increasing \bc{} bank reserves, etc. However, it would be reasonable to consider worst-case scenario, then in the real world \dx{} will be even more durable than in theory. 
 
 In this case, the bank must intervene after $T$ units of time, as the price differs significantly, and restore the price in the pool, so set it to $s$. We denote amounts of \bc{} and \sct{} in the pool after the intervention as $e'$ and $u'$, respectively. Then:
 
@@ -154,10 +153,9 @@ It is simple to see why this scenario is worst-case for the bank. In this scenar
 Based on needed reserves for worst-case scenario estimation, we can consider minting rules accordingly. Similarly to SigUSD~(a Djed instantiation), we can, for example, target for security in case of 
 4x price drop, so to consider $R = \frac{p}{s} = 4$, and allow to mint \sct{}~while there are enough, so not less than $E_w$, \bc{}~in reserves. However, in this case most of time \sct{} would be non-mintable, and only during moments of \bc{} price going up significantly it will be possible to mint \dx{}. As worst-case scenario is based on unrealistic assumptions, unlikely a realistic protocol can be built on top of it.  
 
-Thus we leave worst-case scenario for UI, so dapps working with the \dx{} may show e.g. collateralization for the worst-case scenario. Having on-chain data analysis, 
-more precise estimations of reserve quality can be made~(by considering \sct{}s locked in DeFi protocols, likely forgotten, etc).
+Thus we leave worst-case scenario for UI, so dapps working with the \dx{} may show e.g. collateralization for the worst-case scenario. Having on-chain data analysis, more precise estimations of reserve quality can be made~(by considering \sct{}s locked in DeFi protocols, likely forgotten, etc).
 
-We allow for cautios minting. That is, we whether allow minting when oracle price is above pool's price~(in this way the bank is providing liquidity for arbitrage when \sct{} pice is above the peg), or we allow to mint a little bit (per some time period) when liquidity pool is in good shape. In details, we have two following minting operations, with minting price being the oracle's price $p$:  
+Instead, we always allow for cautios minting. That is, we whether allow minting when oracle price is above pool's price~(in this way the bank is providing liquidity for arbitrage when \sct{} pice is above the peg), or we allow to mint a little bit (per some time period) when liquidity pool is in good shape. In details, we have two following minting operations, with minting price being the oracle's price $p$:  
 
 \begin{itemize}
   \item{Arbitrage mint: } if price reported by the oracle is higher than in the pool, i.e. $p > \frac{u}{e}$, we allow to print enough \sct{} tokens to bring the price to $p$. That is, the bank allows to mint up to $\delta_u = \sqrt{p*e*u}-u$ \sct{} by accepting up to $\delta_e = \frac{\delta_u}{p}$ \bc{}s into reserves. 
