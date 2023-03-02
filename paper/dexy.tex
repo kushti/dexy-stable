@@ -173,8 +173,6 @@ In addition to minting actions, which increase bank reserves, we define followin
    \em{To instantiate the rule, we propose to allow the bank to intervene if $r <= 0.98$ for time period $T_{int} = 1 {\ day}$.
        During intervention tracker is reset, so another intervention will be after $T_{int} = 1 {\ day}$ at least. The bank is getting 
        price to 99.5\% of the oracle price max, but also spending no more than 2\% of its reserves for that.}
-   \item{Payout: } if bank has too much reserves, in comparison with total \dx{} circulating supply expressed in base currency ($\frac{O + u}{p}$), we can allow for reserves to be used to buy LP shares, burn some of them (thus liquidity pool will get \bc{} and \dx{} tokens locked up forever in it), and time-lock the rest, with developers able to get LP tokens after lock time. There could be different ways to do this. Alternatively, LP tokens can be paid to LP ot other tokens vested.
-      \em{To instantiate the rule, we propose to allow for payouts once per 1 month if $E > 2 * (O + u) / p$, burn half of LP tokens and time-lock another help for 3 months, then if $E > 2 * (O + u) / p$ still , payout could be done, otherwise, LP tokens should be burnt.}
 \end{itemize}
 
 
@@ -228,30 +226,25 @@ It is important to explicitly state assumptions the protocol is based on, so a u
 
 Authors would like to thank Ile for his inspiring forum posts.
 
-\section*{DexyGold And Its Payout Token}
+\section*{Oracle safety and tokenomics}
 
-As a first instantiation for the Dexy protocol, we consider DexyGold, gold-pegged and ERG-backed stablecoin. 
+As a first instantiation for the Dexy protocol, we consider DexyGold, gold-pegged and ERG-backed stablecoin.
 
-It would be desirable to remove excessive reserves, as in case of too much ERG liquidity locked, the underlying Ergo blockchain economy
-could be damaged. So we will implement ERG payouts in case of excessive reserves, and they will be done to holders of the DexyGold payout token. 
+Oracles security is the most important issue for our stablecoin protocol, as this is the only component which is
+not working autonomously on-chain. Thus the protocol needs to reward oracles.
 
-DexyGold payout tokens will be distributed across developers and partners, some part of it will be given to miners (via a GetBlok pool), 
-and also it will be able to get rewarded in payout tokens by locking reference pool's LP tokens in a staking contract.
+Oracle Pools 2.0 framework \knote{link} has support for paying rewards in custom tokens. So we will create GERT (Gold
+Ecosystem Rewards Token), which will be used to reward oracles and also developers.
+
 Distribution would be like~(not finalized!):
 
 \begin{itemize}
-\item{dev team} - 25\%
-\item{Spectrum} - 10\%
-\item{ecosystem devs (exchanges, wallets, payout distribution and staking solutions providers)} - 30\%
-\item{LP tokens staking rewards} - 25\%
-\item{Sigmanauts Treasury} - 5\%
-\item{Ergo Foundation Treasury} - 5\%
+\item{dev team} - 35\%
+\item{ecosystem devs (exchanges, wallets, payout distribution and staking solutions providers)} - 11\%
+\item{Oracle rewards} - 50\%
+\item{Sigmanauts Treasury} - 2\%
+\item{Ergo Foundation Treasury} - 2\%
 \end{itemize}
-
-
-Please note that revenue is not guaranteed with the payout token. Also, it does not give any governance rights, as there is no governance in the protocol, it is run as purely autonomous code-controlled entity. 
-
-Payout tokens will not be sold to the public, or sold at all. However, no one can prevent second market formation (e.g. liquidity pool appeared on Spectrum).
 
 
 \bibliography{sources}
