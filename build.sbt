@@ -1,4 +1,4 @@
-name := "simul"
+name := "dexy"
 
 version := "0.1"
 
