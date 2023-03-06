@@ -1,4 +1,7 @@
 {
+    // Liquidity pool script
+    // Unlike ErgoDex (Spectrum) scripts, we split the script into many action scripts, like done in bank
+    //
     // This box: (LP box)
     //
     // TOKENS

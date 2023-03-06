@@ -1,5 +1,5 @@
 {
-    // This box: Extract to future
+    // Extract to the future script
     //
     // TOKENS
     //   tokens(0): extractionNFT

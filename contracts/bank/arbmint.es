@@ -1,4 +1,6 @@
 {
+  // Arbitrage mint action script
+  //
   // This box: (arbitrage-mint box)
   //
   // TOKENS

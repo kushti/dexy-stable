@@ -88,7 +88,7 @@ object DexySpec {
 
   // payout box
   val payoutScript = readContract("bank/payout.es")
-  
+
   val interventionScript = readContract("bank/intervention.es")
 
   // below contract is adapted from N2T DEX contract in EIP-14 https://github.com/ergoplatform/eips/blob/de30f94ace1c18a9772e1dd0f65f00caf774eea3/eip-0014.md?plain=1#L558-L636

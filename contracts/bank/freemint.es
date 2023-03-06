@@ -1,4 +1,6 @@
 {
+  // Free mint action script
+  //
   // This box: (free-mint box)
   //
   // TOKENS

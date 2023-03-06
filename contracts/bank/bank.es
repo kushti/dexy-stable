@@ -1,4 +1,6 @@
 {
+  // Bank script
+  //
   // This box: (Bank box)
   //
   // TOKENS
