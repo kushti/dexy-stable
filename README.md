@@ -1,2 +1,9 @@
 # dexy-stable
-Contracts and offchain part of DEXy stablecoin 
+
+This repository contains everything related to Dexy stablecoin protocol.
+
+## Contents
+
+* [Whitepaper](paper/dexy.pdf)
+* [Contracts](contracts/)
+
