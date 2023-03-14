@@ -76,9 +76,6 @@ object DexySpec {
     substitute(scala.io.Source.fromFile("contracts/" + path, "utf-8").getLines.mkString("\n"))
   }
 
-  val bankScript = readContract("bank/bank.es")
-
-
   // arbitrage mint box
   val arbitrageMintScript = readContract("bank/arbmint.es")
 
@@ -88,8 +85,6 @@ object DexySpec {
 
   // payout box
   val payoutScript = readContract("bank/payout.es")
-
-  val interventionScript = readContract("bank/intervention.es")
 
   // below contract is adapted from N2T DEX contract in EIP-14 https://github.com/ergoplatform/eips/blob/de30f94ace1c18a9772e1dd0f65f00caf774eea3/eip-0014.md?plain=1#L558-L636
   lazy val lpScript = readContract("lp/lp.es")
@@ -104,14 +99,29 @@ object DexySpec {
 
   val extractScript = readContract("lp/extract.es")
 
+  val trackingErgoTree = ScriptUtil.compile(Map(), trackingScript)
+  val trackingAddress = getStringFromAddress(getAddressFromErgoTree(trackingErgoTree))
+
+  val bankScript = readContract("bank/bank.es")
   val bankErgoTree = ScriptUtil.compile(Map(), bankScript)
   val bankAddress = getStringFromAddress(getAddressFromErgoTree(bankErgoTree))
+
   val arbitrageMintErgoTree = ScriptUtil.compile(Map(), arbitrageMintScript)
   val arbitrageMintAddress = getStringFromAddress(getAddressFromErgoTree(arbitrageMintErgoTree))
   val freeMintErgoTree = ScriptUtil.compile(Map(), freeMintScript)
   val freeMintAddress = getStringFromAddress(getAddressFromErgoTree(freeMintErgoTree))
   val payoutErgoTree = ScriptUtil.compile(Map(), payoutScript)
   val payoutAddress = getStringFromAddress(getAddressFromErgoTree(payoutErgoTree))
+
+  val interventionScript = readContract("bank/intervention.es")
+  val interventionErgoTree = ScriptUtil.compile(Map(), interventionScript)
+  val interventionAddress = getStringFromAddress(getAddressFromErgoTree(interventionErgoTree))
+
+  val payToSwapScript = readContract("bank/paytoswap.es")
+  val payToSwapErgoTree = ScriptUtil.compile(Map(), payToSwapScript)
+  val payToSwapAddress = getStringFromAddress(getAddressFromErgoTree(payToSwapErgoTree))
+
+
   val lpErgoTree = ScriptUtil.compile(Map(), lpScript)
   val lpAddress = getStringFromAddress(getAddressFromErgoTree(lpErgoTree))
   val lpSwapErgoTree = ScriptUtil.compile(Map(), lpSwapScript)
@@ -120,12 +130,9 @@ object DexySpec {
   val lpMintAddress = getStringFromAddress(getAddressFromErgoTree(lpMintErgoTree))
   val lpRedeemErgoTree = ScriptUtil.compile(Map(), lpRedeemScript)
   val lpRedeemAddress = getStringFromAddress(getAddressFromErgoTree(lpRedeemErgoTree))
-  val trackingErgoTree = ScriptUtil.compile(Map(), trackingScript)
-  val trackingAddress = getStringFromAddress(getAddressFromErgoTree(trackingErgoTree))
   val extractErgoTree = ScriptUtil.compile(Map(), extractScript)
   val extractAddress = getStringFromAddress(getAddressFromErgoTree(extractErgoTree))
-  val interventionErgoTree = ScriptUtil.compile(Map(), interventionScript)
-  val interventionAddress = getStringFromAddress(getAddressFromErgoTree(interventionErgoTree))
+
 
   def main(args: Array[String]): Unit = {
     println(s"Bank: $bankAddress")
@@ -142,6 +149,10 @@ object DexySpec {
 
     println(s"Payout: $payoutAddress")
     println(payoutScript)
+    println()
+
+    println(s"Pay to swap: $payToSwapAddress")
+    println(payToSwapScript)
     println()
 
     println(s"LP: $lpAddress")
