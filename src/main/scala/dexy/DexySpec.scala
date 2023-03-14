@@ -6,6 +6,14 @@ import kiosk.script.ScriptUtil
 import scorex.util.encode.Base64
 
 object DexySpec {
+  // oracle related tokens
+
+  // Gold Oracle Reward Token
+  val gort = "472B4B6250655368566D597133743677397A24432646294A404D635166546A57" // TODO replace with actual
+  // GORT / ERG LP
+  val gortLpNFT = "472B4B6250655368566D597133743677397A24432646294A404D635166546A57" // TODO replace with actual
+  val gortLpSwapNFT = "472B4B6250655368566D597133743677397A24432646294A404D635166546A57" // TODO replace with actual
+
   // tokens for main boxes
   val oracleNFT = "472B4B6250655368566D597133743677397A24432646294A404D635166546A57" // TODO replace with actual
   val bankNFT = "861A3A5250655368566D597133743677397A24432646294A404D635166546A57" // TODO replace with actual
@@ -43,6 +51,8 @@ object DexySpec {
   val feeDenomLp = 1000
 
   val nftDictionary: Map[String, String] = Map(
+    "gortLpNFT" -> gortLpNFT,
+    "gortLpSwapNFT" -> gortLpSwapNFT,
     "freeMintNFT" -> freeMintNFT,
     "arbitrageMintNFT" -> arbitrageMintNFT,
     "interventionNFT" -> interventionNFT,
