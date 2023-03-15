@@ -51,6 +51,7 @@ object DexySpec {
   val feeDenomLp = 1000
 
   val nftDictionary: Map[String, String] = Map(
+    "gortId" -> gort,
     "gortLpNFT" -> gortLpNFT,
     "gortLpSwapNFT" -> gortLpSwapNFT,
     "freeMintNFT" -> freeMintNFT,
@@ -127,9 +128,9 @@ object DexySpec {
   val interventionErgoTree = ScriptUtil.compile(Map(), interventionScript)
   val interventionAddress = getStringFromAddress(getAddressFromErgoTree(interventionErgoTree))
 
-  val payToSwapScript = readContract("bank/paytoswap.es")
-  val payToSwapErgoTree = ScriptUtil.compile(Map(), payToSwapScript)
-  val payToSwapAddress = getStringFromAddress(getAddressFromErgoTree(payToSwapErgoTree))
+  val buybackScript = readContract("bank/buyback.es")
+  val buybackErgoTree = ScriptUtil.compile(Map(), buybackScript)
+  val buybackAddress = getStringFromAddress(getAddressFromErgoTree(buybackErgoTree))
 
 
   val lpErgoTree = ScriptUtil.compile(Map(), lpScript)
@@ -161,8 +162,8 @@ object DexySpec {
     println(payoutScript)
     println()
 
-    println(s"Pay to swap: $payToSwapAddress")
-    println(payToSwapScript)
+    println(s"Buyback: $buybackAddress")
+    println(buybackScript)
     println()
 
     println(s"LP: $lpAddress")

@@ -1,7 +1,8 @@
 {
   // GORT (Gold Oracle Reward Token) buyback script
   //
-  // It is accepting ERGs (via top-up action),
+  // It is accepting ERGs (via top-up action), swapping them in ERG/GORT LP pool to get GORT, and gives GORT back
+  // to oracle pool
   //
   // Tokens:
   //  - buyback NFT
@@ -20,7 +21,7 @@
   // -----------------------------------------------
   // 0 BuyBack       |  BuyBack       |
   //
-  // Return:
+  // Give back:
   //
   //   Input         |  Output        |   Data-Input
   // -----------------------------------------------
@@ -33,9 +34,17 @@
   val buybackNft = SELF.tokens(0)._1
 
   // checking that swap inputs provided
-  val swapNft = INPUTS(0).tokens(0)._1 == fromBase64("$gortLpNFT") &&
+  val poolInput = INPUTS(0)
+  val swapNft = poolInput.tokens(0)._1 == fromBase64("$gortLpNFT") &&
                   INPUTS(1).tokens(0)._1 == fromBase64("$gortLpSwapNFT")
-  val outputsCorrect = OUTPUTS.size == 4 && OUTPUTS(3).tokens.size == 0 && OUTPUTS(2).tokens(0)._1 == buybackNft
+  val outputsCorrect = OUTPUTS.size == 4 && OUTPUTS(3).tokens.size == 0
+  val selfOut = OUTPUTS(2)
+  val minPrice = poolInput.value / poolInput.tokens(2)._2
+  val gortObtained = selfOut.tokens(1)._2
+  val maxErgDelta = minPrice * gortObtained * 11 / 10
+  val selfCorrect = selfOut.tokens(0)._1 == buybackNft &&
+                    selfOut.tokens(1)._1 == fromBase64("$gortId") &&
+                    SELF.value - selfOut.value <= maxErgDelta
 
   val swap = swapNft && outputsCorrect
 
