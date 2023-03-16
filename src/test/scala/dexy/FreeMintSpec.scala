@@ -62,7 +62,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(oracleNFT, 1))
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
           .registers(KioskLong(oracleRateXy).getErgoValue)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
@@ -174,7 +174,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(oracleNFT, 1))
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
           .registers(KioskLong(oracleRateXy).getErgoValue)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
@@ -287,7 +287,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(oracleNFT, 1))
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
           .registers(KioskLong(oracleRateXy).getErgoValue)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
@@ -397,7 +397,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(oracleNFT, 1))
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
           .registers(KioskLong(oracleRateXy).getErgoValue)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
@@ -507,7 +507,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(oracleNFT, 1))
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
           .registers(KioskLong(oracleRateXy).getErgoValue)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
@@ -732,7 +732,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(oracleNFT, 1))
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
           .registers(KioskLong(oracleRateXy).getErgoValue)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
@@ -845,7 +845,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(oracleNFT, 1))
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
           .registers(KioskLong(oracleRateXy).getErgoValue)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
@@ -962,7 +962,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(oracleNFT, 1))
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
           .registers(KioskLong(oracleRateXy).getErgoValue)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
@@ -1072,7 +1072,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(oracleNFT, 1))
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
           .registers(KioskLong(oracleRateXy).getErgoValue)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
@@ -1182,7 +1182,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(oracleNFT, 1))
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
           .registers(KioskLong(oracleRateXy).getErgoValue)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()

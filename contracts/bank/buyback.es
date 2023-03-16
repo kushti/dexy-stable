@@ -29,37 +29,56 @@
   // 1 Refresh       |  Refresh       |
   // 2 BuyBack       |  BuyBack       |
 
-  // swap path
+  val action = getVar[Int](0).get
 
-  val buybackNft = SELF.tokens(0)._1
+  if(action == 0) {
+    // swap path
+    val buybackNft = SELF.tokens(0)._1
 
-  // checking that swap inputs provided
-  val poolInput = INPUTS(0)
-  val swapNft = poolInput.tokens(0)._1 == fromBase64("$gortLpNFT") &&
+    // checking that swap inputs provided
+    val poolInput = INPUTS(0)
+    val swapNft = poolInput.tokens(0)._1 == fromBase64("$gortLpNFT") &&
                   INPUTS(1).tokens(0)._1 == fromBase64("$gortLpSwapNFT")
-  val outputsCorrect = OUTPUTS.size == 4 && OUTPUTS(3).tokens.size == 0
-  val selfOut = OUTPUTS(2)
-  val minPrice = poolInput.value / poolInput.tokens(2)._2
-  val gortObtained = selfOut.tokens(1)._2
-  val maxErgDelta = minPrice * gortObtained * 11 / 10
-  val selfCorrect = selfOut.tokens(0)._1 == buybackNft &&
-                    selfOut.tokens(1)._1 == fromBase64("$gortId") &&
-                    SELF.value - selfOut.value <= maxErgDelta
+    val outputsCorrect = OUTPUTS.size == 4 && OUTPUTS(3).tokens.size == 0
+    val selfOut = OUTPUTS(2)
+    val minPrice = poolInput.value / poolInput.tokens(2)._2
+    val gortObtained = selfOut.tokens(1)._2
+    val maxErgDelta = minPrice * gortObtained * 11 / 10
+    val selfCorrect = selfOut.tokens(0)._1 == buybackNft &&
+                        selfOut.tokens(1)._1 == fromBase64("$gortId") &&
+                        SELF.value - selfOut.value <= maxErgDelta
 
-  val swap = swapNft && outputsCorrect
+    val swap = swapNft && outputsCorrect
+    sigmaProp(swap)
+  } else if(action == 1) {
+    // top-up path
+    val topUp = OUTPUTS(0).tokens == SELF.tokens &&
+                OUTPUTS(0).propositionBytes == SELF.propositionBytes &&
+                SELF.value < OUTPUTS(0).value
+    sigmaProp(topUp)
+  } else {
+    // return path
+    val minStartHeight = HEIGHT - $epochLength
+    val poolIn = INPUTS(0)
 
-  // top-up path
-  val topUp = OUTPUTS(0).tokens == SELF.tokens &&
-              OUTPUTS(0).propositionBytes == SELF.propositionBytes &&
-              SELF.value < OUTPUTS(0).value
+    def isValidDataPoint(b: Box) = if (b.R6[Long].isDefined) {
+        b.creationInfo._1    >= minStartHeight &&
+        b.tokens(0)._1       == fromBase64("$oracleTokenId") &&
+        b.R5[Int].get        == poolIn.R5[Int].get
+    }  else false
 
-  // return path
-  // todo: check pool tokens
-  val giveback = OUTPUTS(2).tokens(0) == SELF.tokens(0) &&
-               OUTPUTS(2).tokens.size == 1 &&
-               OUTPUTS(2).propositionBytes == SELF.propositionBytes &&
-               SELF.value == OUTPUTS(2).value
+    val dataPoints = INPUTS.filter(isValidDataPoint)
+    val rewardEmitted = dataPoints.size * 2
 
-  sigmaProp(swap || topUp || giveback)
+    val selfGort = SELF.tokens(1)._2
+    val properGiving =  poolIn.tokens(0)._1 == fromBase64("$oracleNFT") &&
+                        OUTPUTS(0).tokens(1)._2 >= poolIn.tokens(1)._2 + selfGort - rewardEmitted
 
+    val giveback = OUTPUTS(2).tokens(0) == SELF.tokens(0) &&
+                   OUTPUTS(2).propositionBytes == SELF.propositionBytes &&
+                   SELF.value == OUTPUTS(2).value &&
+                   properGiving
+
+    sigmaProp(giveback)
+  }
 }

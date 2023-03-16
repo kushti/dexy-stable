@@ -13,9 +13,10 @@ object DexySpec {
   // GORT / ERG LP
   val gortLpNFT = "472B4B6250655368566D597133743677397A24432646294A404D635166546A57" // TODO replace with actual
   val gortLpSwapNFT = "472B4B6250655368566D597133743677397A24432646294A404D635166546A57" // TODO replace with actual
+  val oracleTokenId = "2A472D4A614E645267556B58703273357638792F423F4528482B4D6250655368"
 
   // tokens for main boxes
-  val oracleNFT = "472B4B6250655368566D597133743677397A24432646294A404D635166546A57" // TODO replace with actual
+  val oraclePoolNFT = "472B4B6250655368566D597133743677397A24432646294A404D635166546A57" // TODO replace with actual
   val bankNFT = "861A3A5250655368566D597133743677397A24432646294A404D635166546A57" // TODO replace with actual
   val lpNFT = "361A3A5250655368566D597133743677397A24432646294A404D635166546A57" // TODO replace with actual
 
@@ -53,6 +54,7 @@ object DexySpec {
   val feeDenomLp = 1000
 
   val nftDictionary: Map[String, String] = Map(
+    "oracleTokenId" -> oracleTokenId,
     "gortId" -> gort,
     "gortLpNFT" -> gortLpNFT,
     "gortLpSwapNFT" -> gortLpSwapNFT,
@@ -60,7 +62,7 @@ object DexySpec {
     "arbitrageMintNFT" -> arbitrageMintNFT,
     "interventionNFT" -> interventionNFT,
     "payoutNFT" -> payoutNFT,
-    "oracleNFT" -> oracleNFT,
+    "oracleNFT" -> oraclePoolNFT,
     "bankNFT" -> bankNFT,
     "lpNFT" -> lpNFT,
     "tracking95NFT" -> tracking95NFT,
@@ -75,7 +77,8 @@ object DexySpec {
     "feeNumLp" -> (feeNumLp.toString + "L"),
     "feeDenomLp" -> (feeDenomLp.toString + "L"),
     "initialLp" -> (initialLp.toString + "L"),
-    "intMax" -> Int.MaxValue.toString
+    "intMax" -> Int.MaxValue.toString,
+    "epochLength" -> 30.toString
   )
 
   // totally inefficient substitution method, but ok for our contracts

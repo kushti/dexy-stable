@@ -36,7 +36,8 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             value = minStorageRent,
             registers = Array(),
             tokens = Array(
-              (buybackNFT, 1)
+              (buybackNFT, 1),
+              (gort, gortAmt)
             )
           )),
         fee = 1000000L,
@@ -72,7 +73,7 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
       val inputs = Array[InputBox](
         poolBox,
         refreshBox.withContextVars(new ContextVar(0, KioskInt(0).getErgoValue)), // 1st dataPoint box (dataPoint1) is spender
-        buyBackBox,
+        buyBackBox.withContextVars(new ContextVar(0, KioskInt(2).getErgoValue)),
         dataPoint1.withContextVars(new ContextVar(0, KioskInt(3).getErgoValue)), // output index 2 corresponds to dataPoint1
         dataPoint2.withContextVars(new ContextVar(0, KioskInt(4).getErgoValue)), // output index 3 corresponds to dataPoint2
         dataPoint3.withContextVars(new ContextVar(0, KioskInt(5).getErgoValue)), // output index 4 corresponds to dataPoint3
@@ -82,7 +83,7 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
       )
       val dataInputs = Array[InputBox]()
       val outputs = Array[KioskBox](
-        KioskBox(poolAddress, minStorageRent, Array(KioskLong(1002), KioskInt(1)), Array((config.poolNFT, 1), (rewardTokenId, defaultGortSupply - 10))),
+        KioskBox(poolAddress, minStorageRent, Array(KioskLong(1002), KioskInt(1)), Array((config.poolNFT, 1), (rewardTokenId, defaultGortSupply - 10 + 500))),
         KioskBox(refreshAddress, minStorageRent, Array.empty, Array((config.refreshNFT, 1))),
         KioskBox(buybackAddress, minStorageRent, Array.empty, Array((buybackNFT, 1))),
         KioskBox(oracleAddress, minStorageRent, Array(pubKey1), Array((config.oracleTokenId, 1), (rewardTokenId, 16))),

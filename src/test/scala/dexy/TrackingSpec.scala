@@ -50,7 +50,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(oracleNFT, 1))
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
           .registers(KioskLong(oracleRateXY).getErgoValue)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
@@ -142,7 +142,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(oracleNFT, 1))
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
           .registers(KioskLong(oracleRateXY).getErgoValue)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
@@ -330,7 +330,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(oracleNFT, 1))
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
           .registers(KioskLong(oracleRateXY).getErgoValue)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
@@ -418,7 +418,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(oracleNFT, 1))
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
           .registers(KioskLong(oracleRateXY).getErgoValue)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
@@ -508,7 +508,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(oracleNFT, 1))
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
           .registers(KioskLong(oracleRateXY).getErgoValue)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
@@ -598,7 +598,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(oracleNFT, 1))
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
           .registers(KioskLong(oracleRateXY).getErgoValue)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
@@ -690,7 +690,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(oracleNFT, 1))
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
           .registers(KioskLong(oracleRateXY).getErgoValue)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
