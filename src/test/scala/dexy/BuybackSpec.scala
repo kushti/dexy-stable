@@ -2,8 +2,8 @@ package dexy
 
 import kiosk.ergo.{DhtData, KioskBox, KioskInt, KioskLong}
 import kiosk.tx.TxUtil
-import oracles.OracleHelpers
-import org.ergoplatform.appkit.{BlockchainContext, ContextVar, HttpClientTesting, InputBox}
+import oracles.{OracleContracts, OracleHelpers}
+import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ContextVar, ErgoToken, HttpClientTesting, InputBox}
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
@@ -11,8 +11,43 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   with HttpClientTesting with Common with OracleHelpers {
 
   import oracles.OracleContracts._
+  import DexySpec._
 
   val ergoClient = createMockedErgoClient(MockData(Nil, Nil))
+
+  def createBuyback(gortAmt: Long)(implicit ctx: BlockchainContext): InputBox = {
+    TxUtil
+      .createTx(
+        Array(
+          ctx // for funding transactions
+            .newTxBuilder()
+            .outBoxBuilder
+            .value(dummyNanoErgs)
+            .tokens(
+              new ErgoToken(buybackNFT, 1),
+              new ErgoToken(gort, gortAmt))
+            .contract(ctx.compileContract(ConstantsBuilder.empty(), dummyScript))
+            .build()
+            .convertToInputWith(dummyTxId, dummyIndex)),
+        Array[InputBox](),
+        Array(
+          KioskBox(
+            buybackAddress,
+            value = minStorageRent,
+            registers = Array(),
+            tokens = Array(
+              (buybackNFT, 1)
+            )
+          )),
+        fee = 1000000L,
+        changeAddress,
+        Array[String](),
+        Array[DhtData](),
+        false
+      )
+      .getOutputsToSpend
+      .get(0)
+  }
 
   property("giveback scenario") {
     ergoClient.execute { implicit ctx: BlockchainContext =>
@@ -21,10 +56,10 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
       val poolBox = bootstrapPoolBox(ctx.getHeight - config.epochLength - 1, rate = 1)
 
       val oracleBox1 = bootstrapOracleBox(pubKey1, rewardTokenQty = 10)
-      val oracleBox2 = bootstrapOracleBox(pubKey2, 20)
-      val oracleBox3 = bootstrapOracleBox(pubKey3, 30)
-      val oracleBox4 = bootstrapOracleBox(pubKey4, 40)
-      val oracleBox5 = bootstrapOracleBox(pubKey5, 50)
+      val oracleBox2 = bootstrapOracleBox(pubKey2, rewardTokenQty = 20)
+      val oracleBox3 = bootstrapOracleBox(pubKey3, rewardTokenQty = 30)
+      val oracleBox4 = bootstrapOracleBox(pubKey4, rewardTokenQty = 40)
+      val oracleBox5 = bootstrapOracleBox(pubKey5, rewardTokenQty = 50)
 
       val dataPoint1 = createDataPoint(1000, 0, oracleAddress, minStorageRent, oracleBox1, privKey1, 0, 10)
       val dataPoint2 = createDataPoint(1001, 0, oracleAddress, minStorageRent, oracleBox2, privKey2, 0, 20)
