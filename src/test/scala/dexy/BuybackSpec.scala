@@ -18,9 +18,9 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
       val refreshBox = bootstrapRefreshBox()
-      val poolBox = bootstrapPoolBox(ctx.getHeight - config.epochLength - 1, 1)
+      val poolBox = bootstrapPoolBox(ctx.getHeight - config.epochLength - 1, rate = 1)
 
-      val oracleBox1 = bootstrapOracleBox(pubKey1, 10)
+      val oracleBox1 = bootstrapOracleBox(pubKey1, rewardTokenQty = 10)
       val oracleBox2 = bootstrapOracleBox(pubKey2, 20)
       val oracleBox3 = bootstrapOracleBox(pubKey3, 30)
       val oracleBox4 = bootstrapOracleBox(pubKey4, 40)
@@ -46,11 +46,11 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
       val outputs = Array[KioskBox](
         KioskBox(poolAddress, minStorageRent, Array(KioskLong(1002), KioskInt(1)), Array((config.poolNFT, 1), (rewardTokenId, 1000000L - 10))),
         KioskBox(refreshAddress, minStorageRent, Array.empty, Array((config.refreshNFT, 1))),
-        KioskBox(oracleAddress, minStorageRent, Array(pubKey1), Array((DexySpec.gort, 1), (rewardTokenId, 16))),
-        KioskBox(oracleAddress, minStorageRent, Array(pubKey2), Array((DexySpec.gort, 1), (rewardTokenId, 21))),
-        KioskBox(oracleAddress, minStorageRent, Array(pubKey3), Array((DexySpec.gort, 1), (rewardTokenId, 31))),
-        KioskBox(oracleAddress, minStorageRent, Array(pubKey4), Array((DexySpec.gort, 1), (rewardTokenId, 41))),
-        KioskBox(oracleAddress, minStorageRent, Array(pubKey5), Array((DexySpec.gort, 1), (rewardTokenId, 51)))
+        KioskBox(oracleAddress, minStorageRent, Array(pubKey1), Array((config.oracleTokenId, 1), (rewardTokenId, 16))),
+        KioskBox(oracleAddress, minStorageRent, Array(pubKey2), Array((config.oracleTokenId, 1), (rewardTokenId, 21))),
+        KioskBox(oracleAddress, minStorageRent, Array(pubKey3), Array((config.oracleTokenId, 1), (rewardTokenId, 31))),
+        KioskBox(oracleAddress, minStorageRent, Array(pubKey4), Array((config.oracleTokenId, 1), (rewardTokenId, 41))),
+        KioskBox(oracleAddress, minStorageRent, Array(pubKey5), Array((config.oracleTokenId, 1), (rewardTokenId, 51)))
       )
 
       noException shouldBe thrownBy {
@@ -60,7 +60,7 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           outputs,
           fee = 1000000L,
           changeAddress,
-          Array[String](),
+          Array[String](privKey1.toString),
           Array[DhtData](),
           false
         )

@@ -52,12 +52,17 @@ trait OracleHelpers extends Common {
       .newTxBuilder()
       .outBoxBuilder
       .value(dummyNanoErgs)
+      // .tokens(new ErgoToken(rewardTokenId, 1000000L))
       .contract(ctx.compileContract(ConstantsBuilder.empty(), dummyScript))
       .build()
       .convertToInputWith(dummyTxId, dummyIndex)
 
-  def bootstrapOracleBox(pubKey: KioskGroupElement, rewardTokenQty: Long, optRewardTokenId: Option[String] = None, optOracleAddress: Option[String] = None, optOracleTokenId: Option[String] = None)(
-    implicit ctx: BlockchainContext) =
+  def bootstrapOracleBox(pubKey: KioskGroupElement,
+                         rewardTokenQty: Long,
+                         optRewardTokenId: Option[String] = None,
+                         optOracleAddress: Option[String] = None,
+                         optOracleTokenId: Option[String] = None)
+                        (implicit ctx: BlockchainContext) =
     TxUtil
       .createTx(
         Array(
@@ -65,7 +70,8 @@ trait OracleHelpers extends Common {
             .newTxBuilder()
             .outBoxBuilder
             .value(dummyNanoErgs)
-            .tokens(new ErgoToken(optOracleTokenId.getOrElse(config.oracleTokenId), 1), new ErgoToken(optRewardTokenId.getOrElse(rewardTokenId), rewardTokenQty))
+            .tokens(new ErgoToken(optOracleTokenId.getOrElse(config.oracleTokenId), 1),
+                    new ErgoToken(optRewardTokenId.getOrElse(rewardTokenId), rewardTokenQty))
             .contract(ctx.compileContract(ConstantsBuilder.empty(), dummyScript))
             .build()
             .convertToInputWith(dummyTxId, dummyIndex)),
@@ -85,6 +91,50 @@ trait OracleHelpers extends Common {
       )
       .getOutputsToSpend
       .get(0)
+
+  private def getOracleTokensToAdd(rewardTokenQty: Long, customRewardTokenId: Option[String], optOracleTokenId: Option[String] = None): Array[(String, Long)] = {
+    val oracleTokenIdToUse = optOracleTokenId.getOrElse(config.oracleTokenId)
+    if (rewardTokenQty > 0) Array((oracleTokenIdToUse, 1L), (customRewardTokenId.getOrElse(rewardTokenId), rewardTokenQty)) else Array((oracleTokenIdToUse, 1L))
+  }
+
+  def createDataPoint(dataPointValue: Long,
+                      epochCounter: Int,
+                      outAddress: String,
+                      outValue: Long,
+                      inputOracleBox: InputBox,
+                      privKey: BigInt,
+                      contextVarOutIndex: Int,
+                      rewardTokenQty: Long,
+                      newPubKey: Option[KioskGroupElement] = None,
+                      customCreationHeight: Option[Int] = None,
+                      customRewardTokenId: Option[String] = None,
+                      customOracleTokenId: Option[String] = None)(implicit ctx: BlockchainContext) = {
+    TxUtil
+      .createTx(
+        Array(inputOracleBox.withContextVars(new ContextVar(0, KioskInt(contextVarOutIndex).getErgoValue)), dummyFundingBox),
+        Array[InputBox](),
+        Array(
+          KioskBox(
+            outAddress,
+            value = outValue,
+            registers = Array(
+              newPubKey.getOrElse(KioskGroupElement(inputOracleBox.getRegisters.get(0).asInstanceOf[ErgoValue[GroupElement]].getValue)),
+              KioskInt(epochCounter),
+              KioskLong(dataPointValue)
+            ),
+            tokens = getOracleTokensToAdd(rewardTokenQty, customRewardTokenId, customOracleTokenId),
+            creationHeight = customCreationHeight
+          )),
+        1500000,
+        changeAddress,
+        Array[String](privKey.toString),
+        Array[DhtData](),
+        false
+      )
+      .getOutputsToSpend
+      .get(0)
+  }
+
 
   def bootstrapPoolBox(customCreationHeight: Int,
                        rate: Long,
@@ -157,46 +207,4 @@ trait OracleHelpers extends Common {
       .getOutputsToSpend
       .get(0)
 
-  private def getOracleTokensToAdd(rewardTokenQty: Long, customRewardTokenId: Option[String], optOracleTokenId: Option[String] = None): Array[(String, Long)] = {
-    val oracleTokenIdToUse = optOracleTokenId.getOrElse(config.oracleTokenId)
-    if (rewardTokenQty > 0) Array((oracleTokenIdToUse, 1L), (customRewardTokenId.getOrElse(rewardTokenId), rewardTokenQty)) else Array((oracleTokenIdToUse, 1L))
-  }
-
-  def createDataPoint(dataPointValue: Long,
-                      epochCounter: Int,
-                      outAddress: String,
-                      outValue: Long,
-                      inputOracleBox: InputBox,
-                      privKey: BigInt,
-                      contextVarOutIndex: Int,
-                      rewardTokenQty: Long,
-                      newPubKey: Option[KioskGroupElement] = None,
-                      customCreationHeight: Option[Int] = None,
-                      customRewardTokenId: Option[String] = None,
-                      customOracleTokenId: Option[String] = None)(implicit ctx: BlockchainContext) = {
-    TxUtil
-      .createTx(
-        Array(inputOracleBox.withContextVars(new ContextVar(0, KioskInt(contextVarOutIndex).getErgoValue)), dummyFundingBox),
-        Array[InputBox](),
-        Array(
-          KioskBox(
-            outAddress,
-            value = outValue,
-            registers = Array(
-              newPubKey.getOrElse(KioskGroupElement(inputOracleBox.getRegisters.get(0).asInstanceOf[ErgoValue[GroupElement]].getValue)),
-              KioskInt(epochCounter),
-              KioskLong(dataPointValue)
-            ),
-            tokens = getOracleTokensToAdd(rewardTokenQty, customRewardTokenId, customOracleTokenId),
-            creationHeight = customCreationHeight
-          )),
-        1500000,
-        changeAddress,
-        Array[String](privKey.toString),
-        Array[DhtData](),
-        false
-      )
-      .getOutputsToSpend
-      .get(0)
-  }
 }

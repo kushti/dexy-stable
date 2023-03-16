@@ -1,5 +1,6 @@
 package oracles
 
+import dexy.Common
 import kiosk.encoding.ScalaErgoConverters.{getAddressFromErgoTree, getStringFromAddress}
 import kiosk.script.ScriptUtil
 import scorex.util.encode.Base64
@@ -18,7 +19,7 @@ case class PoolConfig(epochLength: Int, // blocks
                       minVotes: Int,
                       minStorageRent: Long)
 
-object OracleContracts {
+object OracleContracts extends Common {
 
   val config = PoolConfig(
     epochLength = 30, // 30 blocks in 1 hour
@@ -31,7 +32,7 @@ object OracleContracts {
     updateNFT = "6251655468576D5A7134743777217A25432A462D4A404E635266556A586E3272",
     ballotTokenId = "3F4428472D4B6150645367566B5970337336763979244226452948404D625165",
     minVotes = 6,
-    minStorageRent = 10000000
+    minStorageRent = minStorageRent
   )
 
   import config._
