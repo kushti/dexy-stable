@@ -57,6 +57,8 @@ trait OracleHelpers extends Common {
       .build()
       .convertToInputWith(dummyTxId, dummyIndex)
 
+  val defaultGortSupply = 1000000000L
+
   def bootstrapOracleBox(pubKey: KioskGroupElement,
                          rewardTokenQty: Long,
                          optRewardTokenId: Option[String] = None,
@@ -152,7 +154,7 @@ trait OracleHelpers extends Common {
             .value(dummyNanoErgs)
             .tokens(
               new ErgoToken(newPoolNFT.getOrElse(config.poolNFT), 1),
-              new ErgoToken(optRewardTokenId.getOrElse(rewardTokenId), optRewardTokenQty.getOrElse(1000000L))
+              new ErgoToken(optRewardTokenId.getOrElse(rewardTokenId), optRewardTokenQty.getOrElse(defaultGortSupply))
             )
             .contract(ctx.compileContract(ConstantsBuilder.empty(), dummyScript))
             .build()
@@ -165,7 +167,7 @@ trait OracleHelpers extends Common {
             registers = Array(KioskLong(rate), KioskInt(counter)),
             tokens = Array(
               (newPoolNFT.getOrElse(config.poolNFT), 1),
-              (optRewardTokenId.getOrElse(gort), optRewardTokenQty.getOrElse(1000000L))
+              (optRewardTokenId.getOrElse(gort), optRewardTokenQty.getOrElse(defaultGortSupply))
             ),
             creationHeight = Some(customCreationHeight)
           )),

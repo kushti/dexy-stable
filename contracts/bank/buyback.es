@@ -54,6 +54,7 @@
               SELF.value < OUTPUTS(0).value
 
   // return path
+  // todo: check pool tokens
   val giveback = OUTPUTS(2).tokens(0) == SELF.tokens(0) &&
                OUTPUTS(2).tokens.size == 1 &&
                OUTPUTS(2).propositionBytes == SELF.propositionBytes &&
