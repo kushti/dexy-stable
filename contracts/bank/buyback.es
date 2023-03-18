@@ -12,8 +12,7 @@
   //   Input         |  Output        |   Data-Input
   // -----------------------------------------------
   // 0 LP            |  LP            |
-  // 1 Swap          |  Swap          |
-  // 2 BuyBack       |  BuyBack       |
+  // 1 BuyBack       |  BuyBack       |
   //
   // Top-up:
   //
@@ -37,10 +36,9 @@
 
     // checking that swap inputs provided
     val poolInput = INPUTS(0)
-    val swapNft = poolInput.tokens(0)._1 == fromBase64("$gortLpNFT") &&
-                  INPUTS(1).tokens(0)._1 == fromBase64("$gortLpSwapNFT")
-    val outputsCorrect = OUTPUTS.size == 4 && OUTPUTS(3).tokens.size == 0
-    val selfOut = OUTPUTS(2)
+    val swapNft = poolInput.tokens(0)._1 == fromBase64("$gortLpNFT")
+    val outputsCorrect = OUTPUTS.size == 3 && OUTPUTS(2).tokens.size == 0
+    val selfOut = OUTPUTS(1)
     val minPrice = poolInput.value / poolInput.tokens(2)._2
     val gortObtained = selfOut.tokens(1)._2
     val maxErgDelta = minPrice * gortObtained * 11 / 10
@@ -48,7 +46,7 @@
                         selfOut.tokens(1)._1 == fromBase64("$gortId") &&
                         SELF.value - selfOut.value <= maxErgDelta
 
-    val swap = swapNft && outputsCorrect
+    val swap = swapNft && outputsCorrect && selfCorrect
     sigmaProp(swap)
   } else if(action == 1) {
     // top-up path

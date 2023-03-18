@@ -285,13 +285,13 @@ object OracleContracts extends Common {
        |}
        |""".stripMargin
 
-  val poolErgoTree: Values.ErgoTree = ScriptUtil.compile(Map(), poolScript)
+  val oraclePoolErgoTree: Values.ErgoTree = ScriptUtil.compile(Map(), poolScript)
   val refreshErgoTree: Values.ErgoTree = ScriptUtil.compile(Map(), refreshScript)
   val oracleErgoTree: Values.ErgoTree = ScriptUtil.compile(Map(), oracleScript)
   val updateErgoTree: Values.ErgoTree = ScriptUtil.compile(Map(), updateScript)
   val ballotErgoTree: Values.ErgoTree = ScriptUtil.compile(Map(), ballotScript)
 
-  val poolAddress: String = getStringFromAddress(getAddressFromErgoTree(poolErgoTree))
+  val oraclePoolAddress: String = getStringFromAddress(getAddressFromErgoTree(oraclePoolErgoTree))
   val refreshAddress: String = getStringFromAddress(getAddressFromErgoTree(refreshErgoTree))
   val oracleAddress: String = getStringFromAddress(getAddressFromErgoTree(oracleErgoTree))
   val updateAddress: String = getStringFromAddress(getAddressFromErgoTree(updateErgoTree))

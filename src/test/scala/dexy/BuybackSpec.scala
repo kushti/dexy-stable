@@ -83,7 +83,41 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
       )
       val dataInputs = Array[InputBox]()
       val outputs = Array[KioskBox](
-        KioskBox(poolAddress, minStorageRent, Array(KioskLong(1002), KioskInt(1)), Array((config.poolNFT, 1), (rewardTokenId, defaultGortSupply - 10 + 500))),
+        KioskBox(oraclePoolAddress, minStorageRent, Array(KioskLong(1002), KioskInt(1)), Array((config.poolNFT, 1), (rewardTokenId, defaultGortSupply - 10 + 500))),
+        KioskBox(refreshAddress, minStorageRent, Array.empty, Array((config.refreshNFT, 1))),
+        KioskBox(buybackAddress, minStorageRent, Array.empty, Array((buybackNFT, 1))),
+        KioskBox(oracleAddress, minStorageRent, Array(pubKey1), Array((config.oracleTokenId, 1), (rewardTokenId, 16))),
+        KioskBox(oracleAddress, minStorageRent, Array(pubKey2), Array((config.oracleTokenId, 1), (rewardTokenId, 21))),
+        KioskBox(oracleAddress, minStorageRent, Array(pubKey3), Array((config.oracleTokenId, 1), (rewardTokenId, 31))),
+        KioskBox(oracleAddress, minStorageRent, Array(pubKey4), Array((config.oracleTokenId, 1), (rewardTokenId, 41))),
+        KioskBox(oracleAddress, minStorageRent, Array(pubKey5), Array((config.oracleTokenId, 1), (rewardTokenId, 51)))
+      )
+
+      noException shouldBe thrownBy {
+        TxUtil.createTx(
+          inputs,
+          dataInputs,
+          outputs,
+          fee = 1000000L,
+          changeAddress,
+          Array[String](privKey1.toString),
+          Array[DhtData](),
+          false
+        )
+      }
+    }
+  }
+
+  property("swap scenario") {
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      val buyBackBox = createBuyback(500)
+
+      val inputs = Array[InputBox](
+        dummyFundingBox
+      )
+      val dataInputs = Array[InputBox]()
+      val outputs = Array[KioskBox](
+        KioskBox(oraclePoolAddress, minStorageRent, Array(KioskLong(1002), KioskInt(1)), Array((config.poolNFT, 1), (rewardTokenId, defaultGortSupply - 10 + 500))),
         KioskBox(refreshAddress, minStorageRent, Array.empty, Array((config.refreshNFT, 1))),
         KioskBox(buybackAddress, minStorageRent, Array.empty, Array((buybackNFT, 1))),
         KioskBox(oracleAddress, minStorageRent, Array(pubKey1), Array((config.oracleTokenId, 1), (rewardTokenId, 16))),
@@ -109,11 +143,9 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("top-up scenario") {
+    ergoClient.execute { implicit ctx: BlockchainContext =>
 
-  }
-
-  property("swap scenario") {
-
+    }
   }
 
 }

@@ -12,7 +12,6 @@ object DexySpec {
   val gort = "6D597133743677397A244326462948404D635166546A576E5A72347537782141" // TODO replace with actual
   // GORT / ERG LP
   val gortLpNFT = "472B4B6250655368566D597133743677397A24432646294A404D635166546A57" // TODO replace with actual
-  val gortLpSwapNFT = "472B4B6250655368566D597133743677397A24432646294A404D635166546A57" // TODO replace with actual
   val oracleTokenId = "2A472D4A614E645267556B58703273357638792F423F4528482B4D6250655368"
 
   // tokens for main boxes
@@ -57,7 +56,6 @@ object DexySpec {
     "oracleTokenId" -> oracleTokenId,
     "gortId" -> gort,
     "gortLpNFT" -> gortLpNFT,
-    "gortLpSwapNFT" -> gortLpSwapNFT,
     "freeMintNFT" -> freeMintNFT,
     "arbitrageMintNFT" -> arbitrageMintNFT,
     "interventionNFT" -> interventionNFT,

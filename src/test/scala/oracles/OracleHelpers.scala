@@ -162,7 +162,7 @@ trait OracleHelpers extends Common {
         Array[InputBox](),
         Array(
           KioskBox(
-            OracleContracts.poolAddress,
+            OracleContracts.oraclePoolAddress,
             value = minStorageRent,
             registers = Array(KioskLong(rate), KioskInt(counter)),
             tokens = Array(
