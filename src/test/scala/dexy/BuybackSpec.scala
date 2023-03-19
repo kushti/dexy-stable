@@ -164,7 +164,7 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
       val dataInputs = Array[InputBox]()
       val outputs = Array[KioskBox](
         KioskBox(ordinaryLpAddress, gortLpErg, Array(KioskInt(5)), Array((gortLpNFT, 1), (gorgLpToken, 1000000000), (gort, gortLpGort))),
-        KioskBox(buybackAddress, minStorageRent, Array.empty, Array((buybackNFT, 1)))
+        KioskBox(buybackAddress, minStorageRent, Array.empty, Array((buybackNFT, 1), (gort, 500)))
       )
 
       noException shouldBe thrownBy {

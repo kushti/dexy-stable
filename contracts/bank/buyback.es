@@ -37,14 +37,18 @@
     // checking that swap inputs provided
     val poolInput = INPUTS(0)
     val swapNft = poolInput.tokens(0)._1 == fromBase64("$gortLpNFT")
-    val outputsCorrect = OUTPUTS.size == 3 && OUTPUTS(2).tokens.size == 0
+
+    def noTokens(b: Box) = b.tokens.size == 0
+    val outputsCorrect = OUTPUTS.slice(2, OUTPUTS.size).forall(noTokens)
+
     val selfOut = OUTPUTS(1)
-    val minPrice = poolInput.value / poolInput.tokens(2)._2
+    val price = poolInput.value / poolInput.tokens(2)._2
     val gortObtained = selfOut.tokens(1)._2
-    val maxErgDelta = minPrice * gortObtained * 11 / 10
+    val maxErgDelta = price * gortObtained * 11 / 10
     val selfCorrect = selfOut.tokens(0)._1 == buybackNft &&
-                        selfOut.tokens(1)._1 == fromBase64("$gortId") &&
-                        SELF.value - selfOut.value <= maxErgDelta
+                      selfOut.tokens(1)._1 == fromBase64("$gortId") &&
+                      gortObtained >= 0 && // todo: should be >
+                      SELF.value - selfOut.value <= maxErgDelta
 
     val swap = swapNft && outputsCorrect && selfCorrect
     sigmaProp(swap)
