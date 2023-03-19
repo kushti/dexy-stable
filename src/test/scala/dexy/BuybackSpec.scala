@@ -10,10 +10,13 @@ import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks
   with HttpClientTesting with Common with OracleHelpers {
 
+  import gort.OrdinaryLp._
   import oracles.OracleContracts._
   import DexySpec._
 
   val ergoClient = createMockedErgoClient(MockData(Nil, Nil))
+
+  private val gorgLpToken = "872B4B6250655368566D597133743677397A24432646294A404D635166546A87"
 
   def createBuyback(gortAmt: Long)(implicit ctx: BlockchainContext): InputBox = {
     TxUtil
@@ -38,6 +41,43 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             tokens = Array(
               (buybackNFT, 1),
               (gort, gortAmt)
+            )
+          )),
+        fee = 1000000L,
+        changeAddress,
+        Array[String](),
+        Array[DhtData](),
+        false
+      )
+      .getOutputsToSpend
+      .get(0)
+  }
+
+  def createGortLpBox(gortLpErg: Long, gortLpGort: Long)(implicit ctx: BlockchainContext): InputBox = {
+    TxUtil
+      .createTx(
+        Array(
+          ctx // for funding transactions
+            .newTxBuilder()
+            .outBoxBuilder
+            .value(gortLpErg + dummyNanoErgs)
+            .tokens(
+              new ErgoToken(gortLpNFT, 1),
+              new ErgoToken(gorgLpToken, 1000000000),
+              new ErgoToken(gort, gortLpGort))
+            .contract(ctx.compileContract(ConstantsBuilder.empty(), dummyScript))
+            .build()
+            .convertToInputWith(dummyTxId, dummyIndex)),
+        Array[InputBox](),
+        Array(
+          KioskBox(
+            ordinaryLpAddress,
+            value = gortLpErg,
+            registers = Array(KioskInt(5)),
+            tokens = Array(
+              (gortLpNFT, 1),
+              (gorgLpToken, 1000000000),
+              (gort, gortLpGort)
             )
           )),
         fee = 1000000L,
@@ -110,21 +150,21 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
 
   property("swap scenario") {
     ergoClient.execute { implicit ctx: BlockchainContext =>
+      val gortLpErg = 1000 * 1000000000L
+      val gortLpGort = 1000000
+
+      val gortLpBox = createGortLpBox(gortLpErg, gortLpGort)
       val buyBackBox = createBuyback(500)
 
       val inputs = Array[InputBox](
+        gortLpBox,
+        buyBackBox.withContextVars(new ContextVar(0, KioskInt(0).getErgoValue)),
         dummyFundingBox
       )
       val dataInputs = Array[InputBox]()
       val outputs = Array[KioskBox](
-        KioskBox(oraclePoolAddress, minStorageRent, Array(KioskLong(1002), KioskInt(1)), Array((config.poolNFT, 1), (rewardTokenId, defaultGortSupply - 10 + 500))),
-        KioskBox(refreshAddress, minStorageRent, Array.empty, Array((config.refreshNFT, 1))),
-        KioskBox(buybackAddress, minStorageRent, Array.empty, Array((buybackNFT, 1))),
-        KioskBox(oracleAddress, minStorageRent, Array(pubKey1), Array((config.oracleTokenId, 1), (rewardTokenId, 16))),
-        KioskBox(oracleAddress, minStorageRent, Array(pubKey2), Array((config.oracleTokenId, 1), (rewardTokenId, 21))),
-        KioskBox(oracleAddress, minStorageRent, Array(pubKey3), Array((config.oracleTokenId, 1), (rewardTokenId, 31))),
-        KioskBox(oracleAddress, minStorageRent, Array(pubKey4), Array((config.oracleTokenId, 1), (rewardTokenId, 41))),
-        KioskBox(oracleAddress, minStorageRent, Array(pubKey5), Array((config.oracleTokenId, 1), (rewardTokenId, 51)))
+        KioskBox(ordinaryLpAddress, gortLpErg, Array(KioskInt(5)), Array((gortLpNFT, 1), (gorgLpToken, 1000000000), (gort, gortLpGort))),
+        KioskBox(buybackAddress, minStorageRent, Array.empty, Array((buybackNFT, 1)))
       )
 
       noException shouldBe thrownBy {
@@ -134,7 +174,7 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           outputs,
           fee = 1000000L,
           changeAddress,
-          Array[String](privKey1.toString),
+          Array[String](),
           Array[DhtData](),
           false
         )
