@@ -6,6 +6,7 @@
   //
   // Tokens:
   //  - buyback NFT
+  //  - gort
   //
   // Swap:
   //
@@ -36,27 +37,31 @@
 
     // checking that swap inputs provided
     val poolInput = INPUTS(0)
-    val swapNft = poolInput.tokens(0)._1 == fromBase64("$gortLpNFT")
+    val lpCorrect = poolInput.tokens(0)._1 == fromBase64("$gortLpNFT")
 
+    // checking that gort tokens are in LP and buyback outputs only
+    // we consider other outputs are fee and maybe change, and change output could not have tokens
     def noTokens(b: Box) = b.tokens.size == 0
     val outputsCorrect = OUTPUTS.slice(2, OUTPUTS.size).forall(noTokens)
 
     val selfOut = OUTPUTS(1)
-    val price = poolInput.value / poolInput.tokens(2)._2
-    val gortObtained = selfOut.tokens(1)._2
-    val maxErgDelta = price * gortObtained * 11 / 10
-    val selfCorrect = selfOut.tokens(0)._1 == buybackNft &&
-                      selfOut.tokens(1)._1 == fromBase64("$gortId") &&
-                      gortObtained >= 0 && // todo: should be >
-                      SELF.value - selfOut.value <= maxErgDelta
+    val selfOutCorrect = selfOut.tokens(0)._1 == buybackNft &&
+                          selfOut.tokens(1)._1 == fromBase64("$gortId")
 
-    val swap = swapNft && outputsCorrect && selfCorrect
-    sigmaProp(swap)
+    val price = poolInput.value / poolInput.tokens(2)._2
+    val gortObtained = selfOut.tokens(1)._2 - SELF.tokens(1)._2
+    val maxErgDelta = price * gortObtained / 100 * 105 // max slippage 5%
+    val ergDelta = SELF.value - selfOut.value
+    val poolOutput = OUTPUTS(0)
+    val swapCorrect = gortObtained > 0 && ergDelta <= maxErgDelta && poolOutput.value - poolInput.value == ergDelta
+
+    sigmaProp(lpCorrect && outputsCorrect && selfOutCorrect && swapCorrect)
   } else if(action == 1) {
     // top-up path
-    val topUp = OUTPUTS(0).tokens == SELF.tokens &&
-                OUTPUTS(0).propositionBytes == SELF.propositionBytes &&
-                SELF.value < OUTPUTS(0).value
+    val selfOut = OUTPUTS(0)
+    val topUp = selfOut.tokens == SELF.tokens &&
+                selfOut.propositionBytes == SELF.propositionBytes &&
+                SELF.value < selfOut.value
     sigmaProp(topUp)
   } else {
     // return path

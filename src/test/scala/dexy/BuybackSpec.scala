@@ -2,10 +2,12 @@ package dexy
 
 import kiosk.ergo.{DhtData, KioskBox, KioskInt, KioskLong}
 import kiosk.tx.TxUtil
-import oracles.{OracleContracts, OracleHelpers}
+import oracles.OracleHelpers
 import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ContextVar, ErgoToken, HttpClientTesting, InputBox}
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
+
+import scala.collection.convert.ImplicitConversions.`collection AsScalaIterable`
 
 class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks
   with HttpClientTesting with Common with OracleHelpers {
@@ -16,16 +18,16 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
 
   val ergoClient = createMockedErgoClient(MockData(Nil, Nil))
 
-  private val gorgLpToken = "872B4B6250655368566D597133743677397A24432646294A404D635166546A87"
+  private val gortLpToken = "872B4B6250655368566D597133743677397A24432646294A404D635166546A87"
 
-  def createBuyback(gortAmt: Long)(implicit ctx: BlockchainContext): InputBox = {
+  def createBuyback(gortAmt: Long, ergAmount: Long = dummyNanoErgs)(implicit ctx: BlockchainContext): InputBox = {
     TxUtil
       .createTx(
         Array(
           ctx // for funding transactions
             .newTxBuilder()
             .outBoxBuilder
-            .value(dummyNanoErgs)
+            .value(ergAmount + 1000000L)
             .tokens(
               new ErgoToken(buybackNFT, 1),
               new ErgoToken(gort, gortAmt))
@@ -36,7 +38,7 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         Array(
           KioskBox(
             buybackAddress,
-            value = minStorageRent,
+            value = ergAmount,
             registers = Array(),
             tokens = Array(
               (buybackNFT, 1),
@@ -63,7 +65,7 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             .value(gortLpErg + dummyNanoErgs)
             .tokens(
               new ErgoToken(gortLpNFT, 1),
-              new ErgoToken(gorgLpToken, 1000000000),
+              new ErgoToken(gortLpToken, 1000000000L),
               new ErgoToken(gort, gortLpGort))
             .contract(ctx.compileContract(ConstantsBuilder.empty(), dummyScript))
             .build()
@@ -73,10 +75,10 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           KioskBox(
             ordinaryLpAddress,
             value = gortLpErg,
-            registers = Array(KioskInt(5)),
+            registers = Array(KioskInt(995)),
             tokens = Array(
               (gortLpNFT, 1),
-              (gorgLpToken, 1000000000),
+              (gortLpToken, 1000000000L),
               (gort, gortLpGort)
             )
           )),
@@ -108,7 +110,7 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
       val dataPoint4 = createDataPoint(1003, 0, oracleAddress, minStorageRent, oracleBox4, privKey4, 0, 40)
       val dataPoint5 = createDataPoint(1004, 0, oracleAddress, minStorageRent, oracleBox5, privKey5, 0, 50)
 
-      val buyBackBox = createBuyback(500)
+      val buyBackBox = createBuyback(500, minStorageRent)
 
       val inputs = Array[InputBox](
         poolBox,
@@ -151,10 +153,12 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("swap scenario") {
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val gortLpErg = 1000 * 1000000000L
-      val gortLpGort = 1000000
+      val gortLpGort = 1000000L
+
+      val buybackErg = 500 * 1000000000L
 
       val gortLpBox = createGortLpBox(gortLpErg, gortLpGort)
-      val buyBackBox = createBuyback(500)
+      val buyBackBox = createBuyback(gortAmt = 500, ergAmount = buybackErg)
 
       val inputs = Array[InputBox](
         gortLpBox,
@@ -162,9 +166,13 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         dummyFundingBox
       )
       val dataInputs = Array[InputBox]()
+
+      val price = gortLpErg / gortLpGort
+      val ergDelta = price * 500 / 100 * 105
+
       val outputs = Array[KioskBox](
-        KioskBox(ordinaryLpAddress, gortLpErg, Array(KioskInt(5)), Array((gortLpNFT, 1), (gorgLpToken, 1000000000), (gort, gortLpGort))),
-        KioskBox(buybackAddress, minStorageRent, Array.empty, Array((buybackNFT, 1), (gort, 500)))
+        KioskBox(ordinaryLpAddress, gortLpErg + ergDelta, Array(KioskInt(995)), Array((gortLpNFT, 1), (gortLpToken, 1000000000L), (gort, gortLpGort - 500))),
+        KioskBox(buybackAddress, buybackErg - ergDelta, Array.empty, Array((buybackNFT, 1), (gort, 1000)))
       )
 
       noException shouldBe thrownBy {
@@ -184,8 +192,18 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
 
   property("top-up scenario") {
     ergoClient.execute { implicit ctx: BlockchainContext =>
-
+      // todo: finish
     }
   }
 
+}
+
+
+object Calc extends App {
+  val gortLpErg = 1000 * 1000000000L
+  val gortLpGort = 1000000L
+  val gortDelta = 500
+
+  val ergDelta = gortLpErg * gortLpGort / (gortLpGort - gortDelta) - gortLpErg
+  println(ergDelta)
 }

@@ -52,7 +52,6 @@ trait OracleHelpers extends Common {
       .newTxBuilder()
       .outBoxBuilder
       .value(dummyNanoErgs)
-      // .tokens(new ErgoToken(rewardTokenId, 1000000L))
       .contract(ctx.compileContract(ConstantsBuilder.empty(), dummyScript))
       .build()
       .convertToInputWith(dummyTxId, dummyIndex)
