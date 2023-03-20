@@ -192,7 +192,29 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
 
   property("top-up scenario") {
     ergoClient.execute { implicit ctx: BlockchainContext =>
-      // todo: finish
+      val buyBackBox = createBuyback(gortAmt = 500)
+
+      val inputs = Array[InputBox](
+        buyBackBox.withContextVars(new ContextVar(0, KioskInt(1).getErgoValue)),
+        dummyFundingBox
+      )
+      val dataInputs = Array[InputBox]()
+      val outputs = Array[KioskBox](
+        KioskBox(buybackAddress, buyBackBox.getValue + 1000000, Array.empty, Array((buybackNFT, 1), (gort, 500)))
+      )
+
+      noException shouldBe thrownBy {
+        TxUtil.createTx(
+          inputs,
+          dataInputs,
+          outputs,
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          false
+        )
+      }
     }
   }
 
