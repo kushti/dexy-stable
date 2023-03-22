@@ -153,10 +153,12 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
 
   property("Free mint should fail if Bank Dexy token id changed") {
     val oracleRateXy = 10000L
-    val feeNum = 5 // implies 0.5 % fee
+    val bankFeeNum = 3 // implies 0.5 % fee
+    val buybackFeeNum = 2 // implies 0.5 % fee
     val feeDenom = 1000
 
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
 
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
@@ -164,15 +166,17 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     // initial ratio of X/Y = 10000
 
     assert(lpReservesX / lpReservesY == 10000)
-    assert(oracleRateXyWithFee == 10100L)
+    assert(bankRate == 10030L)
+    assert(buybackRate == 20L)
     val dexyMinted = 35000L // must be a +ve value
 
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
 
     val bankReservesXIn = 100000000000000L
     val bankReservesYIn = 90200000100L
     val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val resetHeightIn = ctx.getHeight // counter is reset if the resetHeightIn is < HEIGHT. Hence it won't be reset here
@@ -189,6 +193,16 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .value(fakeNanoErgs)
           .tokens(new ErgoToken(dummyTokenId, bankReservesYOut))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
 
@@ -209,6 +223,420 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .outBoxBuilder
           .value(lpReservesX)
           .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalance), new ErgoToken(dexyUSD, lpReservesY))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
+          .build()
+          .convertToInputWith(fakeTxId3, fakeIndex)
+
+      val freeMintBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(freeMintNFT, 1))
+          .registers(KioskInt(resetHeightIn).getErgoValue, KioskLong(remainingDexyIn).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), freeMintScript))
+          .build()
+          .convertToInputWith(fakeTxId4, fakeIndex)
+
+      val bankBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(bankReservesXIn)
+          .tokens(new ErgoToken(bankNFT, 1), new ErgoToken(dexyUSD, bankReservesYIn))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), bankScript))
+          .build()
+          .convertToInputWith(fakeTxId4, fakeIndex)
+
+      val validFreeMintOutBox = KioskBox(
+        freeMintAddress,
+        minStorageRent,
+        registers = Array(KioskInt(resetHeightOut), KioskLong(remainingDexyOut)),
+        tokens = Array((freeMintNFT, 1))
+      )
+
+      val validBankOutBox = KioskBox(
+        bankAddress,
+        bankReservesXOut,
+        registers = Array(),
+        tokens = Array(
+                        (bankNFT, 1),
+                        (dummyTokenId, bankReservesYOut) // <-- this value has changed
+                      )
+      )
+
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
+      )
+
+      the[Exception] thrownBy {
+        TxUtil.createTx(
+          Array(freeMintBox, bankBox, buybackBox.withContextVars(new ContextVar(0, KioskInt(1).getErgoValue)), fundingBox),
+          Array(oracleBox, lpBox),
+          Array(validFreeMintOutBox, validBankOutBox, validBuybackOutBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          false
+        )
+      } should have message "Script reduced to false"
+    }
+  }
+
+  property("Free mint should fail if Bank box script changed") {
+    val oracleRateXy = 10000L
+    val bankFeeNum = 3 // implies 0.5 % fee
+    val buybackFeeNum = 2 // implies 0.5 % fee
+    val feeDenom = 1000
+
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+
+    val lpBalance = 100000000L
+    val lpReservesX = 100000000000000L
+    val lpReservesY = 10000000000L
+    // initial ratio of X/Y = 10000
+
+    assert(lpReservesX / lpReservesY == 10000)
+    assert(bankRate == 10030L)
+    assert(buybackRate == 20L)
+    val dexyMinted = 35000L // must be a +ve value
+
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
+
+    val bankReservesXIn = 100000000000000L
+    val bankReservesYIn = 90200000100L
+    val bankReservesYOut = bankReservesYIn - dexyMinted
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      val resetHeightIn = ctx.getHeight // counter is reset if the resetHeightIn is < HEIGHT. Hence it won't be reset here
+      // ToDo: add tests for reset
+      val resetHeightOut = resetHeightIn
+
+      val remainingDexyIn = 10000000L
+      val remainingDexyOut = remainingDexyIn - dexyMinted
+
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val oracleBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
+          .registers(KioskLong(oracleRateXy).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId2, fakeIndex)
+
+      val lpBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(lpReservesX)
+          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalance), new ErgoToken(dexyUSD, lpReservesY))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
+          .build()
+          .convertToInputWith(fakeTxId3, fakeIndex)
+
+      val freeMintBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(freeMintNFT, 1))
+          .registers(KioskInt(resetHeightIn).getErgoValue, KioskLong(remainingDexyIn).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), freeMintScript))
+          .build()
+          .convertToInputWith(fakeTxId4, fakeIndex)
+
+      val bankBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(bankReservesXIn)
+          .tokens(new ErgoToken(bankNFT, 1), new ErgoToken(dexyUSD, bankReservesYIn))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), bankScript))
+          .build()
+          .convertToInputWith(fakeTxId4, fakeIndex)
+
+      val validFreeMintOutBox = KioskBox(
+        freeMintAddress,
+        minStorageRent,
+        registers = Array(KioskInt(resetHeightOut), KioskLong(remainingDexyOut)),
+        tokens = Array((freeMintNFT, 1))
+      )
+
+      val validBankOutBox = KioskBox(
+        changeAddress, // <-- this value has changed
+        bankReservesXOut,
+        registers = Array(),
+        tokens = Array(
+          (bankNFT, 1),
+          (dexyUSD, bankReservesYOut)
+        )
+      )
+
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
+      )
+
+      the[Exception] thrownBy {
+        TxUtil.createTx(
+          Array(freeMintBox, bankBox, buybackBox.withContextVars(new ContextVar(0, KioskInt(1).getErgoValue)), fundingBox),
+          Array(oracleBox, lpBox),
+          Array(validFreeMintOutBox, validBankOutBox, validBuybackOutBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          false
+        )
+      } should have message "Script reduced to false"
+    }
+  }
+
+  property("Free mint should fail if FreeMint box script changed") {
+    val oracleRateXy = 10000L
+    val bankFeeNum = 3 // implies 0.5 % fee
+    val buybackFeeNum = 2 // implies 0.5 % fee
+    val feeDenom = 1000
+
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+
+    val lpBalance = 100000000L
+    val lpReservesX = 100000000000000L
+    val lpReservesY = 10000000000L
+    // initial ratio of X/Y = 10000
+
+    assert(lpReservesX / lpReservesY == 10000)
+    assert(bankRate == 10030L)
+    assert(buybackRate == 20L)
+    val dexyMinted = 35000L // must be a +ve value
+
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
+
+    val bankReservesXIn = 100000000000000L
+    val bankReservesYIn = 90200000100L
+    val bankReservesYOut = bankReservesYIn - dexyMinted
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      val resetHeightIn = ctx.getHeight // counter is reset if the resetHeightIn is < HEIGHT. Hence it won't be reset here
+      // ToDo: add tests for reset
+      val resetHeightOut = resetHeightIn
+
+      val remainingDexyIn = 10000000L
+      val remainingDexyOut = remainingDexyIn - dexyMinted
+
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val oracleBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
+          .registers(KioskLong(oracleRateXy).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId2, fakeIndex)
+
+      val lpBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(lpReservesX)
+          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalance), new ErgoToken(dexyUSD, lpReservesY))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
+          .build()
+          .convertToInputWith(fakeTxId3, fakeIndex)
+
+      val freeMintBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(freeMintNFT, 1))
+          .registers(KioskInt(resetHeightIn).getErgoValue, KioskLong(remainingDexyIn).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), freeMintScript))
+          .build()
+          .convertToInputWith(fakeTxId4, fakeIndex)
+
+      val bankBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(bankReservesXIn)
+          .tokens(new ErgoToken(bankNFT, 1), new ErgoToken(dexyUSD, bankReservesYIn))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), bankScript))
+          .build()
+          .convertToInputWith(fakeTxId4, fakeIndex)
+
+      val validFreeMintOutBox = KioskBox(
+        changeAddress, // <-- this value has changed
+        minStorageRent,
+        registers = Array(KioskInt(resetHeightOut), KioskLong(remainingDexyOut)),
+        tokens = Array((freeMintNFT, 1))
+      )
+
+      val validBankOutBox = KioskBox(
+        bankAddress,
+        bankReservesXOut,
+        registers = Array(),
+        tokens = Array(
+          (bankNFT, 1),
+          (dexyUSD, bankReservesYOut)
+        )
+      )
+
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
+      )
+
+      the[Exception] thrownBy {
+        TxUtil.createTx(
+          Array(freeMintBox, bankBox, buybackBox.withContextVars(new ContextVar(0, KioskInt(1).getErgoValue)), fundingBox),
+          Array(oracleBox, lpBox),
+          Array(validFreeMintOutBox, validBankOutBox, validBuybackOutBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          false
+        )
+      } should have message "Script reduced to false"
+    }
+  }
+
+  property("Free mint should fail if wrong LP NFT") {
+    val oracleRateXy = 10000L
+    val bankFeeNum = 3 // implies 0.5 % fee
+    val buybackFeeNum = 2 // implies 0.5 % fee
+    val feeDenom = 1000
+
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+
+    val lpBalance = 100000000L
+    val lpReservesX = 100000000000000L
+    val lpReservesY = 10000000000L
+    // initial ratio of X/Y = 10000
+
+    assert(lpReservesX / lpReservesY == 10000)
+    assert(bankRate == 10030L)
+    assert(buybackRate == 20L)
+    val dexyMinted = 35000L // must be a +ve value
+
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
+
+    val bankReservesXIn = 100000000000000L
+    val bankReservesYIn = 90200000100L
+    val bankReservesYOut = bankReservesYIn - dexyMinted
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      val resetHeightIn = ctx.getHeight // counter is reset if the resetHeightIn is < HEIGHT. Hence it won't be reset here
+      // ToDo: add tests for reset
+      val resetHeightOut = resetHeightIn
+
+      val remainingDexyIn = 10000000L
+      val remainingDexyOut = remainingDexyIn - dexyMinted
+
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val oracleBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
+          .registers(KioskLong(oracleRateXy).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId2, fakeIndex)
+
+      val lpBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(lpReservesX)
+          .tokens(
+            new ErgoToken(dummyTokenId, 1), // <-- this value has changed
+            new ErgoToken(lpToken, lpBalance),
+            new ErgoToken(dexyUSD, lpReservesY))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
           .build()
           .convertToInputWith(fakeTxId3, fakeIndex)
@@ -247,349 +675,24 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         registers = Array(),
         tokens = Array(
           (bankNFT, 1),
-          (dummyTokenId, bankReservesYOut) // <-- this value has changed
+          (dexyUSD, bankReservesYOut)
         )
       )
 
-      the[Exception] thrownBy {
-        TxUtil.createTx(
-          Array(freeMintBox, bankBox, fundingBox),
-          Array(oracleBox, lpBox),
-          Array(validFreeMintOutBox, validBankOutBox),
-          fee = 1000000L,
-          changeAddress,
-          Array[String](),
-          Array[DhtData](),
-          false
-        )
-      } should have message "Script reduced to false"
-    }
-  }
-
-  property("Free mint should fail if Bank box script changed") {
-    val oracleRateXy = 10000L
-    val feeNum = 10 // implies 1 % fee
-    val feeDenom = 1000
-
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
-
-    val lpBalance = 100000000L
-    val lpReservesX = 100000000000000L
-    val lpReservesY = 10000000000L
-    // initial ratio of X/Y = 10000
-
-    assert(lpReservesX / lpReservesY == 10000)
-    assert(oracleRateXyWithFee == 10100L)
-    val dexyMinted = 35000L // must be a +ve value
-
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
-
-    val bankReservesXIn = 100000000000000L
-    val bankReservesYIn = 90200000100L
-    val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
-
-    ergoClient.execute { implicit ctx: BlockchainContext =>
-      val resetHeightIn = ctx.getHeight // counter is reset if the resetHeightIn is < HEIGHT. Hence it won't be reset here
-      val resetHeightOut = resetHeightIn
-
-      val remainingDexyIn = 10000000L
-      val remainingDexyOut = remainingDexyIn - dexyMinted
-
-      val fundingBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(fakeNanoErgs)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
-          .build()
-          .convertToInputWith(fakeTxId1, fakeIndex)
-
-      val oracleBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(minStorageRent)
-          .tokens(new ErgoToken(oraclePoolNFT, 1))
-          .registers(KioskLong(oracleRateXy).getErgoValue)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
-          .build()
-          .convertToInputWith(fakeTxId2, fakeIndex)
-
-      val lpBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(lpReservesX)
-          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalance), new ErgoToken(dexyUSD, lpReservesY))
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
-          .build()
-          .convertToInputWith(fakeTxId3, fakeIndex)
-
-      val freeMintBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(minStorageRent)
-          .tokens(new ErgoToken(freeMintNFT, 1))
-          .registers(KioskInt(resetHeightIn).getErgoValue, KioskLong(remainingDexyIn).getErgoValue)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), freeMintScript))
-          .build()
-          .convertToInputWith(fakeTxId4, fakeIndex)
-
-      val bankBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(bankReservesXIn)
-          .tokens(new ErgoToken(bankNFT, 1), new ErgoToken(dexyUSD, bankReservesYIn))
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), bankScript))
-          .build()
-          .convertToInputWith(fakeTxId4, fakeIndex)
-
-      val validFreeMintOutBox = KioskBox(
-        freeMintAddress,
-        minStorageRent,
-        registers = Array(KioskInt(resetHeightOut), KioskLong(remainingDexyOut)),
-        tokens = Array((freeMintNFT, 1))
-      )
-
-      val validBankOutBox = KioskBox(
-        changeAddress, // <-- this value is different
-        bankReservesXOut,
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
         registers = Array(),
-        tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
-      )
-
-      the[Exception] thrownBy {
-        TxUtil.createTx(
-          Array(freeMintBox, bankBox, fundingBox),
-          Array(oracleBox, lpBox),
-          Array(validFreeMintOutBox, validBankOutBox),
-          fee = 1000000L,
-          changeAddress,
-          Array[String](),
-          Array[DhtData](),
-          false
+        tokens = Array(
+          (buybackNFT, 1)
         )
-      } should have message "Script reduced to false"
-    }
-  }
-
-  property("Free mint should fail if FreeMint box script changed") {
-    val oracleRateXy = 10000L
-    val feeNum = 10 // implies 1 % fee
-    val feeDenom = 1000
-
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
-
-    val lpBalance = 100000000L
-    val lpReservesX = 100000000000000L
-    val lpReservesY = 10000000000L
-    // initial ratio of X/Y = 10000
-
-    assert(lpReservesX / lpReservesY == 10000)
-    assert(oracleRateXyWithFee == 10100L)
-    val dexyMinted = 35000L // must be a +ve value
-
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
-
-    val bankReservesXIn = 100000000000000L
-    val bankReservesYIn = 90200000100L
-    val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
-
-    ergoClient.execute { implicit ctx: BlockchainContext =>
-      val resetHeightIn = ctx.getHeight // counter is reset if the resetHeightIn is < HEIGHT. Hence it won't be reset here
-      val resetHeightOut = resetHeightIn
-
-      val remainingDexyIn = 10000000L
-      val remainingDexyOut = remainingDexyIn - dexyMinted
-
-      val fundingBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(fakeNanoErgs)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
-          .build()
-          .convertToInputWith(fakeTxId1, fakeIndex)
-
-      val oracleBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(minStorageRent)
-          .tokens(new ErgoToken(oraclePoolNFT, 1))
-          .registers(KioskLong(oracleRateXy).getErgoValue)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
-          .build()
-          .convertToInputWith(fakeTxId2, fakeIndex)
-
-      val lpBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(lpReservesX)
-          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalance), new ErgoToken(dexyUSD, lpReservesY))
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
-          .build()
-          .convertToInputWith(fakeTxId3, fakeIndex)
-
-      val freeMintBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(minStorageRent)
-          .tokens(new ErgoToken(freeMintNFT, 1))
-          .registers(KioskInt(resetHeightIn).getErgoValue, KioskLong(remainingDexyIn).getErgoValue)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), freeMintScript))
-          .build()
-          .convertToInputWith(fakeTxId4, fakeIndex)
-
-      val bankBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(bankReservesXIn)
-          .tokens(new ErgoToken(bankNFT, 1), new ErgoToken(dexyUSD, bankReservesYIn))
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), bankScript))
-          .build()
-          .convertToInputWith(fakeTxId4, fakeIndex)
-
-      val validFreeMintOutBox = KioskBox(
-        changeAddress, // <-- this value is different
-        minStorageRent,
-        registers = Array(KioskInt(resetHeightOut), KioskLong(remainingDexyOut)),
-        tokens = Array((freeMintNFT, 1))
-      )
-
-      val validBankOutBox = KioskBox(
-        bankAddress,
-        bankReservesXOut,
-        registers = Array(),
-        tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
       )
 
       the[Exception] thrownBy {
         TxUtil.createTx(
-          Array(freeMintBox, bankBox, fundingBox),
+          Array(freeMintBox, bankBox, buybackBox.withContextVars(new ContextVar(0, KioskInt(1).getErgoValue)), fundingBox),
           Array(oracleBox, lpBox),
-          Array(validFreeMintOutBox, validBankOutBox),
-          fee = 1000000L,
-          changeAddress,
-          Array[String](),
-          Array[DhtData](),
-          false
-        )
-      } should have message "Script reduced to false"
-    }
-  }
-
-  property("Free mint should fail if wrong LP NFT") {
-    val oracleRateXy = 10000L
-    val feeNum = 10 // implies 1 % fee
-    val feeDenom = 1000
-
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
-
-    val lpBalance = 100000000L
-    val lpReservesX = 100000000000000L
-    val lpReservesY = 10000000000L
-    // initial ratio of X/Y = 10000
-
-    assert(lpReservesX / lpReservesY == 10000)
-    assert(oracleRateXyWithFee == 10100L)
-    val dexyMinted = 35000L // must be a +ve value
-
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
-
-    val bankReservesXIn = 100000000000000L
-    val bankReservesYIn = 90200000100L
-    val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
-
-    ergoClient.execute { implicit ctx: BlockchainContext =>
-      val resetHeightIn = ctx.getHeight // counter is reset if the resetHeightIn is < HEIGHT. Hence it won't be reset here
-      val resetHeightOut = resetHeightIn
-
-      val remainingDexyIn = 10000000L
-      val remainingDexyOut = remainingDexyIn - dexyMinted
-
-      val fundingBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(fakeNanoErgs)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
-          .build()
-          .convertToInputWith(fakeTxId1, fakeIndex)
-
-      val oracleBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(minStorageRent)
-          .tokens(new ErgoToken(oraclePoolNFT, 1))
-          .registers(KioskLong(oracleRateXy).getErgoValue)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
-          .build()
-          .convertToInputWith(fakeTxId2, fakeIndex)
-
-      val lpBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(lpReservesX)
-          .tokens(
-            new ErgoToken(dummyTokenId, 1), // <-- this value is different
-            new ErgoToken(lpToken, lpBalance),
-            new ErgoToken(dexyUSD, lpReservesY)
-          )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
-          .build()
-          .convertToInputWith(fakeTxId3, fakeIndex)
-
-      val freeMintBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(minStorageRent)
-          .tokens(new ErgoToken(freeMintNFT, 1))
-          .registers(KioskInt(resetHeightIn).getErgoValue, KioskLong(remainingDexyIn).getErgoValue)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), freeMintScript))
-          .build()
-          .convertToInputWith(fakeTxId4, fakeIndex)
-
-      val bankBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(bankReservesXIn)
-          .tokens(new ErgoToken(bankNFT, 1), new ErgoToken(dexyUSD, bankReservesYIn))
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), bankScript))
-          .build()
-          .convertToInputWith(fakeTxId4, fakeIndex)
-
-      val validFreeMintOutBox = KioskBox(
-        freeMintAddress,
-        minStorageRent,
-        registers = Array(KioskInt(resetHeightOut), KioskLong(remainingDexyOut)),
-        tokens = Array((freeMintNFT, 1))
-      )
-
-      val validBankOutBox = KioskBox(
-        bankAddress,
-        bankReservesXOut,
-        registers = Array(),
-        tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
-      )
-
-      the[Exception] thrownBy {
-        TxUtil.createTx(
-          Array(freeMintBox, bankBox, fundingBox),
-          Array(oracleBox, lpBox),
-          Array(validFreeMintOutBox, validBankOutBox),
+          Array(validFreeMintOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
@@ -602,10 +705,12 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
 
   property("Free mint should fail if wrong Oracle NFT") {
     val oracleRateXy = 10000L
-    val feeNum = 10 // implies 1 % fee
+    val bankFeeNum = 3 // implies 0.5 % fee
+    val buybackFeeNum = 2 // implies 0.5 % fee
     val feeDenom = 1000
 
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
 
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
@@ -613,18 +718,21 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     // initial ratio of X/Y = 10000
 
     assert(lpReservesX / lpReservesY == 10000)
-    assert(oracleRateXyWithFee == 10100L)
+    assert(bankRate == 10030L)
+    assert(buybackRate == 20L)
     val dexyMinted = 35000L // must be a +ve value
 
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
 
     val bankReservesXIn = 100000000000000L
     val bankReservesYIn = 90200000100L
     val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val resetHeightIn = ctx.getHeight // counter is reset if the resetHeightIn is < HEIGHT. Hence it won't be reset here
+      // ToDo: add tests for reset
       val resetHeightOut = resetHeightIn
 
       val remainingDexyIn = 10000000L
@@ -639,12 +747,22 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
 
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
       val oracleBox =
         ctx
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(dummyTokenId, 1)) // <-- this value is different
+          .tokens(new ErgoToken(dummyTokenId, 1)) // <-- this value has changed
           .registers(KioskLong(oracleRateXy).getErgoValue)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
@@ -655,7 +773,10 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(lpReservesX)
-          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalance), new ErgoToken(dexyUSD, lpReservesY))
+          .tokens(
+            new ErgoToken(lpNFT, 1),
+            new ErgoToken(lpToken, lpBalance),
+            new ErgoToken(dexyUSD, lpReservesY))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
           .build()
           .convertToInputWith(fakeTxId3, fakeIndex)
@@ -677,233 +798,6 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .outBoxBuilder
           .value(bankReservesXIn)
           .tokens(new ErgoToken(bankNFT, 1), new ErgoToken(dexyUSD, bankReservesYIn))
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), bankScript))
-          .build()
-          .convertToInputWith(fakeTxId4, fakeIndex)
-
-      val validFreeMintOutBox = KioskBox(
-        freeMintAddress,
-        minStorageRent,
-        registers = Array(KioskInt(resetHeightOut), KioskLong(remainingDexyOut)),
-        tokens = Array((freeMintNFT, 1))
-      )
-
-      val validBankOutBox = KioskBox(
-        bankAddress,
-        bankReservesXOut,
-        registers = Array(),
-        tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
-      )
-
-      the[Exception] thrownBy {
-        TxUtil.createTx(
-          Array(freeMintBox, bankBox, fundingBox),
-          Array(oracleBox, lpBox),
-          Array(validFreeMintOutBox, validBankOutBox),
-          fee = 1000000L,
-          changeAddress,
-          Array[String](),
-          Array[DhtData](),
-          false
-        )
-      } should have message "Script reduced to false"
-    }
-  }
-
-  property("Free mint should fail if wrong Bank NFT in but right Bank NFT out") {
-    val oracleRateXy = 10000L
-    val feeNum = 10 // implies 1 % fee
-    val feeDenom = 1000
-
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
-
-    val lpBalance = 100000000L
-    val lpReservesX = 100000000000000L
-    val lpReservesY = 10000000000L
-    // initial ratio of X/Y = 10000
-
-    assert(lpReservesX / lpReservesY == 10000)
-    assert(oracleRateXyWithFee == 10100L)
-    val dexyMinted = 35000L // must be a +ve value
-
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
-
-    val bankReservesXIn = 100000000000000L
-    val bankReservesYIn = 90200000100L
-    val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
-
-    ergoClient.execute { implicit ctx: BlockchainContext =>
-      val resetHeightIn = ctx.getHeight // counter is reset if the resetHeightIn is < HEIGHT. Hence it won't be reset here
-      val resetHeightOut = resetHeightIn
-
-      val remainingDexyIn = 10000000L
-      val remainingDexyOut = remainingDexyIn - dexyMinted
-
-      val fundingBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(fakeNanoErgs)
-          .tokens(new ErgoToken(bankNFT, 1))
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
-          .build()
-          .convertToInputWith(fakeTxId1, fakeIndex)
-
-      val oracleBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(minStorageRent)
-          .tokens(new ErgoToken(oraclePoolNFT, 1))
-          .registers(KioskLong(oracleRateXy).getErgoValue)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
-          .build()
-          .convertToInputWith(fakeTxId2, fakeIndex)
-
-      val lpBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(lpReservesX)
-          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalance), new ErgoToken(dexyUSD, lpReservesY))
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
-          .build()
-          .convertToInputWith(fakeTxId3, fakeIndex)
-
-      val freeMintBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(minStorageRent)
-          .tokens(new ErgoToken(freeMintNFT, 1))
-          .registers(KioskInt(resetHeightIn).getErgoValue, KioskLong(remainingDexyIn).getErgoValue)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), freeMintScript))
-          .build()
-          .convertToInputWith(fakeTxId4, fakeIndex)
-
-      val bankBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(bankReservesXIn)
-          .tokens(
-            new ErgoToken(dummyTokenId, 1), // <-- this value is different
-            new ErgoToken(dexyUSD, bankReservesYIn)
-          )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), bankScript))
-          .build()
-          .convertToInputWith(fakeTxId4, fakeIndex)
-
-      val validFreeMintOutBox = KioskBox(
-        freeMintAddress,
-        minStorageRent,
-        registers = Array(KioskInt(resetHeightOut), KioskLong(remainingDexyOut)),
-        tokens = Array((freeMintNFT, 1))
-      )
-
-      val validBankOutBox = KioskBox(
-        bankAddress,
-        bankReservesXOut,
-        registers = Array(),
-        tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
-      )
-
-      the[Exception] thrownBy {
-        TxUtil.createTx(
-          Array(freeMintBox, bankBox, fundingBox),
-          Array(oracleBox, lpBox),
-          Array(validFreeMintOutBox, validBankOutBox),
-          fee = 1000000L,
-          changeAddress,
-          Array[String](),
-          Array[DhtData](),
-          false
-        )
-      } should have message "Script reduced to false"
-    }
-  }
-
-  property("Free mint should fail if wrong Bank NFT") {
-    val oracleRateXy = 10000L
-    val feeNum = 10 // implies 1 % fee
-    val feeDenom = 1000
-
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
-
-    val lpBalance = 100000000L
-    val lpReservesX = 100000000000000L
-    val lpReservesY = 10000000000L
-    // initial ratio of X/Y = 10000
-
-    assert(lpReservesX / lpReservesY == 10000)
-    assert(oracleRateXyWithFee == 10100L)
-    val dexyMinted = 35000L // must be a +ve value
-
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
-
-    val bankReservesXIn = 100000000000000L
-    val bankReservesYIn = 90200000100L
-    val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
-
-    ergoClient.execute { implicit ctx: BlockchainContext =>
-      val resetHeightIn = ctx.getHeight // counter is reset if the resetHeightIn is < HEIGHT. Hence it won't be reset here
-      val resetHeightOut = resetHeightIn
-
-      val remainingDexyIn = 10000000L
-      val remainingDexyOut = remainingDexyIn - dexyMinted
-
-      val fundingBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(fakeNanoErgs)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
-          .build()
-          .convertToInputWith(fakeTxId1, fakeIndex)
-
-      val oracleBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(minStorageRent)
-          .tokens(new ErgoToken(oraclePoolNFT, 1))
-          .registers(KioskLong(oracleRateXy).getErgoValue)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
-          .build()
-          .convertToInputWith(fakeTxId2, fakeIndex)
-
-      val lpBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(lpReservesX)
-          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalance), new ErgoToken(dexyUSD, lpReservesY))
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
-          .build()
-          .convertToInputWith(fakeTxId3, fakeIndex)
-
-      val freeMintBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(minStorageRent)
-          .tokens(new ErgoToken(freeMintNFT, 1))
-          .registers(KioskInt(resetHeightIn).getErgoValue, KioskLong(remainingDexyIn).getErgoValue)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), freeMintScript))
-          .build()
-          .convertToInputWith(fakeTxId4, fakeIndex)
-
-      val bankBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(bankReservesXIn)
-          .tokens(
-            new ErgoToken(dummyTokenId, 1), // <-- this value is different
-            new ErgoToken(dexyUSD, bankReservesYIn)
-          )
           .contract(ctx.compileContract(ConstantsBuilder.empty(), bankScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
@@ -920,16 +814,25 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         bankReservesXOut,
         registers = Array(),
         tokens = Array(
-          (dummyTokenId, 1), // <-- this value is different
+          (bankNFT, 1),
           (dexyUSD, bankReservesYOut)
+        )
+      )
+
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
         )
       )
 
       the[Exception] thrownBy {
         TxUtil.createTx(
-          Array(freeMintBox, bankBox, fundingBox),
+          Array(freeMintBox, bankBox, buybackBox.withContextVars(new ContextVar(0, KioskInt(1).getErgoValue)), fundingBox),
           Array(oracleBox, lpBox),
-          Array(validFreeMintOutBox, validBankOutBox),
+          Array(validFreeMintOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
@@ -940,12 +843,14 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     }
   }
 
-  property("Free mint should fail if wrong FreeMint NFT in but right FreeMint NFT out") {
+  property("Free mint should fail if wrong Bank NFT in but right Bank NFT out") {
     val oracleRateXy = 10000L
-    val feeNum = 10 // implies 1 % fee
+    val bankFeeNum = 3 // implies 0.5 % fee
+    val buybackFeeNum = 2 // implies 0.5 % fee
     val feeDenom = 1000
 
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
 
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
@@ -953,18 +858,21 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     // initial ratio of X/Y = 10000
 
     assert(lpReservesX / lpReservesY == 10000)
-    assert(oracleRateXyWithFee == 10100L)
+    assert(bankRate == 10030L)
+    assert(buybackRate == 20L)
     val dexyMinted = 35000L // must be a +ve value
 
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
 
     val bankReservesXIn = 100000000000000L
     val bankReservesYIn = 90200000100L
     val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val resetHeightIn = ctx.getHeight // counter is reset if the resetHeightIn is < HEIGHT. Hence it won't be reset here
+      // ToDo: add tests for reset
       val resetHeightOut = resetHeightIn
 
       val remainingDexyIn = 10000000L
@@ -975,8 +883,18 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(fakeNanoErgs)
-          .tokens(new ErgoToken(freeMintNFT, 1))
+          .tokens(new ErgoToken(bankNFT, 1))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
 
@@ -996,7 +914,10 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(lpReservesX)
-          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalance), new ErgoToken(dexyUSD, lpReservesY))
+          .tokens(
+            new ErgoToken(lpNFT, 1),
+            new ErgoToken(lpToken, lpBalance),
+            new ErgoToken(dexyUSD, lpReservesY))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
           .build()
           .convertToInputWith(fakeTxId3, fakeIndex)
@@ -1006,7 +927,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(dummyTokenId, 1)) // <-- this value is different
+          .tokens(new ErgoToken(freeMintNFT, 1))
           .registers(KioskInt(resetHeightIn).getErgoValue, KioskLong(remainingDexyIn).getErgoValue)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), freeMintScript))
           .build()
@@ -1017,7 +938,8 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(bankReservesXIn)
-          .tokens(new ErgoToken(bankNFT, 1), new ErgoToken(dexyUSD, bankReservesYIn))
+          .tokens(new ErgoToken(dummyTokenId, 1),  // <-- this value has changed
+                  new ErgoToken(dexyUSD, bankReservesYIn))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), bankScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
@@ -1033,14 +955,26 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         bankAddress,
         bankReservesXOut,
         registers = Array(),
-        tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
+        tokens = Array(
+          (bankNFT, 1),
+          (dexyUSD, bankReservesYOut)
+        )
+      )
+
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
       )
 
       the[Exception] thrownBy {
         TxUtil.createTx(
-          Array(freeMintBox, bankBox, fundingBox),
+          Array(freeMintBox, bankBox, buybackBox.withContextVars(new ContextVar(0, KioskInt(1).getErgoValue)), fundingBox),
           Array(oracleBox, lpBox),
-          Array(validFreeMintOutBox, validBankOutBox),
+          Array(validFreeMintOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
@@ -1051,12 +985,14 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     }
   }
 
-  property("Free mint should fail if wrong FreeMint NFT") {
+  property("Free mint should fail if wrong Bank NFT") {
     val oracleRateXy = 10000L
-    val feeNum = 10 // implies 1 % fee
+    val bankFeeNum = 3 // implies 0.5 % fee
+    val buybackFeeNum = 2 // implies 0.5 % fee
     val feeDenom = 1000
 
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
 
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
@@ -1064,18 +1000,21 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     // initial ratio of X/Y = 10000
 
     assert(lpReservesX / lpReservesY == 10000)
-    assert(oracleRateXyWithFee == 10100L)
+    assert(bankRate == 10030L)
+    assert(buybackRate == 20L)
     val dexyMinted = 35000L // must be a +ve value
 
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
 
     val bankReservesXIn = 100000000000000L
     val bankReservesYIn = 90200000100L
     val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val resetHeightIn = ctx.getHeight // counter is reset if the resetHeightIn is < HEIGHT. Hence it won't be reset here
+      // ToDo: add tests for reset
       val resetHeightOut = resetHeightIn
 
       val remainingDexyIn = 10000000L
@@ -1086,7 +1025,18 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(fakeNanoErgs)
+          .tokens(new ErgoToken(dummyTokenId, 1))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
 
@@ -1106,7 +1056,10 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(lpReservesX)
-          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalance), new ErgoToken(dexyUSD, lpReservesY))
+          .tokens(
+            new ErgoToken(lpNFT, 1),
+            new ErgoToken(lpToken, lpBalance),
+            new ErgoToken(dexyUSD, lpReservesY))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
           .build()
           .convertToInputWith(fakeTxId3, fakeIndex)
@@ -1116,7 +1069,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(dummyTokenId, 1)) // <-- this value is different
+          .tokens(new ErgoToken(freeMintNFT, 1))
           .registers(KioskInt(resetHeightIn).getErgoValue, KioskLong(remainingDexyIn).getErgoValue)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), freeMintScript))
           .build()
@@ -1127,7 +1080,8 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(bankReservesXIn)
-          .tokens(new ErgoToken(bankNFT, 1), new ErgoToken(dexyUSD, bankReservesYIn))
+          .tokens(new ErgoToken(bankNFT, 1),
+                  new ErgoToken(dexyUSD, bankReservesYIn))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), bankScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
@@ -1136,55 +1090,357 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         freeMintAddress,
         minStorageRent,
         registers = Array(KioskInt(resetHeightOut), KioskLong(remainingDexyOut)),
-        tokens = Array((dummyTokenId, 1)) // <-- this value is different
+        tokens = Array((freeMintNFT, 1))
       )
 
       val validBankOutBox = KioskBox(
         bankAddress,
         bankReservesXOut,
         registers = Array(),
-        tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
+        tokens = Array(
+          (dummyTokenId, 1),  // <-- this value has changed
+          (dexyUSD, bankReservesYOut)
+        )
       )
 
-      an[Exception] shouldBe thrownBy {
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
+      )
+
+      the[Exception] thrownBy {
         TxUtil.createTx(
-          Array(freeMintBox, bankBox, fundingBox),
+          Array(freeMintBox, bankBox, buybackBox.withContextVars(new ContextVar(0, KioskInt(1).getErgoValue)), fundingBox),
           Array(oracleBox, lpBox),
-          Array(validFreeMintOutBox, validBankOutBox),
+          Array(validFreeMintOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
           Array[DhtData](),
           false
         )
-      }
+      } should have message "Script reduced to false"
+    }
+  }
+
+  property("Free mint should fail if wrong FreeMint NFT in but right FreeMint NFT out") {
+    val oracleRateXy = 10000L
+    val bankFeeNum = 3 // implies 0.5 % fee
+    val buybackFeeNum = 2 // implies 0.5 % fee
+    val feeDenom = 1000
+
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+
+    val lpBalance = 100000000L
+    val lpReservesX = 100000000000000L
+    val lpReservesY = 10000000000L
+    // initial ratio of X/Y = 10000
+
+    assert(lpReservesX / lpReservesY == 10000)
+    assert(bankRate == 10030L)
+    assert(buybackRate == 20L)
+    val dexyMinted = 35000L // must be a +ve value
+
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
+
+    val bankReservesXIn = 100000000000000L
+    val bankReservesYIn = 90200000100L
+    val bankReservesYOut = bankReservesYIn - dexyMinted
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      val resetHeightIn = ctx.getHeight // counter is reset if the resetHeightIn is < HEIGHT. Hence it won't be reset here
+      // ToDo: add tests for reset
+      val resetHeightOut = resetHeightIn
+
+      val remainingDexyIn = 10000000L
+      val remainingDexyOut = remainingDexyIn - dexyMinted
+
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(freeMintNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val oracleBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
+          .registers(KioskLong(oracleRateXy).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId2, fakeIndex)
+
+      val lpBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(lpReservesX)
+          .tokens(
+            new ErgoToken(lpNFT, 1),
+            new ErgoToken(lpToken, lpBalance),
+            new ErgoToken(dexyUSD, lpReservesY))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
+          .build()
+          .convertToInputWith(fakeTxId3, fakeIndex)
+
+      val freeMintBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(dummyTokenId, 1)) // <-- this value has changed
+          .registers(KioskInt(resetHeightIn).getErgoValue, KioskLong(remainingDexyIn).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), freeMintScript))
+          .build()
+          .convertToInputWith(fakeTxId4, fakeIndex)
+
+      val bankBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(bankReservesXIn)
+          .tokens(new ErgoToken(bankNFT, 1),
+            new ErgoToken(dexyUSD, bankReservesYIn))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), bankScript))
+          .build()
+          .convertToInputWith(fakeTxId4, fakeIndex)
+
+      val validFreeMintOutBox = KioskBox(
+        freeMintAddress,
+        minStorageRent,
+        registers = Array(KioskInt(resetHeightOut), KioskLong(remainingDexyOut)),
+        tokens = Array((freeMintNFT, 1))
+      )
+
+      val validBankOutBox = KioskBox(
+        bankAddress,
+        bankReservesXOut,
+        registers = Array(),
+        tokens = Array(
+          (bankNFT, 1),
+          (dexyUSD, bankReservesYOut)
+        )
+      )
+
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
+      )
+
+      the[Exception] thrownBy {
+        TxUtil.createTx(
+          Array(freeMintBox, bankBox, buybackBox.withContextVars(new ContextVar(0, KioskInt(1).getErgoValue)), fundingBox),
+          Array(oracleBox, lpBox),
+          Array(validFreeMintOutBox, validBankOutBox, validBuybackOutBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          false
+        )
+      } should have message "Script reduced to false"
+    }
+  }
+
+  property("Free mint should fail if wrong FreeMint NFT") {
+    val oracleRateXy = 10000L
+    val bankFeeNum = 3 // implies 0.5 % fee
+    val buybackFeeNum = 2 // implies 0.5 % fee
+    val feeDenom = 1000
+
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+
+    val lpBalance = 100000000L
+    val lpReservesX = 100000000000000L
+    val lpReservesY = 10000000000L
+    // initial ratio of X/Y = 10000
+
+    assert(lpReservesX / lpReservesY == 10000)
+    assert(bankRate == 10030L)
+    assert(buybackRate == 20L)
+    val dexyMinted = 35000L // must be a +ve value
+
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
+
+    val bankReservesXIn = 100000000000000L
+    val bankReservesYIn = 90200000100L
+    val bankReservesYOut = bankReservesYIn - dexyMinted
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      val resetHeightIn = ctx.getHeight // counter is reset if the resetHeightIn is < HEIGHT. Hence it won't be reset here
+      // ToDo: add tests for reset
+      val resetHeightOut = resetHeightIn
+
+      val remainingDexyIn = 10000000L
+      val remainingDexyOut = remainingDexyIn - dexyMinted
+
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(dummyTokenId, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val oracleBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
+          .registers(KioskLong(oracleRateXy).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId2, fakeIndex)
+
+      val lpBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(lpReservesX)
+          .tokens(
+            new ErgoToken(lpNFT, 1),
+            new ErgoToken(lpToken, lpBalance),
+            new ErgoToken(dexyUSD, lpReservesY))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
+          .build()
+          .convertToInputWith(fakeTxId3, fakeIndex)
+
+      val freeMintBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(freeMintNFT, 1))
+          .registers(KioskInt(resetHeightIn).getErgoValue, KioskLong(remainingDexyIn).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), freeMintScript))
+          .build()
+          .convertToInputWith(fakeTxId4, fakeIndex)
+
+      val bankBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(bankReservesXIn)
+          .tokens(new ErgoToken(bankNFT, 1),
+            new ErgoToken(dexyUSD, bankReservesYIn))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), bankScript))
+          .build()
+          .convertToInputWith(fakeTxId4, fakeIndex)
+
+      val validFreeMintOutBox = KioskBox(
+        freeMintAddress,
+        minStorageRent,
+        registers = Array(KioskInt(resetHeightOut), KioskLong(remainingDexyOut)),
+        tokens = Array((dummyTokenId, 1)) // <-- this value has changed
+      )
+
+      val validBankOutBox = KioskBox(
+        bankAddress,
+        bankReservesXOut,
+        registers = Array(),
+        tokens = Array(
+          (bankNFT, 1),
+          (dexyUSD, bankReservesYOut)
+        )
+      )
+
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
+      )
+
+      the[Exception] thrownBy {
+        TxUtil.createTx(
+          Array(freeMintBox, bankBox, buybackBox.withContextVars(new ContextVar(0, KioskInt(1).getErgoValue)), fundingBox),
+          Array(oracleBox, lpBox),
+          Array(validFreeMintOutBox, validBankOutBox, validBuybackOutBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          false
+        )
+      } should have message "Script reduced to false"
     }
   }
 
   property("Free mint should fail for negative dexy minted") {
     val oracleRateXy = 10000L
-    val feeNum = 10 // implies 1 % fee
+    val bankFeeNum = 3 // implies 0.5 % fee
+    val buybackFeeNum = 2 // implies 0.5 % fee
     val feeDenom = 1000
 
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
 
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
     val lpReservesY = 10000000000L
+    // initial ratio of X/Y = 10000
 
     assert(lpReservesX / lpReservesY == 10000)
-    assert(oracleRateXyWithFee == 10100L)
-    val dexyMinted = -35000L // must be a +ve value // <-- this value is different
+    assert(bankRate == 10030L)
+    assert(buybackRate == 20L)
+    val dexyMinted = -35000L // must be a +ve value // <-- this value has changed
 
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
 
     val bankReservesXIn = 100000000000000L
     val bankReservesYIn = 90200000100L
     val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val resetHeightIn = ctx.getHeight // counter is reset if the resetHeightIn is < HEIGHT. Hence it won't be reset here
+      // ToDo: add tests for reset
       val resetHeightOut = resetHeightIn
 
       val remainingDexyIn = 10000000L
@@ -1200,6 +1456,16 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
 
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
       val oracleBox =
         ctx
           .newTxBuilder()
@@ -1216,7 +1482,10 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(lpReservesX)
-          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalance), new ErgoToken(dexyUSD, lpReservesY))
+          .tokens(
+            new ErgoToken(lpNFT, 1),
+            new ErgoToken(lpToken, lpBalance),
+            new ErgoToken(dexyUSD, lpReservesY))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
           .build()
           .convertToInputWith(fakeTxId3, fakeIndex)
@@ -1237,7 +1506,8 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(bankReservesXIn)
-          .tokens(new ErgoToken(bankNFT, 1), new ErgoToken(dexyUSD, bankReservesYIn))
+          .tokens(new ErgoToken(bankNFT, 1),
+            new ErgoToken(dexyUSD, bankReservesYIn))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), bankScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
@@ -1253,14 +1523,26 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         bankAddress,
         bankReservesXOut,
         registers = Array(),
-        tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
+        tokens = Array(
+          (bankNFT, 1),
+          (dexyUSD, bankReservesYOut)
+        )
+      )
+
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
       )
 
       the[Exception] thrownBy {
         TxUtil.createTx(
-          Array(freeMintBox, bankBox, fundingBox),
+          Array(freeMintBox, bankBox, buybackBox.withContextVars(new ContextVar(0, KioskInt(1).getErgoValue)), fundingBox),
           Array(oracleBox, lpBox),
-          Array(validFreeMintOutBox, validBankOutBox),
+          Array(validFreeMintOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
