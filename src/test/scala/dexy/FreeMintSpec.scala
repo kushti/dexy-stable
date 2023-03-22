@@ -3,7 +3,7 @@ package dexy
 import dexy.DexySpec._
 import kiosk.ergo.{DhtData, KioskBox, KioskInt, KioskLong}
 import kiosk.tx.TxUtil
-import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoToken, HttpClientTesting}
+import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ContextVar, ErgoToken, HttpClientTesting}
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
@@ -19,10 +19,12 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   // ToDo: test for wide ranges of initial ratio in LP for x/y (very low to very high)
   property("Free mint (remove Dexy from and adding Ergs to bank box) should work") {
     val oracleRateXy = 10000L
-    val feeNum = 10 // implies 1 % fee
+    val bankFeeNum = 3 // implies 0.5 % fee
+    val buybackFeeNum = 2 // implies 0.5 % fee
     val feeDenom = 1000
 
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
 
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
@@ -30,15 +32,17 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     // initial ratio of X/Y = 10000
 
     assert(lpReservesX / lpReservesY == 10000)
-    assert(oracleRateXyWithFee == 10100L)
+    assert(bankRate == 10030L)
+    assert(buybackRate == 20L)
     val dexyMinted = 35000L // must be a +ve value
 
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
 
     val bankReservesXIn = 100000000000000L
     val bankReservesYIn = 90200000100L
     val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val resetHeightIn = ctx.getHeight // counter is reset if the resetHeightIn is < HEIGHT. Hence it won't be reset here
@@ -54,6 +58,16 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .outBoxBuilder
           .value(fakeNanoErgs)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
 
@@ -113,11 +127,20 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
       )
 
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
+      )
+
       noException shouldBe thrownBy {
         TxUtil.createTx(
-          Array(freeMintBox, bankBox, fundingBox),
+          Array(freeMintBox, bankBox, buybackBox.withContextVars(new ContextVar(0, KioskInt(1).getErgoValue)), fundingBox),
           Array(oracleBox, lpBox),
-          Array(validFreeMintOutBox, validBankOutBox),
+          Array(validFreeMintOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
@@ -130,7 +153,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
 
   property("Free mint should fail if Bank Dexy token id changed") {
     val oracleRateXy = 10000L
-    val feeNum = 10 // implies 1 % fee
+    val feeNum = 5 // implies 0.5 % fee
     val feeDenom = 1000
 
     val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom

@@ -62,6 +62,7 @@ object DexySpec {
     "payoutNFT" -> payoutNFT,
     "oracleNFT" -> oraclePoolNFT,
     "bankNFT" -> bankNFT,
+    "buybackNFT" -> buybackNFT,
     "lpNFT" -> lpNFT,
     "tracking95NFT" -> tracking95NFT,
     "tracking98NFT" -> tracking98NFT,

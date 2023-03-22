@@ -19,7 +19,9 @@
   //
   //   Input         |  Output        |   Data-Input
   // -----------------------------------------------
-  // 0 BuyBack       |  BuyBack       |
+  // 0 mint action   |  mint action   |
+  // 1 Bank          |  Bank          |
+  // 2 BuyBack       |  BuyBack       |
   //
   // Give back:
   //
@@ -58,7 +60,7 @@
     sigmaProp(lpCorrect && outputsCorrect && selfOutCorrect && swapCorrect)
   } else if(action == 1) {
     // top-up path
-    val selfOut = OUTPUTS(0)
+    val selfOut = OUTPUTS(2)
     val topUp = selfOut.tokens == SELF.tokens &&
                 selfOut.propositionBytes == SELF.propositionBytes &&
                 SELF.value < selfOut.value

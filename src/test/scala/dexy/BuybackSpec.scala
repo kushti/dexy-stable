@@ -7,8 +7,6 @@ import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ContextVar,
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
-import scala.collection.convert.ImplicitConversions.`collection AsScalaIterable`
-
 class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks
   with HttpClientTesting with Common with OracleHelpers {
 
@@ -200,6 +198,8 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
       )
       val dataInputs = Array[InputBox]()
       val outputs = Array[KioskBox](
+        KioskBox(junkAddress, minStorageRent, Array.empty, Array.empty),
+        KioskBox(junkAddress, minStorageRent, Array.empty, Array.empty),
         KioskBox(buybackAddress, buyBackBox.getValue + 1000000, Array.empty, Array((buybackNFT, 1), (gort, 500)))
       )
 
