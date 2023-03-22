@@ -1413,8 +1413,9 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
 
   property("Free mint should fail for negative dexy minted") {
     val oracleRateXy = 10000L
-    val bankFeeNum = 3 // implies 0.5 % fee
-    val buybackFeeNum = 2 // implies 0.5 % fee
+    // implies 0.5 % fee in total
+    val bankFeeNum = 3
+    val buybackFeeNum = 2
     val feeDenom = 1000
 
     val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
@@ -1425,9 +1426,11 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     val lpReservesY = 10000000000L
     // initial ratio of X/Y = 10000
 
+    val oracleRateWithFee = bankRate + buybackRate
     assert(lpReservesX / lpReservesY == 10000)
     assert(bankRate == 10030L)
     assert(buybackRate == 20L)
+    assert(oracleRateWithFee == 10050)
     val dexyMinted = -35000L // must be a +ve value // <-- this value has changed
 
     val bankErgsAdded = bankRate * dexyMinted

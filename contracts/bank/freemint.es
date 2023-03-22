@@ -35,10 +35,11 @@
   val oracleBoxIndex = 0
   val lpBoxIndex = 1
 
-  val oracleNFT = fromBase64("$oracleNFT") // to identify oracle pool box
   val bankNFT = fromBase64("$bankNFT")
-  val lpNFT = fromBase64("$lpNFT")
   val buybackNft = fromBase64("$buybackNFT")
+
+  val oracleNFT = fromBase64("$oracleNFT") // to identify oracle pool box
+  val lpNFT = fromBase64("$lpNFT")
 
   val T_free = 100
   val T_buffer = 5 // max delay permitted after broadcasting and confirmation of the tx spending this box
@@ -46,11 +47,13 @@
   val bankFeeNum = 3
   val buybackFeeNum = 2
   val feeDenom = 1000
+  // feeNum = bankFeeNum + buybackFeeNum
   // actual fee ratio is feeNum / feeDenom
   // example if feeNum = 5 and feeDenom = 1000 then fee = 0.005 = 0.5 %
 
   val oracleBox = CONTEXT.dataInputs(oracleBoxIndex) // oracle-pool (v1 and v2) box containing rate in R4
   val lpBox = CONTEXT.dataInputs(lpBoxIndex)
+
   val bankBoxIn = INPUTS(bankInIndex)
   val buybackBoxIn = INPUTS(buybackInIndex)
 

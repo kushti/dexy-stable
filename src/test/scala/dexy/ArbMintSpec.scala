@@ -3,7 +3,7 @@ package dexy
 import dexy.DexySpec._
 import kiosk.ergo.{DhtData, KioskBoolean, KioskBox, KioskInt, KioskLong}
 import kiosk.tx.TxUtil
-import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoToken, HttpClientTesting}
+import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ContextVar, ErgoToken, HttpClientTesting}
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
@@ -19,10 +19,15 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Arbitrage mint (remove Dexy from and adding Ergs to bank box) should work") {
     val oracleRateXy = 9000L // ToDo: test for ranges of oracleRateXy (very low to very high)
 
-    val feeNum = 5 // implies 0.5 % fee
+    // implies 0.5 % fee in total
+    val bankFeeNum = 3
+    val buybackFeeNum = 2
     val feeDenom = 1000
 
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+
+    val oracleRateXyWithFee = bankRate + buybackRate
 
     val thresholdPercent = 101
     val lpBalance = 100000000L
@@ -36,12 +41,13 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
 
     val dexyMinted = 35000L // must be a +ve value // ToDo: Test that negative value doesn't work
 
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
 
     val bankReservesXIn = 100000000000000L
     val bankReservesYIn = 90200000100L
     val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
 
     val t_arb = 30
 
@@ -115,6 +121,17 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+          .withContextVars(new ContextVar(0, KioskInt(1).getErgoValue))
+
       val validArbMintOutBox = KioskBox(
         arbitrageMintAddress,
         minStorageRent,
@@ -129,11 +146,20 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
       )
 
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
+      )
+
       noException shouldBe thrownBy {
         TxUtil.createTx(
-          Array(arbMintBox, bankBox, fundingBox),
+          Array(arbMintBox, bankBox, buybackBox, fundingBox),
           Array(oracleBox, lpBox, tracking101Box),
-          Array(validArbMintOutBox, validBankOutBox),
+          Array(validArbMintOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
