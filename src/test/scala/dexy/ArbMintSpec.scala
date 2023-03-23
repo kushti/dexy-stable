@@ -39,7 +39,7 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     assert(lpRateXy == 10000)
     assert(lpRateXy * 100 > thresholdPercent * oracleRateXyWithFee)
 
-    val dexyMinted = 35000L // must be a +ve value // ToDo: Test that negative value doesn't work
+    val dexyMinted = 35000L // must be a +ve value
 
     val bankErgsAdded = bankRate * dexyMinted
     val buybackErgsAdded = buybackRate * dexyMinted
@@ -171,30 +171,37 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Arbitrage mint should fail if threshold is invalid") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L // this line has changed
 
-    val feeNum = 5 // implies 0.5 % fee
+    // implies 0.5 % fee in total
+    val bankFeeNum = 3
+    val buybackFeeNum = 2
     val feeDenom = 1000
 
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+
+    val oracleRateXyWithFee = bankRate + buybackRate
 
     val thresholdPercent = 101
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
     val lpReservesY = 10000000000L
+    // initial ratio of X/Y = 10000
 
     val lpRateXy = lpReservesX / lpReservesY
     assert(lpRateXy == 10000)
-    assert(lpRateXy * 100 <= thresholdPercent * oracleRateXyWithFee) // threshold invalid condition
+    assert(lpRateXy * 100 <= thresholdPercent * oracleRateXyWithFee) // check that threshold is wrong
 
     val dexyMinted = 35000L // must be a +ve value
 
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
 
     val bankReservesXIn = 100000000000000L
     val bankReservesYIn = 90200000100L
     val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
 
     val t_arb = 30
 
@@ -268,6 +275,17 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+          .withContextVars(new ContextVar(0, KioskInt(1).getErgoValue))
+
       val validArbMintOutBox = KioskBox(
         arbitrageMintAddress,
         minStorageRent,
@@ -282,11 +300,20 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
       )
 
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
+      )
+
       the[Exception] thrownBy {
         TxUtil.createTx(
-          Array(arbMintBox, bankBox, fundingBox),
+          Array(arbMintBox, bankBox, buybackBox, fundingBox),
           Array(oracleBox, lpBox, tracking101Box),
-          Array(validArbMintOutBox, validBankOutBox),
+          Array(validArbMintOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
@@ -300,28 +327,35 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Arbitrage mint should fail if negative amount minted") {
     val oracleRateXy = 9000L
 
-    val feeNum = 5 // implies 0.5 % fee
+    // implies 0.5 % fee in total
+    val bankFeeNum = 3
+    val buybackFeeNum = 2
     val feeDenom = 1000
 
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+
+    val oracleRateXyWithFee = bankRate + buybackRate
 
     val thresholdPercent = 101
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
     val lpReservesY = 10000000000L
+    // initial ratio of X/Y = 10000  // ToDo: test for wide ranges of initial ratio (very low to very high)
 
     val lpRateXy = lpReservesX / lpReservesY
     assert(lpRateXy == 10000)
     assert(lpRateXy * 100 > thresholdPercent * oracleRateXyWithFee)
 
-    val dexyMinted = -35000L // must be a +ve value
+    val dexyMinted = -35000L // this line has changed
 
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
 
     val bankReservesXIn = 100000000000000L
     val bankReservesYIn = 90200000100L
     val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
 
     val t_arb = 30
 
@@ -396,6 +430,17 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+          .withContextVars(new ContextVar(0, KioskInt(1).getErgoValue))
+
       val validArbMintOutBox = KioskBox(
         arbitrageMintAddress,
         minStorageRent,
@@ -410,11 +455,20 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
       )
 
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
+      )
+
       the[Exception] thrownBy {
         TxUtil.createTx(
-          Array(arbMintBox, bankBox, fundingBox),
+          Array(arbMintBox, bankBox, buybackBox, fundingBox),
           Array(oracleBox, lpBox, tracking101Box),
-          Array(validArbMintOutBox, validBankOutBox),
+          Array(validArbMintOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
@@ -428,15 +482,21 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Arbitrage mint should fail if counter not reset and more Dexy taken than allowed") {
     val oracleRateXy = 9000L
 
-    val feeNum = 5 // implies 0.5 % fee
+    // implies 0.5 % fee in total
+    val bankFeeNum = 3
+    val buybackFeeNum = 2
     val feeDenom = 1000
 
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+
+    val oracleRateXyWithFee = bankRate + buybackRate
 
     val thresholdPercent = 101
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
     val lpReservesY = 10000000000L
+    // initial ratio of X/Y = 10000  // ToDo: test for wide ranges of initial ratio (very low to very high)
 
     val lpRateXy = lpReservesX / lpReservesY
     assert(lpRateXy == 10000)
@@ -444,14 +504,15 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
 
     val remainingDexyIn = 10000000L
 
-    val dexyMinted = remainingDexyIn + 1 // must be a +ve value // <-- this value is different
+    val dexyMinted = remainingDexyIn + 1 // <-- this value is different
 
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
 
     val bankReservesXIn = 100000000000000L
     val bankReservesYIn = 90200000100L
     val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
 
     val t_arb = 30
 
@@ -467,6 +528,7 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .newTxBuilder()
           .outBoxBuilder
           .value(fakeNanoErgs)
+          .tokens(new ErgoToken(dexyUSD, -dexyMinted))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
@@ -524,6 +586,17 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+          .withContextVars(new ContextVar(0, KioskInt(1).getErgoValue))
+
       val validArbMintOutBox = KioskBox(
         arbitrageMintAddress,
         minStorageRent,
@@ -538,11 +611,20 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
       )
 
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
+      )
+
       the[Exception] thrownBy {
         TxUtil.createTx(
-          Array(arbMintBox, bankBox, fundingBox),
+          Array(arbMintBox, bankBox, buybackBox, fundingBox),
           Array(oracleBox, lpBox, tracking101Box),
-          Array(validArbMintOutBox, validBankOutBox),
+          Array(validArbMintOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
@@ -556,15 +638,21 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Arbitrage mint should work if counter (R4) is reset and max allowed (R5) also reset") {
     val oracleRateXy = 9000L
 
-    val feeNum = 5 // implies 0.5 % fee
+    // implies 0.5 % fee in total
+    val bankFeeNum = 3
+    val buybackFeeNum = 2
     val feeDenom = 1000
 
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+
+    val oracleRateXyWithFee = bankRate + buybackRate
 
     val thresholdPercent = 101
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
     val lpReservesY = 10000000000L
+    // initial ratio of X/Y = 10000  // ToDo: test for wide ranges of initial ratio (very low to very high)
 
     val lpRateXy = lpReservesX / lpReservesY
     assert(lpRateXy == 10000)
@@ -572,12 +660,13 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
 
     val dexyMinted = 35000L // must be a +ve value
 
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
 
     val bankReservesXIn = 100000000000000L
     val bankReservesYIn = 90200000100L
     val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
 
     val t_arb = 30
 
@@ -655,6 +744,17 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+          .withContextVars(new ContextVar(0, KioskInt(1).getErgoValue))
+
       val validArbMintOutBox = KioskBox(
         arbitrageMintAddress,
         minStorageRent,
@@ -669,11 +769,20 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
       )
 
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
+      )
+
       noException shouldBe thrownBy {
         TxUtil.createTx(
-          Array(arbMintBox, bankBox, fundingBox),
+          Array(arbMintBox, bankBox, buybackBox, fundingBox),
           Array(oracleBox, lpBox, tracking101Box),
-          Array(validArbMintOutBox, validBankOutBox),
+          Array(validArbMintOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
@@ -687,15 +796,21 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Arbitrage mint should fail if counter (R4) is reset but max allowed (R5) not reset") {
     val oracleRateXy = 9000L
 
-    val feeNum = 5 // implies 0.5 % fee
+    // implies 0.5 % fee in total
+    val bankFeeNum = 3
+    val buybackFeeNum = 2
     val feeDenom = 1000
 
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+
+    val oracleRateXyWithFee = bankRate + buybackRate
 
     val thresholdPercent = 101
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
     val lpReservesY = 10000000000L
+    // initial ratio of X/Y = 10000  // ToDo: test for wide ranges of initial ratio (very low to very high)
 
     val lpRateXy = lpReservesX / lpReservesY
     assert(lpRateXy == 10000)
@@ -703,12 +818,13 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
 
     val dexyMinted = 35000L // must be a +ve value
 
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
 
     val bankReservesXIn = 100000000000000L
     val bankReservesYIn = 90200000100L
     val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
 
     val t_arb = 30
 
@@ -782,6 +898,17 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+          .withContextVars(new ContextVar(0, KioskInt(1).getErgoValue))
+
       val validArbMintOutBox = KioskBox(
         arbitrageMintAddress,
         minStorageRent,
@@ -796,11 +923,20 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
       )
 
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
+      )
+
       the[Exception] thrownBy {
         TxUtil.createTx(
-          Array(arbMintBox, bankBox, fundingBox),
+          Array(arbMintBox, bankBox, buybackBox, fundingBox),
           Array(oracleBox, lpBox, tracking101Box),
-          Array(validArbMintOutBox, validBankOutBox),
+          Array(validArbMintOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
@@ -814,36 +950,43 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Arbitrage mint should fail if counter (R4) is reset and max allowed (R5) reset but more Dexy taken than permitted") {
     val oracleRateXy = 9000L
 
-    val feeNum = 5 // implies 0.5 % fee
+    // implies 0.5 % fee in total
+    val bankFeeNum = 3
+    val buybackFeeNum = 2
     val feeDenom = 1000
 
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+
+    val oracleRateXyWithFee = bankRate + buybackRate
 
     val thresholdPercent = 101
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
     val lpReservesY = 10000000000L
+    // initial ratio of X/Y = 10000  // ToDo: test for wide ranges of initial ratio (very low to very high)
 
     val lpRateXy = lpReservesX / lpReservesY
     assert(lpRateXy == 10000)
     assert(lpRateXy * 100 > thresholdPercent * oracleRateXyWithFee)
 
     val maxAllowedIfReset = (lpReservesX - oracleRateXyWithFee * lpReservesY) / oracleRateXyWithFee
-    assert(maxAllowedIfReset == 1055831951L)
-    val remainingDexyIn = 10000000L
+    val dexyMinted = maxAllowedIfReset + 1 // this value changed
 
-    val dexyMinted = maxAllowedIfReset + 1 // must be a +ve value
-
-    val remainingDexyOut = maxAllowedIfReset - dexyMinted
-
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
 
     val bankReservesXIn = 100000000000000L
     val bankReservesYIn = 90200000100L
     val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
 
     val t_arb = 30
+
+    assert(maxAllowedIfReset == 1055831951L)
+
+    val remainingDexyIn = 10000000L
+    val remainingDexyOut = maxAllowedIfReset - dexyMinted
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val trackingHeight = ctx.getHeight - t_arb - 1
@@ -912,6 +1055,17 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+          .withContextVars(new ContextVar(0, KioskInt(1).getErgoValue))
+
       val validArbMintOutBox = KioskBox(
         arbitrageMintAddress,
         minStorageRent,
@@ -926,46 +1080,62 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
       )
 
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
+      )
+
       the[Exception] thrownBy {
         TxUtil.createTx(
-          Array(arbMintBox, bankBox, fundingBox),
+          Array(arbMintBox, bankBox, buybackBox, fundingBox),
           Array(oracleBox, lpBox, tracking101Box),
-          Array(validArbMintOutBox, validBankOutBox),
+          Array(validArbMintOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
           Array[DhtData](),
           false
         )
-      } should have message "Script reduced to false"
+      }  should have message "Script reduced to false"
     }
   }
 
   property("Arbitrage mint should fail if counter is not reset when too many blocks passed") {
     val oracleRateXy = 9000L
 
-    val feeNum = 5 // implies 0.5 % fee
+    // implies 0.5 % fee in total
+    val bankFeeNum = 3
+    val buybackFeeNum = 2
     val feeDenom = 1000
 
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+
+    val oracleRateXyWithFee = bankRate + buybackRate
 
     val thresholdPercent = 101
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
     val lpReservesY = 10000000000L
+    // initial ratio of X/Y = 10000  // ToDo: test for wide ranges of initial ratio (very low to very high)
 
     val lpRateXy = lpReservesX / lpReservesY
     assert(lpRateXy == 10000)
     assert(lpRateXy * 100 > thresholdPercent * oracleRateXyWithFee)
 
-    val dexyMinted = 35000L // must be a +ve value
+    val dexyMinted = 35000L
 
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
 
     val bankReservesXIn = 100000000000000L
     val bankReservesYIn = 90200000100L
     val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
 
     val t_arb = 30
 
@@ -1040,6 +1210,17 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+          .withContextVars(new ContextVar(0, KioskInt(1).getErgoValue))
+
       val validArbMintOutBox = KioskBox(
         arbitrageMintAddress,
         minStorageRent,
@@ -1054,28 +1235,42 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
       )
 
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
+      )
+
       the[Exception] thrownBy {
         TxUtil.createTx(
-          Array(arbMintBox, bankBox, fundingBox),
+          Array(arbMintBox, bankBox, buybackBox, fundingBox),
           Array(oracleBox, lpBox, tracking101Box),
-          Array(validArbMintOutBox, validBankOutBox),
+          Array(validArbMintOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
           Array[DhtData](),
           false
         )
-      } should have message "Script reduced to false"
+      }  should have message "Script reduced to false"
     }
   }
 
   property("Arbitrage mint should fail if register R4 (reset height) of ArbitrageMint box has incorrect value ") {
     val oracleRateXy = 9000L
 
-    val feeNum = 5 // implies 0.5 % fee
+    // implies 0.5 % fee in total
+    val bankFeeNum = 3
+    val buybackFeeNum = 2
     val feeDenom = 1000
 
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+
+    val oracleRateXyWithFee = bankRate + buybackRate
 
     val thresholdPercent = 101
     val lpBalance = 100000000L
@@ -1086,14 +1281,15 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     assert(lpRateXy == 10000)
     assert(lpRateXy * 100 > thresholdPercent * oracleRateXyWithFee)
 
-    val dexyMinted = 35000L // must be a +ve value
+    val dexyMinted = 35000L
 
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
 
     val bankReservesXIn = 100000000000000L
     val bankReservesYIn = 90200000100L
     val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
 
     val t_arb = 30
 
@@ -1167,6 +1363,17 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+          .withContextVars(new ContextVar(0, KioskInt(1).getErgoValue))
+
       val validArbMintOutBox = KioskBox(
         arbitrageMintAddress,
         minStorageRent,
@@ -1181,28 +1388,42 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
       )
 
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
+      )
+
       the[Exception] thrownBy {
         TxUtil.createTx(
-          Array(arbMintBox, bankBox, fundingBox),
+          Array(arbMintBox, bankBox, buybackBox, fundingBox),
           Array(oracleBox, lpBox, tracking101Box),
-          Array(validArbMintOutBox, validBankOutBox),
+          Array(validArbMintOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
           Array[DhtData](),
           false
         )
-      } should have message "Script reduced to false"
+      }  should have message "Script reduced to false"
     }
   }
 
   property("Arbitrage mint should fail if register R5 (remaining Dexy) of ArbitrageMint box has incorrect value") {
     val oracleRateXy = 9000L
 
-    val feeNum = 5 // implies 0.5 % fee
+    // implies 0.5 % fee in total
+    val bankFeeNum = 3
+    val buybackFeeNum = 2
     val feeDenom = 1000
 
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+
+    val oracleRateXyWithFee = bankRate + buybackRate
 
     val thresholdPercent = 101
     val lpBalance = 100000000L
@@ -1213,14 +1434,15 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     assert(lpRateXy == 10000)
     assert(lpRateXy * 100 > thresholdPercent * oracleRateXyWithFee)
 
-    val dexyMinted = 35000L // must be a +ve value
+    val dexyMinted = 35000L
 
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
 
     val bankReservesXIn = 100000000000000L
     val bankReservesYIn = 90200000100L
     val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
 
     val t_arb = 30
 
@@ -1294,6 +1516,17 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+          .withContextVars(new ContextVar(0, KioskInt(1).getErgoValue))
+
       val validArbMintOutBox = KioskBox(
         arbitrageMintAddress,
         minStorageRent,
@@ -1308,47 +1541,61 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
       )
 
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
+      )
+
       the[Exception] thrownBy {
         TxUtil.createTx(
-          Array(arbMintBox, bankBox, fundingBox),
+          Array(arbMintBox, bankBox, buybackBox, fundingBox),
           Array(oracleBox, lpBox, tracking101Box),
-          Array(validArbMintOutBox, validBankOutBox),
+          Array(validArbMintOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
           Array[DhtData](),
           false
         )
-      } should have message "Script reduced to false"
+      }  should have message "Script reduced to false"
     }
   }
 
   property("Arbitrage mint should fail if Bank Dexy token id changed") {
     val oracleRateXy = 9000L
 
-    val feeNum = 5 // implies 0.5 % fee
+    // implies 0.5 % fee in total
+    val bankFeeNum = 3
+    val buybackFeeNum = 2
     val feeDenom = 1000
 
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+
+    val oracleRateXyWithFee = bankRate + buybackRate
 
     val thresholdPercent = 101
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
     val lpReservesY = 10000000000L
-    // initial ratio of X/Y = 10000
 
     val lpRateXy = lpReservesX / lpReservesY
     assert(lpRateXy == 10000)
     assert(lpRateXy * 100 > thresholdPercent * oracleRateXyWithFee)
 
-    val dexyMinted = 35000L // must be a +ve value
+    val dexyMinted = 35000L
 
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
 
     val bankReservesXIn = 100000000000000L
     val bankReservesYIn = 90200000100L
     val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
 
     val t_arb = 30
 
@@ -1423,6 +1670,17 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+          .withContextVars(new ContextVar(0, KioskInt(1).getErgoValue))
+
       val validArbMintOutBox = KioskBox(
         arbitrageMintAddress,
         minStorageRent,
@@ -1440,47 +1698,61 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         )
       )
 
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
+      )
+
       the[Exception] thrownBy {
         TxUtil.createTx(
-          Array(arbMintBox, bankBox, fundingBox),
+          Array(arbMintBox, bankBox, buybackBox, fundingBox),
           Array(oracleBox, lpBox, tracking101Box),
-          Array(validArbMintOutBox, validBankOutBox),
+          Array(validArbMintOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
           Array[DhtData](),
           false
         )
-      } should have message "Script reduced to false"
+      }  should have message "Script reduced to false"
     }
   }
 
   property("Arbitrage mint should fail if wrong ArbitrageMint box NFT") {
     val oracleRateXy = 9000L
 
-    val feeNum = 5 // implies 0.5 % fee
+    // implies 0.5 % fee in total
+    val bankFeeNum = 3
+    val buybackFeeNum = 2
     val feeDenom = 1000
 
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+
+    val oracleRateXyWithFee = bankRate + buybackRate
 
     val thresholdPercent = 101
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
     val lpReservesY = 10000000000L
-    // initial ratio of X/Y = 10000
 
     val lpRateXy = lpReservesX / lpReservesY
     assert(lpRateXy == 10000)
     assert(lpRateXy * 100 > thresholdPercent * oracleRateXyWithFee)
 
-    val dexyMinted = 35000L // must be a +ve value
+    val dexyMinted = 35000L
 
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
 
     val bankReservesXIn = 100000000000000L
     val bankReservesYIn = 90200000100L
     val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
 
     val t_arb = 30
 
@@ -1554,6 +1826,17 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+          .withContextVars(new ContextVar(0, KioskInt(1).getErgoValue))
+
       val validArbMintOutBox = KioskBox(
         arbitrageMintAddress,
         minStorageRent,
@@ -1565,50 +1848,67 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         bankAddress,
         bankReservesXOut,
         registers = Array(),
-        tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
+        tokens = Array(
+          (bankNFT, 1),
+          (dexyUSD, bankReservesYOut)
+        )
       )
 
-      an[Exception] shouldBe thrownBy {
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
+      )
+
+      the[Exception] thrownBy {
         TxUtil.createTx(
-          Array(arbMintBox, bankBox, fundingBox),
+          Array(arbMintBox, bankBox, buybackBox, fundingBox),
           Array(oracleBox, lpBox, tracking101Box),
-          Array(validArbMintOutBox, validBankOutBox),
+          Array(validArbMintOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
           Array[DhtData](),
           false
         )
-      }
+      }  should have message "Script reduced to false"
     }
   }
 
   property("Arbitrage mint should fail if wrong Bank box NFT") {
     val oracleRateXy = 9000L
 
-    val feeNum = 5 // implies 0.5 % fee
+    // implies 0.5 % fee in total
+    val bankFeeNum = 3
+    val buybackFeeNum = 2
     val feeDenom = 1000
 
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+
+    val oracleRateXyWithFee = bankRate + buybackRate
 
     val thresholdPercent = 101
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
     val lpReservesY = 10000000000L
-    // initial ratio of X/Y = 10000
 
     val lpRateXy = lpReservesX / lpReservesY
     assert(lpRateXy == 10000)
     assert(lpRateXy * 100 > thresholdPercent * oracleRateXyWithFee)
 
-    val dexyMinted = 35000L // must be a +ve value
+    val dexyMinted = 35000L
 
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
 
     val bankReservesXIn = 100000000000000L
     val bankReservesYIn = 90200000100L
     val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
 
     val t_arb = 30
 
@@ -1666,142 +1966,7 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(arbitrageMintNFT, 1))
-          .registers(KioskInt(resetHeightIn).getErgoValue, KioskLong(remainingDexyIn).getErgoValue)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), arbitrageMintScript))
-          .build()
-          .convertToInputWith(fakeTxId4, fakeIndex)
-
-      val bankBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(bankReservesXIn)
-          .tokens(
-            new ErgoToken(dummyTokenId, 1), // <-- this value is different
-            new ErgoToken(dexyUSD, bankReservesYIn)
-          )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), bankScript))
-          .build()
-          .convertToInputWith(fakeTxId4, fakeIndex)
-
-      val validArbMintOutBox = KioskBox(
-        arbitrageMintAddress,
-        minStorageRent,
-        registers = Array(KioskInt(resetHeightOut), KioskLong(remainingDexyOut)),
-        tokens = Array((arbitrageMintNFT, 1))
-      )
-
-      val validBankOutBox = KioskBox(
-        bankAddress,
-        bankReservesXOut,
-        registers = Array(),
-        tokens = Array(
-          (dummyTokenId, 1), // <-- this value is different
-          (dexyUSD, bankReservesYOut)
-        )
-      )
-
-      the[Exception] thrownBy {
-        TxUtil.createTx(
-          Array(arbMintBox, bankBox, fundingBox),
-          Array(oracleBox, lpBox, tracking101Box),
-          Array(validArbMintOutBox, validBankOutBox),
-          fee = 1000000L,
-          changeAddress,
-          Array[String](),
-          Array[DhtData](),
-          false
-        )
-      } should have message "Script reduced to false"
-    }
-  }
-
-  property("Arbitrage mint should fail if ArbitrageMint box NFT changed") {
-    val oracleRateXy = 9000L
-
-    val feeNum = 5 // implies 0.5 % fee
-    val feeDenom = 1000
-
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
-
-    val thresholdPercent = 101
-    val lpBalance = 100000000L
-    val lpReservesX = 100000000000000L
-    val lpReservesY = 10000000000L
-    // initial ratio of X/Y = 10000
-
-    val lpRateXy = lpReservesX / lpReservesY
-    assert(lpRateXy == 10000)
-    assert(lpRateXy * 100 > thresholdPercent * oracleRateXyWithFee)
-
-    val dexyMinted = 35000L // must be a +ve value
-
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
-
-    val bankReservesXIn = 100000000000000L
-    val bankReservesYIn = 90200000100L
-    val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
-
-    val t_arb = 30
-
-    val remainingDexyIn = 10000000L
-    val remainingDexyOut = remainingDexyIn - dexyMinted
-
-    ergoClient.execute { implicit ctx: BlockchainContext =>
-      val trackingHeight = ctx.getHeight - t_arb - 1
-      val resetHeightIn = ctx.getHeight // counter is reset if the resetHeightIn is < HEIGHT. Hence it won't be reset here
-      val resetHeightOut = resetHeightIn
-
-      val fundingBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(fakeNanoErgs)
-          .tokens(new ErgoToken(dummyTokenId, 1))
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
-          .build()
-          .convertToInputWith(fakeTxId1, fakeIndex)
-
-      val oracleBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(minStorageRent)
-          .tokens(new ErgoToken(oraclePoolNFT, 1))
-          .registers(KioskLong(oracleRateXy).getErgoValue)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
-          .build()
-          .convertToInputWith(fakeTxId2, fakeIndex)
-
-      val lpBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(lpReservesX)
-          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalance), new ErgoToken(dexyUSD, lpReservesY))
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
-          .build()
-          .convertToInputWith(fakeTxId3, fakeIndex)
-
-      val tracking101Box =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(lpReservesX)
-          .tokens(new ErgoToken(tracking101NFT, 1))
-          .registers(KioskInt(100).getErgoValue, KioskInt(101).getErgoValue, KioskBoolean(false).getErgoValue, KioskInt(trackingHeight).getErgoValue)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
-          .build()
-          .convertToInputWith(fakeTxId3, fakeIndex)
-
-      val arbMintBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(minStorageRent)
-          .tokens(new ErgoToken(arbitrageMintNFT, 1))
+          .tokens(new ErgoToken(dummyTokenId, 1)) // <-- this value is different
           .registers(KioskInt(resetHeightIn).getErgoValue, KioskLong(remainingDexyIn).getErgoValue)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), arbitrageMintScript))
           .build()
@@ -1816,6 +1981,17 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .contract(ctx.compileContract(ConstantsBuilder.empty(), bankScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
+
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+          .withContextVars(new ContextVar(0, KioskInt(1).getErgoValue))
 
       val validArbMintOutBox = KioskBox(
         arbitrageMintAddress,
@@ -1828,50 +2004,67 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         bankAddress,
         bankReservesXOut,
         registers = Array(),
-        tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
+        tokens = Array(
+          (bankNFT, 1),
+          (dexyUSD, bankReservesYOut)
+        )
+      )
+
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
       )
 
       the[Exception] thrownBy {
         TxUtil.createTx(
-          Array(arbMintBox, bankBox, fundingBox),
+          Array(arbMintBox, bankBox, buybackBox, fundingBox),
           Array(oracleBox, lpBox, tracking101Box),
-          Array(validArbMintOutBox, validBankOutBox),
+          Array(validArbMintOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
           Array[DhtData](),
           false
         )
-      } should have message "Script reduced to false"
+      }  should have message "Script reduced to false"
     }
   }
 
-  property("Arbitrage mint should fail if Bank box NFT changed") {
+  property("Arbitrage mint should fail if ArbitrageMint box NFT changed") {
     val oracleRateXy = 9000L
 
-    val feeNum = 5 // implies 0.5 % fee
+    // implies 0.5 % fee in total
+    val bankFeeNum = 3
+    val buybackFeeNum = 2
     val feeDenom = 1000
 
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+
+    val oracleRateXyWithFee = bankRate + buybackRate
 
     val thresholdPercent = 101
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
     val lpReservesY = 10000000000L
-    // initial ratio of X/Y = 10000
 
     val lpRateXy = lpReservesX / lpReservesY
     assert(lpRateXy == 10000)
     assert(lpRateXy * 100 > thresholdPercent * oracleRateXyWithFee)
 
-    val dexyMinted = 35000L // must be a +ve value
+    val dexyMinted = 35000L
 
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
 
     val bankReservesXIn = 100000000000000L
     val bankReservesYIn = 90200000100L
     val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
 
     val t_arb = 30
 
@@ -1946,6 +2139,174 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+          .withContextVars(new ContextVar(0, KioskInt(1).getErgoValue))
+
+      val validArbMintOutBox = KioskBox(
+        arbitrageMintAddress,
+        minStorageRent,
+        registers = Array(KioskInt(resetHeightOut), KioskLong(remainingDexyOut)),
+        tokens = Array((dummyTokenId, 1)) // <-- this value is different
+      )
+
+      val validBankOutBox = KioskBox(
+        bankAddress,
+        bankReservesXOut,
+        registers = Array(),
+        tokens = Array(
+          (bankNFT, 1),
+          (dexyUSD, bankReservesYOut)
+        )
+      )
+
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
+      )
+
+      the[Exception] thrownBy {
+        TxUtil.createTx(
+          Array(arbMintBox, bankBox, buybackBox, fundingBox),
+          Array(oracleBox, lpBox, tracking101Box),
+          Array(validArbMintOutBox, validBankOutBox, validBuybackOutBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          false
+        )
+      }  should have message "Script reduced to false"
+    }
+  }
+
+  property("Arbitrage mint should fail if Bank box NFT changed") {
+    val oracleRateXy = 9000L
+
+    // implies 0.5 % fee in total
+    val bankFeeNum = 3
+    val buybackFeeNum = 2
+    val feeDenom = 1000
+
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+
+    val oracleRateXyWithFee = bankRate + buybackRate
+
+    val thresholdPercent = 101
+    val lpBalance = 100000000L
+    val lpReservesX = 100000000000000L
+    val lpReservesY = 10000000000L
+
+    val lpRateXy = lpReservesX / lpReservesY
+    assert(lpRateXy == 10000)
+    assert(lpRateXy * 100 > thresholdPercent * oracleRateXyWithFee)
+
+    val dexyMinted = 35000L
+
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
+
+    val bankReservesXIn = 100000000000000L
+    val bankReservesYIn = 90200000100L
+    val bankReservesYOut = bankReservesYIn - dexyMinted
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
+
+    val t_arb = 30
+
+    val remainingDexyIn = 10000000L
+    val remainingDexyOut = remainingDexyIn - dexyMinted
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      val trackingHeight = ctx.getHeight - t_arb - 1
+      val resetHeightIn = ctx.getHeight // counter is reset if the resetHeightIn is < HEIGHT. Hence it won't be reset here
+      val resetHeightOut = resetHeightIn
+
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(dummyTokenId, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val oracleBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
+          .registers(KioskLong(oracleRateXy).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId2, fakeIndex)
+
+      val lpBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(lpReservesX)
+          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalance), new ErgoToken(dexyUSD, lpReservesY))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
+          .build()
+          .convertToInputWith(fakeTxId3, fakeIndex)
+
+      val tracking101Box =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(lpReservesX)
+          .tokens(new ErgoToken(tracking101NFT, 1))
+          .registers(KioskInt(100).getErgoValue, KioskInt(101).getErgoValue, KioskBoolean(false).getErgoValue, KioskInt(trackingHeight).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
+          .build()
+          .convertToInputWith(fakeTxId3, fakeIndex)
+
+      val arbMintBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(arbitrageMintNFT, 1))
+          .registers(KioskInt(resetHeightIn).getErgoValue, KioskLong(remainingDexyIn).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), arbitrageMintScript))
+          .build()
+          .convertToInputWith(fakeTxId4, fakeIndex)
+
+      val bankBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(bankReservesXIn)
+          .tokens(new ErgoToken(bankNFT, 1), new ErgoToken(dexyUSD, bankReservesYIn))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), bankScript))
+          .build()
+          .convertToInputWith(fakeTxId4, fakeIndex)
+
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+          .withContextVars(new ContextVar(0, KioskInt(1).getErgoValue))
+
       val validArbMintOutBox = KioskBox(
         arbitrageMintAddress,
         minStorageRent,
@@ -1963,47 +2324,61 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         )
       )
 
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
+      )
+
       the[Exception] thrownBy {
         TxUtil.createTx(
-          Array(arbMintBox, bankBox, fundingBox),
+          Array(arbMintBox, bankBox, buybackBox, fundingBox),
           Array(oracleBox, lpBox, tracking101Box),
-          Array(validArbMintOutBox, validBankOutBox),
+          Array(validArbMintOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
           Array[DhtData](),
           false
         )
-      } should have message "Script reduced to false"
+      }  should have message "Script reduced to false"
     }
   }
 
   property("Arbitrage mint should fail if Arbitrage box script changed") {
     val oracleRateXy = 9000L
 
-    val feeNum = 5 // implies 0.5 % fee
+    // implies 0.5 % fee in total
+    val bankFeeNum = 3
+    val buybackFeeNum = 2
     val feeDenom = 1000
 
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+
+    val oracleRateXyWithFee = bankRate + buybackRate
 
     val thresholdPercent = 101
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
     val lpReservesY = 10000000000L
-    // initial ratio of X/Y = 10000
 
     val lpRateXy = lpReservesX / lpReservesY
     assert(lpRateXy == 10000)
     assert(lpRateXy * 100 > thresholdPercent * oracleRateXyWithFee)
 
-    val dexyMinted = 35000L // must be a +ve value
+    val dexyMinted = 35000L
 
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
 
     val bankReservesXIn = 100000000000000L
     val bankReservesYIn = 90200000100L
     val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
 
     val t_arb = 30
 
@@ -2076,6 +2451,17 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .contract(ctx.compileContract(ConstantsBuilder.empty(), bankScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
+
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+          .withContextVars(new ContextVar(0, KioskInt(1).getErgoValue))
 
       val validArbMintOutBox = KioskBox(
         changeAddress, // <-- this value is different
@@ -2088,50 +2474,67 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         bankAddress,
         bankReservesXOut,
         registers = Array(),
-        tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
+        tokens = Array(
+          (bankNFT, 1),
+          (dexyUSD, bankReservesYOut)
+        )
+      )
+
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
       )
 
       the[Exception] thrownBy {
         TxUtil.createTx(
-          Array(arbMintBox, bankBox, fundingBox),
+          Array(arbMintBox, bankBox, buybackBox, fundingBox),
           Array(oracleBox, lpBox, tracking101Box),
-          Array(validArbMintOutBox, validBankOutBox),
+          Array(validArbMintOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
           Array[DhtData](),
           false
         )
-      } should have message "Script reduced to false"
+      }  should have message "Script reduced to false"
     }
   }
 
   property("Arbitrage mint should fail if Bank box script changed") {
     val oracleRateXy = 9000L
 
-    val feeNum = 5 // implies 0.5 % fee
+    // implies 0.5 % fee in total
+    val bankFeeNum = 3
+    val buybackFeeNum = 2
     val feeDenom = 1000
 
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+
+    val oracleRateXyWithFee = bankRate + buybackRate
 
     val thresholdPercent = 101
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
     val lpReservesY = 10000000000L
-    // initial ratio of X/Y = 10000
 
     val lpRateXy = lpReservesX / lpReservesY
     assert(lpRateXy == 10000)
     assert(lpRateXy * 100 > thresholdPercent * oracleRateXyWithFee)
 
-    val dexyMinted = 35000L // must be a +ve value
+    val dexyMinted = 35000L
 
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
 
     val bankReservesXIn = 100000000000000L
     val bankReservesYIn = 90200000100L
     val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
 
     val t_arb = 30
 
@@ -2205,6 +2608,17 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+          .withContextVars(new ContextVar(0, KioskInt(1).getErgoValue))
+
       val validArbMintOutBox = KioskBox(
         arbitrageMintAddress,
         minStorageRent,
@@ -2216,50 +2630,67 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         changeAddress, // <-- this value is different
         bankReservesXOut,
         registers = Array(),
-        tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
+        tokens = Array(
+          (bankNFT, 1),
+          (dexyUSD, bankReservesYOut)
+        )
+      )
+
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
       )
 
       the[Exception] thrownBy {
         TxUtil.createTx(
-          Array(arbMintBox, bankBox, fundingBox),
+          Array(arbMintBox, bankBox, buybackBox, fundingBox),
           Array(oracleBox, lpBox, tracking101Box),
-          Array(validArbMintOutBox, validBankOutBox),
+          Array(validArbMintOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
           Array[DhtData](),
           false
         )
-      } should have message "Script reduced to false"
+      }  should have message "Script reduced to false"
     }
   }
 
   property("Arbitrage mint should fail wrong Oracle NFT") {
     val oracleRateXy = 9000L
 
-    val feeNum = 5 // implies 0.5 % fee
+    // implies 0.5 % fee in total
+    val bankFeeNum = 3
+    val buybackFeeNum = 2
     val feeDenom = 1000
 
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+
+    val oracleRateXyWithFee = bankRate + buybackRate
 
     val thresholdPercent = 101
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
     val lpReservesY = 10000000000L
-    // initial ratio of X/Y = 10000
 
     val lpRateXy = lpReservesX / lpReservesY
     assert(lpRateXy == 10000)
     assert(lpRateXy * 100 > thresholdPercent * oracleRateXyWithFee)
 
-    val dexyMinted = 35000L // must be a +ve value
+    val dexyMinted = 35000L
 
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
 
     val bankReservesXIn = 100000000000000L
     val bankReservesYIn = 90200000100L
     val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
 
     val t_arb = 30
 
@@ -2333,6 +2764,17 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+          .withContextVars(new ContextVar(0, KioskInt(1).getErgoValue))
+
       val validArbMintOutBox = KioskBox(
         arbitrageMintAddress,
         minStorageRent,
@@ -2344,50 +2786,67 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         bankAddress,
         bankReservesXOut,
         registers = Array(),
-        tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
+        tokens = Array(
+          (bankNFT, 1),
+          (dexyUSD, bankReservesYOut)
+        )
+      )
+
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
       )
 
       the[Exception] thrownBy {
         TxUtil.createTx(
-          Array(arbMintBox, bankBox, fundingBox),
+          Array(arbMintBox, bankBox, buybackBox, fundingBox),
           Array(oracleBox, lpBox, tracking101Box),
-          Array(validArbMintOutBox, validBankOutBox),
+          Array(validArbMintOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
           Array[DhtData](),
           false
         )
-      } should have message "Script reduced to false"
+      }  should have message "Script reduced to false"
     }
   }
 
   property("Arbitrage mint should fail wrong LP NFT") {
     val oracleRateXy = 9000L
 
-    val feeNum = 5 // implies 0.5 % fee
+    // implies 0.5 % fee in total
+    val bankFeeNum = 3
+    val buybackFeeNum = 2
     val feeDenom = 1000
 
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+
+    val oracleRateXyWithFee = bankRate + buybackRate
 
     val thresholdPercent = 101
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
     val lpReservesY = 10000000000L
-    // initial ratio of X/Y = 10000
 
     val lpRateXy = lpReservesX / lpReservesY
     assert(lpRateXy == 10000)
     assert(lpRateXy * 100 > thresholdPercent * oracleRateXyWithFee)
 
-    val dexyMinted = 35000L // must be a +ve value
+    val dexyMinted = 35000L
 
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
 
     val bankReservesXIn = 100000000000000L
     val bankReservesYIn = 90200000100L
     val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
 
     val t_arb = 30
 
@@ -2465,6 +2924,17 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+          .withContextVars(new ContextVar(0, KioskInt(1).getErgoValue))
+
       val validArbMintOutBox = KioskBox(
         arbitrageMintAddress,
         minStorageRent,
@@ -2476,50 +2946,67 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         bankAddress,
         bankReservesXOut,
         registers = Array(),
-        tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
+        tokens = Array(
+          (bankNFT, 1),
+          (dexyUSD, bankReservesYOut)
+        )
+      )
+
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
       )
 
       the[Exception] thrownBy {
         TxUtil.createTx(
-          Array(arbMintBox, bankBox, fundingBox),
+          Array(arbMintBox, bankBox, buybackBox, fundingBox),
           Array(oracleBox, lpBox, tracking101Box),
-          Array(validArbMintOutBox, validBankOutBox),
+          Array(validArbMintOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
           Array[DhtData](),
           false
         )
-      } should have message "Script reduced to false"
+      }  should have message "Script reduced to false"
     }
   }
 
   property("Arbitrage mint should fail wrong tracking NFT") {
     val oracleRateXy = 9000L
 
-    val feeNum = 5 // implies 0.5 % fee
+    // implies 0.5 % fee in total
+    val bankFeeNum = 3
+    val buybackFeeNum = 2
     val feeDenom = 1000
 
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+
+    val oracleRateXyWithFee = bankRate + buybackRate
 
     val thresholdPercent = 101
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
     val lpReservesY = 10000000000L
-    // initial ratio of X/Y = 10000
 
     val lpRateXy = lpReservesX / lpReservesY
     assert(lpRateXy == 10000)
     assert(lpRateXy * 100 > thresholdPercent * oracleRateXyWithFee)
 
-    val dexyMinted = 35000L // must be a +ve value
+    val dexyMinted = 35000L
 
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
 
     val bankReservesXIn = 100000000000000L
     val bankReservesYIn = 90200000100L
     val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
 
     val t_arb = 30
 
@@ -2593,6 +3080,17 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+          .withContextVars(new ContextVar(0, KioskInt(1).getErgoValue))
+
       val validArbMintOutBox = KioskBox(
         arbitrageMintAddress,
         minStorageRent,
@@ -2604,50 +3102,67 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         bankAddress,
         bankReservesXOut,
         registers = Array(),
-        tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
+        tokens = Array(
+          (bankNFT, 1),
+          (dexyUSD, bankReservesYOut)
+        )
+      )
+
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
       )
 
       the[Exception] thrownBy {
         TxUtil.createTx(
-          Array(arbMintBox, bankBox, fundingBox),
+          Array(arbMintBox, bankBox, buybackBox, fundingBox),
           Array(oracleBox, lpBox, tracking101Box),
-          Array(validArbMintOutBox, validBankOutBox),
+          Array(validArbMintOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
           Array[DhtData](),
           false
         )
-      } should have message "Script reduced to false"
+      }  should have message "Script reduced to false"
     }
   }
 
   property("Arbitrage mint should fail invalid tracking height") {
     val oracleRateXy = 9000L
 
-    val feeNum = 5 // implies 0.5 % fee
+    // implies 0.5 % fee in total
+    val bankFeeNum = 3
+    val buybackFeeNum = 2
     val feeDenom = 1000
 
-    val oracleRateXyWithFee = oracleRateXy * (feeNum + feeDenom) / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+
+    val oracleRateXyWithFee = bankRate + buybackRate
 
     val thresholdPercent = 101
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
     val lpReservesY = 10000000000L
-    // initial ratio of X/Y = 10000
 
     val lpRateXy = lpReservesX / lpReservesY
     assert(lpRateXy == 10000)
     assert(lpRateXy * 100 > thresholdPercent * oracleRateXyWithFee)
 
-    val dexyMinted = 35000L // must be a +ve value
+    val dexyMinted = 35000L
 
-    val ergsAdded = oracleRateXyWithFee * dexyMinted
+    val bankErgsAdded = bankRate * dexyMinted
+    val buybackErgsAdded = buybackRate * dexyMinted
 
     val bankReservesXIn = 100000000000000L
     val bankReservesYIn = 90200000100L
     val bankReservesYOut = bankReservesYIn - dexyMinted
-    val bankReservesXOut = bankReservesXIn + ergsAdded
+    val bankReservesXOut = bankReservesXIn + bankErgsAdded
 
     val t_arb = 30
 
@@ -2721,6 +3236,17 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+          .withContextVars(new ContextVar(0, KioskInt(1).getErgoValue))
+
       val validArbMintOutBox = KioskBox(
         arbitrageMintAddress,
         minStorageRent,
@@ -2732,21 +3258,33 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         bankAddress,
         bankReservesXOut,
         registers = Array(),
-        tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
+        tokens = Array(
+          (bankNFT, 1),
+          (dexyUSD, bankReservesYOut)
+        )
+      )
+
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + buybackErgsAdded,
+        registers = Array(),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
       )
 
       the[Exception] thrownBy {
         TxUtil.createTx(
-          Array(arbMintBox, bankBox, fundingBox),
+          Array(arbMintBox, bankBox, buybackBox, fundingBox),
           Array(oracleBox, lpBox, tracking101Box),
-          Array(validArbMintOutBox, validBankOutBox),
+          Array(validArbMintOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
           Array[String](),
           Array[DhtData](),
           false
         )
-      } should have message "Script reduced to false"
+      }  should have message "Script reduced to false"
     }
   }
 
