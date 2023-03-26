@@ -3,7 +3,10 @@ package dexy
 import kiosk.encoding.ScalaErgoConverters.{getAddressFromErgoTree, getStringFromAddress}
 import kiosk.ergo._
 import kiosk.script.ScriptUtil
+import scorex.crypto.encode.Base16
 import scorex.util.encode.Base64
+import sigmastate.Values.{BooleanConstant, IntConstant}
+import sigmastate.serialization.ValueSerializer
 
 object DexySpec {
   // oracle related tokens
@@ -197,5 +200,45 @@ object DexySpec {
     println(s"Intervention: $interventionAddress")
     println(interventionScript)
     println()
+
+    val num95 = Base16.encode(ValueSerializer.serialize(IntConstant(95)))
+
+    val num98 = Base16.encode(ValueSerializer.serialize(IntConstant(98)))
+
+    val num101 = Base16.encode(ValueSerializer.serialize(IntConstant(101)))
+
+    val denum = Base16.encode(ValueSerializer.serialize(IntConstant(100)))
+
+    val falseValue = Base16.encode(ValueSerializer.serialize(BooleanConstant(false)))
+
+    val trueValue = Base16.encode(ValueSerializer.serialize(BooleanConstant(true)))
+
+    val intMaxValue = Base16.encode(ValueSerializer.serialize(IntConstant(Int.MaxValue)))
+
+    val req =
+      s"""
+        |{
+        |  "requests": [
+        |    {
+        |      "address": "$trackingAddress",
+        |      "value": 1000000000,
+        |      "assets": [
+        |        {
+        |          "tokenId": "$tracking95NFT",
+        |          "amount": 1
+        |        }
+        |      ],
+        |      "registers": {
+        |        "R4": "$denum",
+        |        "R5": "$num95",
+        |        "R6": "$trueValue",
+        |        "R7": "$intMaxValue"
+        |      }
+        |    }
+        |  ]
+        |}
+        |""".stripMargin
+
+    println(req)
   }
 }
