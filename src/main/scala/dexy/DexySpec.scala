@@ -201,21 +201,33 @@ object DexySpec {
     println(interventionScript)
     println()
 
-    val num95 = Base16.encode(ValueSerializer.serialize(IntConstant(95)))
+    def tracking(num: Int) = {
 
-    val num98 = Base16.encode(ValueSerializer.serialize(IntConstant(98)))
+      val num95 = Base16.encode(ValueSerializer.serialize(IntConstant(95)))
 
-    val num101 = Base16.encode(ValueSerializer.serialize(IntConstant(101)))
+      val num98 = Base16.encode(ValueSerializer.serialize(IntConstant(98)))
 
-    val denum = Base16.encode(ValueSerializer.serialize(IntConstant(100)))
+      val num101 = Base16.encode(ValueSerializer.serialize(IntConstant(101)))
 
-    val falseValue = Base16.encode(ValueSerializer.serialize(BooleanConstant(false)))
+      val denum = Base16.encode(ValueSerializer.serialize(IntConstant(100)))
 
-    val trueValue = Base16.encode(ValueSerializer.serialize(BooleanConstant(true)))
+      val falseValue = Base16.encode(ValueSerializer.serialize(BooleanConstant(false)))
 
-    val intMaxValue = Base16.encode(ValueSerializer.serialize(IntConstant(Int.MaxValue)))
+      val trueValue = Base16.encode(ValueSerializer.serialize(BooleanConstant(true)))
 
-    val req =
+      val intMaxValue = Base16.encode(ValueSerializer.serialize(IntConstant(Int.MaxValue)))
+
+      val isBelow = if(num < 100) trueValue else falseValue
+      val (numValue, trackingNft) = if (num == 95) {
+        (num95, tracking95NFT)
+      } else if (num == 98) {
+        (num98, tracking98NFT)
+      } else if (num == 101) {
+        (num101, tracking101NFT)
+      } else {
+        ???
+      }
+
       s"""
         |{
         |  "requests": [
@@ -224,21 +236,22 @@ object DexySpec {
         |      "value": 1000000000,
         |      "assets": [
         |        {
-        |          "tokenId": "$tracking95NFT",
+        |          "tokenId": "$trackingNft",
         |          "amount": 1
         |        }
         |      ],
         |      "registers": {
         |        "R4": "$denum",
-        |        "R5": "$num95",
-        |        "R6": "$trueValue",
+        |        "R5": "$numValue",
+        |        "R6": "$isBelow",
         |        "R7": "$intMaxValue"
         |      }
         |    }
         |  ]
         |}
         |""".stripMargin
+    }
 
-    println(req)
+    println(tracking(95))
   }
 }
