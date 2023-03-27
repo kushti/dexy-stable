@@ -52,3 +52,14 @@ https://testnet.ergoplatform.com/en/transactions/dd63dc1ab1e6661ebad540778b6e5d5
 
 * Buyback contract deployment transaction:
 https://testnet.ergoplatform.com/en/transactions/3887b7bfb6f9bc02734ca09093e4adbe73a22e75133cbf28a7e145fb349c6971
+
+* Freemint contract deployment transaction:
+https://testnet.ergoplatform.com/en/transactions/a40d0d8d897295b651e94ddbb595267b39146c2be1f13da941b33ab0ac35b2f6
+
+
+* Intervention contract deployment transaction:
+https://testnet.ergoplatform.com/en/transactions/1275b03b2450d9dba58bab14cfc7628886fc4bf63de98c21b7665c29261d4d3b
+
+
+
+// TODO: LP with actions and payout

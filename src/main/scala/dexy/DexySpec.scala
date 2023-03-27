@@ -203,6 +203,8 @@ object DexySpec {
     println(interventionScript)
     println()
 
+    val intZero = Base16.encode(ValueSerializer.serialize(IntConstant(0)))
+    val longZero = Base16.encode(ValueSerializer.serialize(LongConstant(0)))
 
     def scanRequest(name: String, nftId: String) = {
       s"""
@@ -271,10 +273,6 @@ object DexySpec {
     }
 
     def arbMintDeploymentRequest() = {
-
-      val intZero = Base16.encode(ValueSerializer.serialize(IntConstant(0)))
-      val longZero = Base16.encode(ValueSerializer.serialize(LongConstant(0)))
-
       s"""
          |{
          |  "requests": [
@@ -284,6 +282,30 @@ object DexySpec {
          |      "assets": [
          |        {
          |          "tokenId": "$arbitrageMintNFT",
+         |          "amount": 1
+         |        }
+         |      ],
+         |      "registers": {
+         |        "R4": "$intZero",
+         |        "R5": "$longZero"
+         |      }
+         |    }
+         |  ],
+         |  "fee": 10000000
+         |}
+         |""".stripMargin
+    }
+
+    def freeMintDeploymentRequest() = {
+      s"""
+         |{
+         |  "requests": [
+         |    {
+         |      "address": "$freeMintAddress",
+         |      "value": 1000000000,
+         |      "assets": [
+         |        {
+         |          "tokenId": "$freeMintNFT",
          |          "amount": 1
          |        }
          |      ],
@@ -342,6 +364,26 @@ object DexySpec {
          |""".stripMargin
     }
 
+    def interventionDeploymentRequest() = {
+      s"""
+         |{
+         |  "requests": [
+         |    {
+         |      "address": "$interventionAddress",
+         |      "value": 1000000000,
+         |      "assets": [
+         |        {
+         |          "tokenId": "$interventionNFT",
+         |          "amount": 1
+         |        }
+         |      ]
+         |    }
+         |  ],
+         |  "fee": 10000000
+         |}
+         |""".stripMargin
+    }
+
     println("============================Deployment requests===============================")
     println("Tracking 95% scan request: ")
     println(scanRequest("Tracking 95%", tracking95NFT))
@@ -372,5 +414,20 @@ object DexySpec {
     println(scanRequest("Buyback", buybackNFT))
     println("Buyback contract deployment request: ")
     println(buybackContractDeploymentRequest())
+
+    println("Free mint scan request: ")
+    println(scanRequest("Free mint", freeMintNFT))
+    println("Free mint contract deployment request: ")
+    println(freeMintDeploymentRequest())
+
+    println("Intervention scan request: ")
+    println(scanRequest("Intervention", interventionNFT))
+    println("Intervention contract deployment request: ")
+    println(interventionDeploymentRequest())
+
+    println("Intervention scan request: ")
+    println(scanRequest("Intervention", interventionNFT))
+    println("Intervention contract deployment request: ")
+    println(interventionDeploymentRequest())
   }
 }
