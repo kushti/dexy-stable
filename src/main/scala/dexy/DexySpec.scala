@@ -247,11 +247,59 @@ object DexySpec {
         |        "R7": "$intMaxValue"
         |      }
         |    }
-        |  ]
+        |  ],
+        |  "fee": 10000000
         |}
         |""".stripMargin
     }
 
+    println("============================Deployment requests===============================")
+    println("Tracking 95% tracking request: ")
+    println(
+      """
+        |{
+        |  "scanName": "Tracking 95%",
+        |  "walletInteraction": "off",
+        |  "removeOffchain": true,
+        |  "trackingRule": {
+        |    "predicate": "containsAsset",
+        |    "assetId": "2a69d7ce75ec961ab3329ddca7a9479044fb0b160b8fef26a632322b994ebced"
+        |  }
+        |}
+        |""".stripMargin)
+    println("Tracking 95% deployment request: ")
     println(tracking(95))
+
+    println("Tracking 98% tracking request: ")
+    println(
+      """
+        |{
+        |  "scanName": "Tracking 98%",
+        |  "walletInteraction": "off",
+        |  "removeOffchain": true,
+        |  "trackingRule": {
+        |    "predicate": "containsAsset",
+        |    "assetId": "1839000c4332ff55b162e974b04c0ed68a8dbf572f458c2692f067e73f0c74e9"
+        |  }
+        |}
+        |""".stripMargin)
+    println("Tracking 98% deployment request: ")
+    println(tracking(98))
+
+    println("Tracking 101% tracking request: ")
+    println(
+      """
+        |{
+        |  "scanName": "Tracking 98%",
+        |  "walletInteraction": "off",
+        |  "removeOffchain": true,
+        |  "trackingRule": {
+        |    "predicate": "containsAsset",
+        |    "assetId": "14a15e8371c0dbde6335af9750336ea293b127489b0bb687416dfc2deb496f73"
+        |  }
+        |}
+        |""".stripMargin)
+    println("Tracking 101% deployment request: ")
+    println(tracking(101))
   }
 }

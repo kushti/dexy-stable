@@ -32,3 +32,17 @@ Tokens to be issued:
 * LP swap NFT: 9575571b4a25eb6309b115b5fb74305455807d227c91602eec603b6364bb6a02
 
 
+
+## Tracking contracts:
+
+* Tracking 95% contract deployment transaction: 
+
+https://testnet.ergoplatform.com/en/transactions/f1f853e33d73dd2ba2406c790e353c89db508068a2761cf8cddbc961e2d07c64
+
+* Tracking 98% contract deployment transaction: 
+
+https://testnet.ergoplatform.com/en/transactions/c007b89f9b20197e9d6510cd98c300af4a1196bcdb619b6dcf5e64574c53ca18
+
+* Tracking 101% contract deployment transaction: 
+
+https://testnet.ergoplatform.com/en/transactions/fabeff5ae3865bb49bedf1d9f3bfe925c13f8103d55ae7831a8174d53cc51bf7
