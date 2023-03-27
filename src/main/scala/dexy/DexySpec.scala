@@ -1,8 +1,7 @@
 package dexy
 
-import kiosk.encoding.ScalaErgoConverters.{getAddressFromErgoTree, getStringFromAddress}
+import dexy.ScriptUtil.{getAddressFromErgoTree, getStringFromAddress}
 import kiosk.ergo._
-import kiosk.script.ScriptUtil
 import scorex.crypto.encode.Base16
 import scorex.util.encode.Base64
 import sigmastate.Values.{BooleanConstant, IntConstant, LongConstant}
@@ -49,7 +48,9 @@ object DexySpec {
   //   2. Liquidity pool (LP) box that allows swapping Dexy with Ergs
   //   3. Oracle (pool) box that has the rate of Erg/USD in R4 (Long) in units nanoErgs per USD
 
-  lazy val initialDexyTokens = 10000000000000L
+  // initial number of dexy tokens issued
+  // used in payout
+  lazy val initialDexyTokens = 5000000000000L
 
   val initialLp =
     100000000000L // initially how many Lp minted (and we need to add that many to tokens(1), after removing some for token burning as in UniSwap v2)
@@ -210,7 +211,7 @@ object DexySpec {
       s"""
         |{
         |  "scanName": "$name",
-        |  "walletInteraction": "off",
+        |  "walletInteraction": "shared",
         |  "removeOffchain": true,
         |  "trackingRule": {
         |    "predicate": "containsAsset",
@@ -248,8 +249,7 @@ object DexySpec {
       }
 
       s"""
-        |{
-        |  "requests": [
+        |  [
         |    {
         |      "address": "$trackingAddress",
         |      "value": 1000000000,
@@ -266,16 +266,13 @@ object DexySpec {
         |        "R7": "$intMaxValue"
         |      }
         |    }
-        |  ],
-        |  "fee": 10000000
-        |}
+        |  ]
         |""".stripMargin
     }
 
     def arbMintDeploymentRequest() = {
       s"""
-         |{
-         |  "requests": [
+         |  [
          |    {
          |      "address": "$arbitrageMintAddress",
          |      "value": 1000000000,
@@ -290,16 +287,13 @@ object DexySpec {
          |        "R5": "$longZero"
          |      }
          |    }
-         |  ],
-         |  "fee": 10000000
-         |}
+         |  ]
          |""".stripMargin
     }
 
     def freeMintDeploymentRequest() = {
       s"""
-         |{
-         |  "requests": [
+         |  [
          |    {
          |      "address": "$freeMintAddress",
          |      "value": 1000000000,
@@ -314,16 +308,13 @@ object DexySpec {
          |        "R5": "$longZero"
          |      }
          |    }
-         |  ],
-         |  "fee": 10000000
-         |}
+         |  ]
          |""".stripMargin
     }
 
     def bankContractDeploymentRequest() = {
       s"""
-         |{
-         |  "requests": [
+         |  [
          |    {
          |      "address": "$bankAddress",
          |      "value": 1000000000,
@@ -338,16 +329,13 @@ object DexySpec {
          |        }
          |      ]
          |    }
-         |  ],
-         |  "fee": 10000000
-         |}
+         |  ]
          |""".stripMargin
     }
 
     def buybackContractDeploymentRequest() = {
       s"""
-         |{
-         |  "requests": [
+         |  [
          |    {
          |      "address": "$buybackAddress",
          |      "value": 1000000000,
@@ -358,16 +346,13 @@ object DexySpec {
          |        }
          |      ]
          |    }
-         |  ],
-         |  "fee": 10000000
-         |}
+         |  ]
          |""".stripMargin
     }
 
     def interventionDeploymentRequest() = {
       s"""
-         |{
-         |  "requests": [
+         |  [
          |    {
          |      "address": "$interventionAddress",
          |      "value": 1000000000,
@@ -378,9 +363,7 @@ object DexySpec {
          |        }
          |      ]
          |    }
-         |  ],
-         |  "fee": 10000000
-         |}
+         |  ]
          |""".stripMargin
     }
 
@@ -419,11 +402,6 @@ object DexySpec {
     println(scanRequest("Free mint", freeMintNFT))
     println("Free mint contract deployment request: ")
     println(freeMintDeploymentRequest())
-
-    println("Intervention scan request: ")
-    println(scanRequest("Intervention", interventionNFT))
-    println("Intervention contract deployment request: ")
-    println(interventionDeploymentRequest())
 
     println("Intervention scan request: ")
     println(scanRequest("Intervention", interventionNFT))

@@ -5,13 +5,12 @@ Tokens to be issued:
 
 ## Testnet
 
-* Dexy: 06255873a0d7a75c05194eb7539becfd6e8b226fd58e90c977af70a5209faa29
-
 * GORT: e2636c9f0e32886954ab1f87ac2e016fdf53d63d8fa2101530d1e31ac59e365f
 * oracle pool NFT = "f2f64bab1f2e9ab65c0e4a6a65eed0b26c5276eb5dda01d4a0e0ebe8a85bfbfc"
 * oracle token ID = "cc8d50d2a9f0f1254f363ee66a3c65e73ea8046386c001544b08841743df411d"
 
-* GORT LP NFT: 601a587fd8c2921b52a77ad643f20efe9bf0f10110e3c21bf38381e590efa8a3
+* Dexy: 06255873a0d7a75c05194eb7539becfd6e8b226fd58e90c977af70a5209faa29
+
 * Tracking 95% NFT: 2a69d7ce75ec961ab3329ddca7a9479044fb0b160b8fef26a632322b994ebced
 * Tracking 98% NFT: 1839000c4332ff55b162e974b04c0ed68a8dbf572f458c2692f067e73f0c74e9
 * Tracking 101% NFT: 14a15e8371c0dbde6335af9750336ea293b127489b0bb687416dfc2deb496f73
@@ -31,34 +30,34 @@ Tokens to be issued:
 * LP extract NFT: 0d83548d9a3d75d91e9362678c3a427a59ed74e31caff4b9e7d3ee7dae83f363
 * LP swap NFT: 9575571b4a25eb6309b115b5fb74305455807d227c91602eec603b6364bb6a02
 
-
+* GORT LP NFT: 601a587fd8c2921b52a77ad643f20efe9bf0f10110e3c21bf38381e590efa8a3
 
 ## Tracking contracts:
 
 * Tracking 95% contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/f1f853e33d73dd2ba2406c790e353c89db508068a2761cf8cddbc961e2d07c64
+https://testnet.ergoplatform.com/en/transactions/feb36ba6a63f877d4e3da4707d7ff67cccf696b121836716c4d0951074e2ad7c
 
 * Tracking 98% contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/c007b89f9b20197e9d6510cd98c300af4a1196bcdb619b6dcf5e64574c53ca18
+https://testnet.ergoplatform.com/en/transactions/19fb386a5490c29a401feaf3d2baad0f80df18c79171d0c427a909612c7e5dfd
 
 * Tracking 101% contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/fabeff5ae3865bb49bedf1d9f3bfe925c13f8103d55ae7831a8174d53cc51bf7
+https://testnet.ergoplatform.com/en/transactions/b5515d49f61280c06eaf9313b706e32924104cde7793f6909149cec2ca550b84
 
 * Arbitrage mint contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/fad9516c98c9f42817356637c7920f0bcd84fe0f1b7d4023a5857a229e1cd832
+https://testnet.ergoplatform.com/en/transactions/15b03f396d374d454f0545b2b0d0aa0b23a651ac2b987c5272dd1ad3e2da67b1
 
 * Bank contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/dd63dc1ab1e6661ebad540778b6e5d56ce12c0f278a50a38e443adce8679e54c
+https://testnet.ergoplatform.com/en/transactions/ca1c695de98228edad88006e1015544d19539132bfb9b011b4ff8b9e415ee92c
 
 * Buyback contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/3887b7bfb6f9bc02734ca09093e4adbe73a22e75133cbf28a7e145fb349c6971
+https://testnet.ergoplatform.com/en/transactions/8fb769e36c696644520460c18cde6f41541ce7e98ac53a93d12c2c51221ab484
 
 * Freemint contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/a40d0d8d897295b651e94ddbb595267b39146c2be1f13da941b33ab0ac35b2f6
+https://testnet.ergoplatform.com/en/transactions/0cc134a1a35dfda809220a681010c64aec9d2363b3c23f5bb8991fff0cc689ac
 
 
 * Intervention contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/1275b03b2450d9dba58bab14cfc7628886fc4bf63de98c21b7665c29261d4d3b
+https://testnet.ergoplatform.com/en/transactions/0f14fc9f1fa44ddf614e9cd2404e3531cc090dbf0b1358e543a07500f7829f5c
 
 
 
