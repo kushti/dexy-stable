@@ -35,14 +35,20 @@ Tokens to be issued:
 
 ## Tracking contracts:
 
-* Tracking 95% contract deployment transaction: 
-
+* Tracking 95% contract deployment transaction:
 https://testnet.ergoplatform.com/en/transactions/f1f853e33d73dd2ba2406c790e353c89db508068a2761cf8cddbc961e2d07c64
 
-* Tracking 98% contract deployment transaction: 
-
+* Tracking 98% contract deployment transaction:
 https://testnet.ergoplatform.com/en/transactions/c007b89f9b20197e9d6510cd98c300af4a1196bcdb619b6dcf5e64574c53ca18
 
-* Tracking 101% contract deployment transaction: 
-
+* Tracking 101% contract deployment transaction:
 https://testnet.ergoplatform.com/en/transactions/fabeff5ae3865bb49bedf1d9f3bfe925c13f8103d55ae7831a8174d53cc51bf7
+
+* Arbitrage mint contract deployment transaction:
+https://testnet.ergoplatform.com/en/transactions/fad9516c98c9f42817356637c7920f0bcd84fe0f1b7d4023a5857a229e1cd832
+
+* Bank contract deployment transaction:
+https://testnet.ergoplatform.com/en/transactions/dd63dc1ab1e6661ebad540778b6e5d56ce12c0f278a50a38e443adce8679e54c
+
+* Buyback contract deployment transaction:
+https://testnet.ergoplatform.com/en/transactions/3887b7bfb6f9bc02734ca09093e4adbe73a22e75133cbf28a7e145fb349c6971

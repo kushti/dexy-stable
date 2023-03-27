@@ -5,11 +5,13 @@ import kiosk.ergo._
 import kiosk.script.ScriptUtil
 import scorex.crypto.encode.Base16
 import scorex.util.encode.Base64
-import sigmastate.Values.{BooleanConstant, IntConstant}
+import sigmastate.Values.{BooleanConstant, IntConstant, LongConstant}
 import sigmastate.serialization.ValueSerializer
 
 object DexySpec {
   // oracle related tokens
+
+  val dexyTokenId = "06255873a0d7a75c05194eb7539becfd6e8b226fd58e90c977af70a5209faa29"
 
   // Gold Oracle Reward Token
   val gort = "e2636c9f0e32886954ab1f87ac2e016fdf53d63d8fa2101530d1e31ac59e365f"
@@ -201,7 +203,22 @@ object DexySpec {
     println(interventionScript)
     println()
 
-    def tracking(num: Int) = {
+
+    def scanRequest(name: String, nftId: String) = {
+      s"""
+        |{
+        |  "scanName": "$name",
+        |  "walletInteraction": "off",
+        |  "removeOffchain": true,
+        |  "trackingRule": {
+        |    "predicate": "containsAsset",
+        |    "assetId": "$nftId"
+        |  }
+        |}
+        |""".stripMargin
+    }
+
+    def trackingContractDeploymentRequest(num: Int) = {
 
       val num95 = Base16.encode(ValueSerializer.serialize(IntConstant(95)))
 
@@ -253,53 +270,107 @@ object DexySpec {
         |""".stripMargin
     }
 
+    def arbMintDeploymentRequest() = {
+
+      val intZero = Base16.encode(ValueSerializer.serialize(IntConstant(0)))
+      val longZero = Base16.encode(ValueSerializer.serialize(LongConstant(0)))
+
+      s"""
+         |{
+         |  "requests": [
+         |    {
+         |      "address": "$arbitrageMintAddress",
+         |      "value": 1000000000,
+         |      "assets": [
+         |        {
+         |          "tokenId": "$arbitrageMintNFT",
+         |          "amount": 1
+         |        }
+         |      ],
+         |      "registers": {
+         |        "R4": "$intZero",
+         |        "R5": "$longZero"
+         |      }
+         |    }
+         |  ],
+         |  "fee": 10000000
+         |}
+         |""".stripMargin
+    }
+
+    def bankContractDeploymentRequest() = {
+      s"""
+         |{
+         |  "requests": [
+         |    {
+         |      "address": "$bankAddress",
+         |      "value": 1000000000,
+         |      "assets": [
+         |        {
+         |          "tokenId": "$bankNFT",
+         |          "amount": 1
+         |        },
+         |        {
+         |          "tokenId": "$dexyTokenId",
+         |          "amount": $initialDexyTokens
+         |        }
+         |      ]
+         |    }
+         |  ],
+         |  "fee": 10000000
+         |}
+         |""".stripMargin
+    }
+
+    def buybackContractDeploymentRequest() = {
+      s"""
+         |{
+         |  "requests": [
+         |    {
+         |      "address": "$buybackAddress",
+         |      "value": 1000000000,
+         |      "assets": [
+         |        {
+         |          "tokenId": "$buybackNFT",
+         |          "amount": 1
+         |        }
+         |      ]
+         |    }
+         |  ],
+         |  "fee": 10000000
+         |}
+         |""".stripMargin
+    }
+
     println("============================Deployment requests===============================")
-    println("Tracking 95% tracking request: ")
-    println(
-      """
-        |{
-        |  "scanName": "Tracking 95%",
-        |  "walletInteraction": "off",
-        |  "removeOffchain": true,
-        |  "trackingRule": {
-        |    "predicate": "containsAsset",
-        |    "assetId": "2a69d7ce75ec961ab3329ddca7a9479044fb0b160b8fef26a632322b994ebced"
-        |  }
-        |}
-        |""".stripMargin)
+    println("Tracking 95% scan request: ")
+    println(scanRequest("Tracking 95%", tracking95NFT))
     println("Tracking 95% deployment request: ")
-    println(tracking(95))
+    println(trackingContractDeploymentRequest(95))
 
-    println("Tracking 98% tracking request: ")
-    println(
-      """
-        |{
-        |  "scanName": "Tracking 98%",
-        |  "walletInteraction": "off",
-        |  "removeOffchain": true,
-        |  "trackingRule": {
-        |    "predicate": "containsAsset",
-        |    "assetId": "1839000c4332ff55b162e974b04c0ed68a8dbf572f458c2692f067e73f0c74e9"
-        |  }
-        |}
-        |""".stripMargin)
+    println("Tracking 98% scan request: ")
+    println(scanRequest("Tracking 98%", tracking98NFT))
     println("Tracking 98% deployment request: ")
-    println(tracking(98))
+    println(trackingContractDeploymentRequest(98))
 
-    println("Tracking 101% tracking request: ")
-    println(
-      """
-        |{
-        |  "scanName": "Tracking 98%",
-        |  "walletInteraction": "off",
-        |  "removeOffchain": true,
-        |  "trackingRule": {
-        |    "predicate": "containsAsset",
-        |    "assetId": "14a15e8371c0dbde6335af9750336ea293b127489b0bb687416dfc2deb496f73"
-        |  }
-        |}
-        |""".stripMargin)
+    println("Tracking 101% scan request: ")
+    println(scanRequest("Tracking 101%", tracking101NFT))
     println("Tracking 101% deployment request: ")
-    println(tracking(101))
+    println(trackingContractDeploymentRequest(101))
+
+    println("Arb mint scan request: ")
+    println(scanRequest("Arbitrage mint", arbitrageMintNFT))
+    println("Arb mint deployment request: ")
+    println(arbMintDeploymentRequest())
+
+    println("Bank scan request: ")
+    println(scanRequest("Bank", bankNFT))
+    println("Bank contract deployment request: ")
+    println(bankContractDeploymentRequest())
+
+    println("Buyback scan request: ")
+    println(scanRequest("Buyback", buybackNFT))
+    println("Buyback contract deployment request: ")
+    println(buybackContractDeploymentRequest())
   }
 }

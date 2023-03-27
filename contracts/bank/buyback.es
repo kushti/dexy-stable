@@ -8,6 +8,9 @@
   //  - buyback NFT
   //  - gort
   //
+  //  Registers:
+  //    None
+  //
   // Swap:
   //
   //   Input         |  Output        |   Data-Input
