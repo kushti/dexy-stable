@@ -3,6 +3,8 @@
 
 ## Testnet
 
+### Tokens
+
 * GORT: e2636c9f0e32886954ab1f87ac2e016fdf53d63d8fa2101530d1e31ac59e365f
 * oracle pool NFT = "f2f64bab1f2e9ab65c0e4a6a65eed0b26c5276eb5dda01d4a0e0ebe8a85bfbfc"
 * oracle token ID = "cc8d50d2a9f0f1254f363ee66a3c65e73ea8046386c001544b08841743df411d"
@@ -30,7 +32,7 @@
 
 * GORT LP NFT: 601a587fd8c2921b52a77ad643f20efe9bf0f10110e3c21bf38381e590efa8a3
 
-## Tracking contracts:
+### Deployment transactions
 
 * Tracking 95% contract deployment transaction:
 https://testnet.ergoplatform.com/en/transactions/feb36ba6a63f877d4e3da4707d7ff67cccf696b121836716c4d0951074e2ad7c
