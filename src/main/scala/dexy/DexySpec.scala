@@ -12,6 +12,8 @@ object DexySpec {
 
   val dexyTokenId = "06255873a0d7a75c05194eb7539becfd6e8b226fd58e90c977af70a5209faa29"
 
+  val lpTokenId = "24ca9980f2303efd357790295c3341160b53c17554238fd987d3ed0e36e9b5d7"
+
   // Gold Oracle Reward Token
   val gort = "e2636c9f0e32886954ab1f87ac2e016fdf53d63d8fa2101530d1e31ac59e365f"
   // GORT / ERG LP
@@ -367,6 +369,103 @@ object DexySpec {
          |""".stripMargin
     }
 
+    def lpSwapDeploymentRequest() = {
+      s"""
+         |  [
+         |    {
+         |      "address": "$lpSwapAddress",
+         |      "value": 1000000000,
+         |      "assets": [
+         |        {
+         |          "tokenId": "$lpSwapNFT",
+         |          "amount": 1
+         |        }
+         |      ]
+         |    }
+         |  ]
+         |""".stripMargin
+    }
+
+    def lpMintDeploymentRequest() = {
+      s"""
+         |  [
+         |    {
+         |      "address": "$lpMintAddress",
+         |      "value": 1000000000,
+         |      "assets": [
+         |        {
+         |          "tokenId": "$lpMintNFT",
+         |          "amount": 1
+         |        }
+         |      ]
+         |    }
+         |  ]
+         |""".stripMargin
+    }
+
+    def lpRedeemDeploymentRequest() = {
+      s"""
+         |  [
+         |    {
+         |      "address": "$lpRedeemAddress",
+         |      "value": 1000000000,
+         |      "assets": [
+         |        {
+         |          "tokenId": "$lpRedeemNFT",
+         |          "amount": 1
+         |        }
+         |      ]
+         |    }
+         |  ]
+         |""".stripMargin
+    }
+
+    def lpExtractDeploymentRequest() = {
+      s"""
+         |  [
+         |    {
+         |      "address": "$extractAddress",
+         |      "value": 1000000000,
+         |      "assets": [
+         |        {
+         |          "tokenId": "$extractionNFT",
+         |          "amount": 1
+         |        },
+         |        {
+         |          "tokenId": "$dexyTokenId",
+         |          "amount": 1
+         |        },
+         |      ]
+         |    }
+         |  ]
+         |""".stripMargin
+    }
+
+    def lpDeploymentRequest() = {
+      s"""
+         |  [
+         |    {
+         |      "address": "$lpAddress",
+         |      "value": 43224547253880,
+         |      "assets": [
+         |        {
+         |          "tokenId": "$lpNFT",
+         |          "amount": 1
+         |        },
+         |        {
+         |          "tokenId": "$lpTokenId",
+         |          "amount": ${initialLp - 6400000000L}
+         |        },
+         |        {
+         |          "tokenId": "$dexyTokenId",
+         |          "amount": 1000000
+         |        }
+         |      ]
+         |    }
+         |  ]
+         |""".stripMargin
+    }
+
     println("============================Deployment requests===============================")
     println("Tracking 95% scan request: ")
     println(scanRequest("Tracking 95%", tracking95NFT))
@@ -407,5 +506,30 @@ object DexySpec {
     println(scanRequest("Intervention", interventionNFT))
     println("Intervention contract deployment request: ")
     println(interventionDeploymentRequest())
+
+    println("LP swap scan request: ")
+    println(scanRequest("LP swap", lpSwapNFT))
+    println("LP swap contract deployment request: ")
+    println(lpSwapDeploymentRequest())
+
+    println("LP mint scan request: ")
+    println(scanRequest("LP mint", lpMintNFT))
+    println("LP mint contract deployment request: ")
+    println(lpMintDeploymentRequest())
+
+    println("LP redeem scan request: ")
+    println(scanRequest("LP redeem", lpRedeemNFT))
+    println("LP redeem contract deployment request: ")
+    println(lpRedeemDeploymentRequest())
+
+    println("LP extract scan request: ")
+    println(scanRequest("LP extract", extractionNFT))
+    println("LP extract contract deployment request: ")
+    println(lpExtractDeploymentRequest())
+
+    println("LP scan request: ")
+    println(scanRequest("LP", lpNFT))
+    println("LP contract deployment request: ")
+    println(lpDeploymentRequest())
   }
 }

@@ -1,7 +1,5 @@
 # Deployment Notes
 
-Tokens to be issued: 
-* 
 
 ## Testnet
 
@@ -59,6 +57,20 @@ https://testnet.ergoplatform.com/en/transactions/0cc134a1a35dfda809220a681010c64
 * Intervention contract deployment transaction:
 https://testnet.ergoplatform.com/en/transactions/0f14fc9f1fa44ddf614e9cd2404e3531cc090dbf0b1358e543a07500f7829f5c
 
+* LP contract deployment transaction:
+https://testnet.ergoplatform.com/en/transactions/9f2b3ad39ddf3fdeee74502850449793462c6f2f9f19577222e770d9ca48828b
+  
+* LP swap contract deployment transaction:
+https://testnet.ergoplatform.com/en/transactions/64559c2aec3d134e9b206abae0b08f254d0fe93ad1b38d25f0fdf2915107a3fe
+
+* LP mint contract deployment transaction:
+https://testnet.ergoplatform.com/en/transactions/a8e72c89ea3de44c2f804314f4e5b73c5f4f0737abf7bb722665fddfddaa3f1c
+
+* LP redeem contract deployment transaction:
+https://testnet.ergoplatform.com/en/transactions/44e608b7f06eeb9399e8f6b6ced53a5f84d74ef49ab169bc0b52b58586aff5be
+
+* LP extract contract deployment transaction:
+https://testnet.ergoplatform.com/en/transactions/ac31d58778930b5dfdc1802aee97b4ca3327cc7c24acd1509583fc4e1f11e73d
 
 
-// TODO: LP with actions and payout
+// TODO: payout
