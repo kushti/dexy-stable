@@ -4,8 +4,8 @@ import scala.util.Random
 
 case class Bank(E: Double, O: Double)
 
-case class LiquidityPool(e: Double, u: Double) {
-  def poolPrice: Double = u / e
+case class LiquidityPool(erg: Double, usd: Double) {
+  def poolPrice: Double = usd / erg
 }
 
 trait Oracle {
@@ -28,7 +28,7 @@ object Functions {
 
   def safeE(pool: LiquidityPool, bank: Bank, oracle: Oracle): Double = {
     val s = calcS(oracle)
-    Math.sqrt(pool.e * pool.u / s.toDouble) + bank.O / s.toDouble
+    Math.sqrt(pool.erg * pool.usd / s.toDouble) + bank.O / s.toDouble
   }
 
   def safeE(st: State): Double = safeE(st.liquidityPool, st.bank, st.time)
@@ -39,16 +39,16 @@ object Functions {
   }
 
   def arbMint(bank: Bank, liquidityPool: LiquidityPool, oracle: Oracle): Bank = {
-    val amtUSD = Math.sqrt(oracle.p * liquidityPool.e * liquidityPool.u) - liquidityPool.u
-    val amtERG = amtUSD / oracle.p * 1.01
+    val amtUSD = Math.sqrt(oracle.p * liquidityPool.erg * liquidityPool.usd) - liquidityPool.usd
+    val amtERG = amtUSD / oracle.p * 1.003
     Bank(bank.E + amtERG, bank.O + amtUSD)
   }
 
   def arb(bank: Bank, liquidityPool: LiquidityPool, targetPrice: Double): (Bank, LiquidityPool) = {
-    val amtUSD = Math.sqrt(targetPrice * liquidityPool.e * liquidityPool.u) - liquidityPool.u
+    val amtUSD = Math.sqrt(targetPrice * liquidityPool.erg * liquidityPool.usd) - liquidityPool.usd
     val newBank = Bank(bank.E, bank.O - amtUSD)
-    val newE = liquidityPool.e * liquidityPool.u / (liquidityPool.u + amtUSD)
-    val newPool = LiquidityPool(newE, liquidityPool.u + amtUSD)
+    val newE = liquidityPool.erg * liquidityPool.usd / (liquidityPool.usd + amtUSD)
+    val newPool = LiquidityPool(newE, liquidityPool.usd + amtUSD)
     newBank -> newPool
   }
 
@@ -57,13 +57,13 @@ object Functions {
   }
 
   def ergIntervention(bank: Bank, liquidityPool: LiquidityPool, oracle: Oracle): (Bank, LiquidityPool) = {
-    val amtERG = Math.min(
-      Math.sqrt(liquidityPool.e * liquidityPool.u / oracle.p) - liquidityPool.e,
+    val amtERG = Math.max(Math.min(
+      Math.sqrt(liquidityPool.erg * liquidityPool.usd / oracle.p) - liquidityPool.erg,
       bank.E
-    )
+    ), bank.E / 100)
     val newBank = Bank(bank.E - amtERG, bank.O)
-    val newU = liquidityPool.e * liquidityPool.u / (liquidityPool.e + amtERG)
-    val newPool = LiquidityPool(liquidityPool.e + amtERG, newU)
+    val newU = liquidityPool.erg * liquidityPool.usd / (liquidityPool.erg + amtERG)
+    val newPool = LiquidityPool(liquidityPool.erg + amtERG, newU)
     newBank -> newPool
   }
 
@@ -72,12 +72,12 @@ object Functions {
   }
 
   def burn(pool: LiquidityPool, oracle: Oracle): LiquidityPool = {
-    LiquidityPool(pool.e, oracle.p * pool.e)
+    LiquidityPool(pool.erg, oracle.p * pool.erg)
   }
 
   def freeMint(bank: Bank, liquidityPool: LiquidityPool, oracle: Oracle): Bank = {
-    val amtUSD = liquidityPool.u / 100
-    val amtERG = amtUSD / oracle.p
+    val amtUSD = liquidityPool.usd / 100
+    val amtERG = amtUSD / oracle.p * 1.003
     Bank(bank.E + amtERG, bank.O + amtUSD)
   }
 }
@@ -90,28 +90,27 @@ object DexySimulation extends App {
   val CoinsInOneErgo = 1000000000L
   val CentsInOneUSD = 100L
 
-
-  val p = 2
+  val p = 2000
   val lp = LiquidityPool(10000, 20000)
   val bank = Bank(10000, 0)
   val time = Time(p, 1)
 
   val initialState = State(bank, lp, time)
 
-  (2 to 10000).foldLeft(initialState) { case (st, epoch) =>
+  (2 to 100000).foldLeft(initialState) { case (st, epoch) =>
     println("price: " + st.time.p + " safe E: " + safeE(st) + " bank: " + st.bank + " pool: " + st.liquidityPool)
 
     val direction = Random.nextBoolean()
-    val delta = Random.nextDouble() / 30 * st.time.p
+    val delta = Random.nextDouble() / 50 * st.time.p
     val price = if (direction) {
-      st.time.p + delta * 1.04
+      st.time.p + delta
     } else {
       st.time.p - delta
     }
 
     val newTime = Time(price, epoch)
 
-    val (newBank, newPool) = if (arbMintPossible(st.liquidityPool, newTime)) {
+    val (beforeBank, beforePool) = if (arbMintPossible(st.liquidityPool, newTime)) {
       println("ARB, pool price: " + st.liquidityPool.poolPrice)
       arb(arbMint(st.bank, st.liquidityPool, newTime), st.liquidityPool, newTime.p)
     } else if (ergInterventionNeeded(st.liquidityPool, st.bank, newTime)) {
@@ -125,7 +124,18 @@ object DexySimulation extends App {
       freeMint(st.bank, st.liquidityPool, newTime) -> st.liquidityPool
     }
 
-    // todo: add random trades
+    val (newBank, newPool) = if (Random.nextInt(20) == 0 && beforeBank.O.toInt > 0) {
+      val rnd = Random.nextInt(beforeBank.O.toInt)
+      val tradeAmount = Math.min(Math.min(rnd, beforeBank.O / 10), beforePool.usd / 10)
+      val newBank = Bank(beforeBank.E, beforeBank.O - tradeAmount)
+
+      val newPoolUsd = beforePool.usd + tradeAmount
+      val newPoolErg = beforePool.erg * beforePool.usd / newPoolUsd
+      println(s"Dumping $tradeAmount USD, pool price after dump: ${newPoolUsd / newPoolErg}" )
+      newBank -> LiquidityPool(newPoolErg, newPoolUsd)
+    } else {
+      beforeBank -> beforePool
+    }
 
     State(newBank, newPool, newTime)
   }
