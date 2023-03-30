@@ -61,35 +61,14 @@
   val ergsRemoved = bankBoxOut.value - bankBoxIn.value
   val ergsTaken = rewardBoxOut.value
 
-  val oracleRate = oracleBox.R4[Long].get // nanoErgs per USD
+  // oracle delivers nanoErgs per 1 kg of gold
+  // we divide it by 1000000 to get nanoErg per dexy, i.e. 1mg of gold
+  val oracleRate = oracleBox.R4[Long].get / 1000000L
 
   val lpRate = lpReservesX / lpReservesY
 
   val dexyInCirculation = $initialDexyTokens - bankDexy
-
-  // We have the parameter payoutThreshold for ensuring that the bank has at least that many ergs
-  // before payout. However, we need to also ensure that there are enough ergs in the bank to
-  // cover the "worst case scenario" described in  section "4 Worst Scenario and Bank Reserves" in paper,
-  // The following notation is used
-  val O = dexyInCirculation // (note: capital o, not zero)
-  val p = lpRate // initial rate
-  val s = oracleRate // final lower rate after crash
-  val e = lpReservesX // Ergs in LP
-  val u = lpReservesY // Dexy in LP
-
-  // we also use the symbol b = bankBoxOut.value (Remaining (nano)Ergs in bank)
-  val b = bankBoxOut.value
-
-  // We want finalErgs in bank, b > sqrt(e * u / s) - e + O / s
-  // or                         b + e - O / s > sqrt(e * u / s)
-  // let x = b + e - O / s
-  // then we need               x ^ 2 > e * u / s
-
-  val x = b.toBigInt + e - O / s
-
-  val y = e.toBigInt * u / s
-
-  val handledWorstCase = x * x > y
+  val handledWorstCase = oracleRate * bankBoxIn.value > dexyInCirculation * 2 // > 200% collateralizationn
 
   // no need to validate bank NFT here
   val validBank = bankBoxOut.propositionBytes == bankBoxIn.propositionBytes && // script preserved
