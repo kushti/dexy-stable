@@ -9,7 +9,6 @@ import sigmastate.serialization.ValueSerializer
 
 object DexySpec {
   // oracle related tokens
-
   val dexyTokenId = "06255873a0d7a75c05194eb7539becfd6e8b226fd58e90c977af70a5209faa29"
 
   val lpTokenId = "24ca9980f2303efd357790295c3341160b53c17554238fd987d3ed0e36e9b5d7"
@@ -467,6 +466,9 @@ object DexySpec {
     }
 
     println("============================Deployment requests===============================")
+    println("Oracle pool scan request: ")
+    println(scanRequest("Oracle pool", oraclePoolNFT))
+
     println("Tracking 95% scan request: ")
     println(scanRequest("Tracking 95%", tracking95NFT))
     println("Tracking 95% deployment request: ")
