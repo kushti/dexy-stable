@@ -68,11 +68,10 @@
   val lpRate = lpReservesX / lpReservesY
 
   val dexyInCirculation = $initialDexyTokens - bankDexy
-  val handledWorstCase = oracleRate * bankBoxIn.value > dexyInCirculation * 2 // > 200% collateralizationn
+  val collateralized = oracleRate * bankBoxIn.value > dexyInCirculation * 2 // > 200% collateralization
 
-  // no need to validate bank NFT here
-  val validBank = bankBoxOut.propositionBytes == bankBoxIn.propositionBytes && // script preserved
-                  bankBoxOut.tokens == bankBoxIn.tokens                     && // tokens preserved
+  // no need to validate bank NFT and proposition here
+  val validBank = bankBoxOut.tokens == bankBoxIn.tokens                     && // tokens preserved
                   ergsRemoved == ergsTaken
 
   val validSuccessor = successor.propositionBytes == SELF.propositionBytes && // script preserved
@@ -85,5 +84,5 @@
                     ergsTaken >= minPayOut                                        && // cannot take too little (dust, etc)
                     ergsTaken <= maxPayOut                                           // cannot take too much
 
-  sigmaProp(validBank && validSuccessor && validPayout && validOracle && validLP && handledWorstCase)
+  sigmaProp(validBank && validSuccessor && validPayout && validOracle && validLP && collateralized)
 }
