@@ -39,15 +39,15 @@ class OffchainUtils(serverUrl: String, apiKey: String, dexyScanIds: DexyScanIds)
     boxesUnspentJson.\\("box").map(_.as[ErgoBox].toOption.get)
   }
 
-  def tracking95Box() = unspentScanBoxes(dexyScanIds.tracking95ScanId).headOption
+  def tracking95Box(): Option[ErgoBox] = unspentScanBoxes(dexyScanIds.tracking95ScanId).headOption
 
-  def tracking98Box() = unspentScanBoxes(dexyScanIds.tracking95ScanId).headOption
+  def tracking98Box(): Option[ErgoBox] = unspentScanBoxes(dexyScanIds.tracking95ScanId).headOption
 
-  def tracking101Box() = unspentScanBoxes(dexyScanIds.tracking95ScanId).headOption
+  def tracking101Box(): Option[ErgoBox] = unspentScanBoxes(dexyScanIds.tracking95ScanId).headOption
 
-  def oraclePoolBox() = unspentScanBoxes(dexyScanIds.oraclePoolScanId).headOption
+  def oraclePoolBox(): Option[ErgoBox] = unspentScanBoxes(dexyScanIds.oraclePoolScanId).headOption
 
-  def lpBox() = unspentScanBoxes(dexyScanIds.lpScanId).headOption
+  def lpBox(): Option[ErgoBox] = unspentScanBoxes(dexyScanIds.lpScanId).headOption
 }
 
 object Test extends App {

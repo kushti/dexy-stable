@@ -55,7 +55,10 @@
                          successor.propositionBytes == SELF.propositionBytes  &&
                          SELF.value <= successor.value
 
-    val oracleRateXY = oracleBox.R4[Long].get
+    // oracle delivers nanoErgs per 1 kg of gold
+    // we divide it by 1000000 to get nanoErg per dexy, i.e. 1mg of gold
+    // can assume always > 0 (ref oracle pool contracts) NanoErgs per USD
+    val oracleRateXY = oracleBox.R4[Long].get / 1000000L
     val reservesX = lpBox.value
     val reservesY = tokenY._2   // Dexy tokens quantity
     val lpRateXY = reservesX / reservesY  // we can assume that reservesY > 0 (since at least one token must exist)
