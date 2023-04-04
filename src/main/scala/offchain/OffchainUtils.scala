@@ -2,7 +2,7 @@ package offchain
 
 import io.circe.parser.parse
 import org.ergoplatform.{DataInput, ErgoBox, ErgoBoxCandidate, ErgoScriptPredef, UnsignedInput}
-import org.ergoplatform.ErgoBox.R4
+import org.ergoplatform.ErgoBox.{R4, R7}
 import org.ergoplatform.http.api.ApiCodecs
 import org.ergoplatform.modifiers.mempool.{ErgoTransaction, ErgoTransactionSerializer, UnsignedErgoTransaction}
 import org.ergoplatform.nodeView.state.{ErgoStateContext, VotingData}
@@ -16,6 +16,7 @@ import scalaj.http.{Http, HttpOptions}
 import scorex.util.encode.Base16
 import sigmastate.interpreter.ContextExtension
 import org.ergoplatform.wallet.interface4j.SecretString
+import sigmastate.Values.IntConstant
 
 
 case class DexyScanIds(tracking95ScanId: Int,
@@ -67,9 +68,9 @@ class OffchainUtils(serverUrl: String,
 
   def tracking95Box(): Option[ErgoBox] = unspentScanBoxes(dexyScanIds.tracking95ScanId).headOption
 
-  def tracking98Box(): Option[ErgoBox] = unspentScanBoxes(dexyScanIds.tracking95ScanId).headOption
+  def tracking98Box(): Option[ErgoBox] = unspentScanBoxes(dexyScanIds.tracking98ScanId).headOption
 
-  def tracking101Box(): Option[ErgoBox] = unspentScanBoxes(dexyScanIds.tracking95ScanId).headOption
+  def tracking101Box(): Option[ErgoBox] = unspentScanBoxes(dexyScanIds.tracking101ScanId).headOption
 
   def oraclePoolBox(): Option[ErgoBox] = unspentScanBoxes(dexyScanIds.oraclePoolScanId).headOption
 
@@ -102,7 +103,7 @@ class OffchainUtils(serverUrl: String,
     txBytes
   }
 
-  def updateTracker101(alarm: Boolean): Array[Byte] = {
+  def updateTracker101(alarmHeight: Option[Int]): Array[Byte] = {
     val feeInputs = fetchWalletInputs().take(3)
     val trackingBox = tracking101Box().head
     val inputBoxes = (IndexedSeq(trackingBox) ++ feeInputs)
@@ -114,7 +115,15 @@ class OffchainUtils(serverUrl: String,
 
     val changeValue = inputBoxes.map(_.value).sum - fee
     val changeBox = new ErgoBoxCandidate(changeValue, feeInputs.head.ergoTree, inputsHeight)
-    val outputs = IndexedSeq(trackingBox.toCandidate, changeBox, feeOut(inputsHeight))
+
+    val updRegisters = trackingBox.additionalRegisters.updated(R7, IntConstant(alarmHeight.getOrElse(Int.MaxValue)))
+    val updTracking = new ErgoBoxCandidate(trackingBox.value,
+                                           trackingBox.ergoTree,
+                                           inputsHeight,
+                                           trackingBox.additionalTokens,
+                                           updRegisters)
+
+    val outputs = IndexedSeq(updTracking, changeBox, feeOut(inputsHeight))
 
     val utx = new UnsignedErgoTransaction(inputs, dataInputs, outputs)
     signTransaction("tracking95 update: ", utx, inputBoxes, dataInputBoxes)
@@ -145,6 +154,6 @@ object Test extends App {
 
   val currentHeight = utils.currentHeight()
 
-  utils.updateTracker101(alarm = true)
+  utils.updateTracker101(Some(currentHeight))
 
 }
