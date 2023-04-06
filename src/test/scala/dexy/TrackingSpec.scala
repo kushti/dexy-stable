@@ -16,6 +16,9 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
 
   property("Trigger 98% tracker should work") {
     // oracle is showing price in X per Y (e.g. nanoErg per mg of gold)
+    // real oracle pool 2.0 delivering price in nanoErg per kg, and contracts are normalizing t by dividing by 1M
+    // 98% protocol should be triggered when price below the peg
+    // it happens when lp price is below oracle price
 
     val lpInCirc = 10000L
     val oracleRateXY = 10205L * 1000000L
