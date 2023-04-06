@@ -2,7 +2,7 @@
   // GORT (Gold Oracle Reward Token) buyback script
   //
   // It is accepting ERGs (via top-up action), swapping them in ERG/GORT LP pool to get GORT, and gives GORT back
-  // to oracle pool
+  // to oracle pool. See detailed description of the actions below.
   //
   // Tokens:
   //  - buyback NFT
@@ -36,8 +36,9 @@
 
   val action = getVar[Int](0).get
 
-  if(action == 0) {
+  if (action == 0) {
     // swap path
+    // the contract is buying back GORTs from ERG/GORT LP here
     val buybackNft = SELF.tokens(0)._1
 
     // checking that swap inputs provided
@@ -45,7 +46,8 @@
     val lpCorrect = poolInput.tokens(0)._1 == fromBase64("$gortLpNFT")
 
     // checking that gort tokens are in LP and buyback outputs only
-    // we consider other outputs are fee and maybe change, and change output could not have tokens
+    // we consider other outputs are fee and maybe change,
+    // and change output could not have tokens, offchain logic needs to ensure that
     def noTokens(b: Box) = b.tokens.size == 0
     val outputsCorrect = OUTPUTS.slice(2, OUTPUTS.size).forall(noTokens)
 
@@ -63,6 +65,7 @@
     sigmaProp(lpCorrect && outputsCorrect && selfOutCorrect && swapCorrect)
   } else if(action == 1) {
     // top-up path
+    // we allow to add Ergs while preserving contract and tokens
     val selfOut = OUTPUTS(2)
     val topUp = selfOut.tokens == SELF.tokens &&
                 selfOut.propositionBytes == SELF.propositionBytes &&
@@ -70,6 +73,13 @@
     sigmaProp(topUp)
   } else {
     // return path
+    // we allow to return GORT tokens to oracle pool
+    // hovewer, oracle pool contract does not have dedicated top-up action,
+    // but it allows to add tokens when paying rewards to oracles.
+    // Thus we need to copy reward logic from oracle pool contract here to be sure the contract
+    // is receiving all the tokens deducted from this box
+
+    // starting copying from oracle pool contract
     val minStartHeight = HEIGHT - $epochLength
     val poolIn = INPUTS(0)
 
@@ -81,6 +91,7 @@
 
     val dataPoints = INPUTS.filter(isValidDataPoint)
     val rewardEmitted = dataPoints.size * 2
+    // finishing copying from oracle pool contract
 
     val selfGort = SELF.tokens(1)._2
     val properGiving =  poolIn.tokens(0)._1 == fromBase64("$oracleNFT") &&

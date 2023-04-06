@@ -123,10 +123,13 @@ class OffchainUtils(serverUrl: String,
                                            trackingBox.additionalTokens,
                                            updRegisters)
 
+    println("t: " + trackingBox)
+    println("ut: " + updTracking)
+
     val outputs = IndexedSeq(updTracking, changeBox, feeOut(inputsHeight))
 
     val utx = new UnsignedErgoTransaction(inputs, dataInputs, outputs)
-    signTransaction("tracking95 update: ", utx, inputBoxes, dataInputBoxes)
+    signTransaction("tracking101 update: ", utx, inputBoxes, dataInputBoxes)
   }
 }
 

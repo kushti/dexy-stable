@@ -46,7 +46,7 @@
     val oracleBox = CONTEXT.dataInputs(oracleBoxIndex)
     val successor = OUTPUTS(selfOutIndex)
 
-    val tokenY = lpBox.tokens(2)  // Dexy USDtokens
+    val tokenY = lpBox.tokens(2)  // Dexy tokens
 
     val validLp = lpBox.tokens(0)._1 == lpNFT
 
@@ -79,18 +79,18 @@
     // 3     | 101 | 100   | _      | false    (for release in future - reverse of extract to future)
 
 
-    val denomIn = SELF.R4[Int].get
-    val numIn = SELF.R5[Int].get
+    val numIn = SELF.R4[Int].get
+    val denomIn = SELF.R5[Int].get
     val isBelowIn = SELF.R6[Boolean].get
     val trackerHeightIn = SELF.R7[Int].get
 
-    val denomOut = successor.R4[Int].get
-    val numOut = successor.R5[Int].get
+    val numOut = successor.R4[Int].get
+    val denomOut = successor.R5[Int].get
     val isBelowOut = successor.R6[Boolean].get
     val trackerHeightOut = successor.R7[Int].get
 
     val validTracking = {
-        // For a ratio of 95%, set num to 95 and denom to 100 (equivalently 19, 20), and set isBelow to true
+        // For a ratio of 95%, set num to 95 and denom to 100, and set isBelow to true
         // Then trackerHeight will be set when oracle pool rate becomes <= 95% of LP rate
         // and it will be reset to Int.MaxValue when that rate becomes > than 95% of LP rate
         //
@@ -99,14 +99,14 @@
         //
         // EVENT    | isBelow | INPUT       | OUTPUT
         // ---------+---------+-------------+-----------
-        // trigger  | true    | P/L0 >= N/D | P/L1 <  N/D
-        // reset    | true    | P/L0 <  N/D | P/L1 >= N/D (reverse of 1st row)
+        // trigger  | true    | L0/P >= N/D | L1/P <  N/D
+        // reset    | true    | L0/P <  N/D | L1/P >= N/D (reverse of 1st row)
         // ---------+---------+-------------+------------
-        // trigger  | false   | P/L0 <= N/D | P/L1 >  N/D
-        // reset    | false   | P/L0 >  N/D | P/L1 <= N/D (reverse of 1st row)
+        // trigger  | false   | L0/P <= N/D | L1/P >  N/D
+        // reset    | false   | L0/P >  N/D | L1/P <= N/D (reverse of 1st row)
 
-        val x = oracleRateXY * denomIn
-        val y = numIn * lpRateXY
+        val x = lpRateXY * denomIn
+        val y = numIn * oracleRateXY
 
         val notTriggeredEarlier = trackerHeightIn == $intMax  // Infinity
         val triggeredNow = trackerHeightOut >= HEIGHT - threshold &&
@@ -125,5 +125,5 @@
         correctAction
     }
 
-    sigmaProp(validSuccessor && validLp && validTracking && validOracleBox)
+    sigmaProp(validSuccessor && validLp && validOracleBox && validTracking)
 }

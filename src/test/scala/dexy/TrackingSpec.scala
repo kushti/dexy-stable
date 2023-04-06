@@ -15,6 +15,103 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   val fakeNanoErgs = 10000000000000L
 
   property("Trigger 98% tracker should work") {
+    // oracle is showing price in X per Y (e.g. nanoErg per mg of gold)
+
+    val lpInCirc = 10000L
+    val oracleRateXY = 10205L * 1000000L
+    val lpBalance = 10000000L
+    val reservesX = 10000000000L
+    val reservesY = 1000000L
+
+    val numIn = 49 // 49/50 = 98%
+    val denomIn = 50
+
+    val lpRateXY = reservesX / reservesY
+    val x = lpRateXY * denomIn
+    val y = numIn * oracleRateXY
+
+    println(x)
+    println(y)
+
+    val toTrigger = x < y
+    assert(toTrigger)
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      val trackingHeightOut = ctx.getHeight
+      val trackingHeightIn = Int.MaxValue
+
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val oracleBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
+          .registers(KioskLong(oracleRateXY).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId2, fakeIndex)
+
+      val lpBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(reservesX)
+          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalance), new ErgoToken(dexyUSD, reservesY))
+          .registers(KioskLong(lpInCirc).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
+          .build()
+          .convertToInputWith(fakeTxId3, fakeIndex)
+
+      val tracking98Box =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(tracking98NFT, 1))
+          .registers(
+            KioskInt(numIn).getErgoValue, // numerator for 98%
+            KioskInt(denomIn).getErgoValue, // denominator for 98%
+            KioskBoolean(true).getErgoValue, // isBelow == true
+            KioskInt(trackingHeightIn).getErgoValue // currently set to INF (input box state is "notTriggeredEarlier")
+          )
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .build()
+          .convertToInputWith(fakeTxId4, fakeIndex)
+
+      val validTrackingOutBox = KioskBox(
+        trackingAddress,
+        minStorageRent,
+        registers = Array(KioskInt(numIn), KioskInt(denomIn), KioskBoolean(true), KioskInt(trackingHeightOut)),
+        tokens = Array((tracking98NFT, 1))
+      )
+
+      // all ok, not triggered earlier, triggered now
+      noException shouldBe thrownBy {
+        TxUtil.createTx(
+          Array(tracking98Box, fundingBox),
+          Array(oracleBox, lpBox),
+          Array(validTrackingOutBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          false
+        )
+      }
+    }
+  }
+
+
+  property("Trigger 98% tracker should fail if price is not below") {
     // following params will decide if its a valid tracking or not
     val lpInCirc = 10000L
     val oracleRateXY = 10000L
@@ -22,10 +119,12 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     val reservesX = 10000000000L
     val reservesY = 1000000L
 
-    val denomIn = 49 // 49/50 = 98%
-    val numIn = 50
+    val denomIn = 50 // 49/50 = 98%
+    val numIn = 49
 
     val lpRateXY = reservesX / reservesY
+    assert(oracleRateXY == lpRateXY)
+
     val x = oracleRateXY * denomIn
     val y = numIn * lpRateXY
 
@@ -91,7 +190,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
       )
 
       // all ok, not triggered earlier, triggered now
-      noException shouldBe thrownBy {
+      the[Exception] thrownBy {
         TxUtil.createTx(
           Array(tracking98Box, fundingBox),
           Array(oracleBox, lpBox),
@@ -102,7 +201,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           Array[DhtData](),
           false
         )
-      }
+      } should have message "Script reduced to false"
     }
   }
 

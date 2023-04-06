@@ -1,7 +1,6 @@
 package dexy
 
 import kiosk.ergo._
-import kiosk.script.ScriptUtil
 import org.ergoplatform.{ErgoAddress, ErgoAddressEncoder}
 import org.ergoplatform.ErgoAddressEncoder.{MainnetNetworkPrefix, TestnetNetworkPrefix}
 import sigmastate.Values.ErgoTree
@@ -13,7 +12,7 @@ import scala.collection.mutable.{Map => MMap}
 
 object ScriptUtil {
 
-  val networkPrefix = TestnetNetworkPrefix
+  val networkPrefix = MainnetNetworkPrefix
   private val compiler = SigmaCompiler(CompilerSettings(networkPrefix, TransformingSigmaBuilder, lowerMethodCalls = true))
 
   implicit val ergoAddressEncoder: ErgoAddressEncoder = new ErgoAddressEncoder(networkPrefix)
