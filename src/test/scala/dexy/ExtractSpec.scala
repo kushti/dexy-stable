@@ -25,7 +25,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   //  cannot work when Bank has enough ergs
 
   property("Extract to future (extract Dexy from Lp and store in extract box) should work") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
     val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
     val T_extract = 10 // blocks for which the rate is below 95%
@@ -44,7 +44,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     // final ratio of X/Y = 10204
     val lpRateXYOut = lpReservesXOut / lpReservesYOut
     assert(lpRateXYOut == 10204)
-    assert(oracleRateXy * 100 > lpRateXYOut * 98 && oracleRateXy * 100 < lpRateXYOut * 101)
+    assert(oracleRateXy * 100 / 1000000L > lpRateXYOut * 98 && oracleRateXy * 100 / 1000000L < lpRateXYOut * 101)
 
     val lpBalanceOut = lpBalanceIn
 

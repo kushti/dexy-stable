@@ -17,15 +17,15 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   val dummyNanoErgs = 100000L
 
   property("Arbitrage mint (remove Dexy from and adding Ergs to bank box) should work") {
-    val oracleRateXy = 9000L // ToDo: test for ranges of oracleRateXy (very low to very high)
+    val oracleRateXy = 9000L * 1000000L // ToDo: test for ranges of oracleRateXy (very low to very high)
 
     // implies 0.5 % fee in total
     val bankFeeNum = 3
     val buybackFeeNum = 2
     val feeDenom = 1000
 
-    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
-    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom / 1000000L
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom / 1000000L
 
     val oracleRateXyWithFee = bankRate + buybackRate
 
@@ -37,7 +37,7 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
 
     val lpRateXy = lpReservesX / lpReservesY
     assert(lpRateXy == 10000)
-    assert(lpRateXy * 100 > thresholdPercent * oracleRateXyWithFee)
+    assert(lpRateXy * 100 > thresholdPercent * oracleRateXyWithFee / 1000000L)
 
     val dexyMinted = 35000L // must be a +ve value
 
@@ -171,15 +171,15 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Arbitrage mint should fail if threshold is invalid") {
-    val oracleRateXy = 10000L // this line has changed
+    val oracleRateXy = 10000L * 1000000L // this line has changed
 
     // implies 0.5 % fee in total
     val bankFeeNum = 3
     val buybackFeeNum = 2
     val feeDenom = 1000
 
-    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
-    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom / 1000000L
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom / 1000000L
 
     val oracleRateXyWithFee = bankRate + buybackRate
 
@@ -636,15 +636,15 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Arbitrage mint should work if counter (R4) is reset and max allowed (R5) also reset") {
-    val oracleRateXy = 9000L
+    val oracleRateXy = 9000L * 1000000L
 
     // implies 0.5 % fee in total
     val bankFeeNum = 3
     val buybackFeeNum = 2
     val feeDenom = 1000
 
-    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
-    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom / 1000000L
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom / 1000000L
 
     val oracleRateXyWithFee = bankRate + buybackRate
 
@@ -794,15 +794,15 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Arbitrage mint should fail if counter (R4) is reset but max allowed (R5) not reset") {
-    val oracleRateXy = 9000L
+    val oracleRateXy = 9000L * 1000000L
 
     // implies 0.5 % fee in total
     val bankFeeNum = 3
     val buybackFeeNum = 2
     val feeDenom = 1000
 
-    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
-    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom / 1000000L
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom / 1000000L
 
     val oracleRateXyWithFee = bankRate + buybackRate
 
@@ -948,15 +948,15 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Arbitrage mint should fail if counter (R4) is reset and max allowed (R5) reset but more Dexy taken than permitted") {
-    val oracleRateXy = 9000L
+    val oracleRateXy = 9000L * 1000000L
 
     // implies 0.5 % fee in total
     val bankFeeNum = 3
     val buybackFeeNum = 2
     val feeDenom = 1000
 
-    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
-    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom / 1000000L
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom / 1000000L
 
     val oracleRateXyWithFee = bankRate + buybackRate
 
@@ -1105,15 +1105,15 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Arbitrage mint should fail if counter is not reset when too many blocks passed") {
-    val oracleRateXy = 9000L
+    val oracleRateXy = 9000L * 1000000L
 
     // implies 0.5 % fee in total
     val bankFeeNum = 3
     val buybackFeeNum = 2
     val feeDenom = 1000
 
-    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
-    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom / 1000000L
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom / 1000000L
 
     val oracleRateXyWithFee = bankRate + buybackRate
 

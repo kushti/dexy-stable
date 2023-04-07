@@ -18,13 +18,13 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   // ToDo: test for ranges of oracleRateXy (very low to very high)
   // ToDo: test for wide ranges of initial ratio in LP for x/y (very low to very high)
   property("Free mint (remove Dexy from and adding Ergs to bank box) should work") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val bankFeeNum = 3 // implies 0.5 % fee
     val buybackFeeNum = 2 // implies 0.5 % fee
     val feeDenom = 1000
 
-    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
-    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom / 1000000L
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom / 1000000L
 
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
@@ -152,13 +152,13 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("Free mint should fail if Bank Dexy token id changed") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val bankFeeNum = 3 // implies 0.5 % fee
     val buybackFeeNum = 2 // implies 0.5 % fee
     val feeDenom = 1000
 
-    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
-    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom / 1000000L
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom / 1000000L
 
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
@@ -290,13 +290,13 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("Free mint should fail if Bank box script changed") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val bankFeeNum = 3 // implies 0.5 % fee
     val buybackFeeNum = 2 // implies 0.5 % fee
     val feeDenom = 1000
 
-    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
-    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom / 1000000L
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom / 1000000L
 
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
@@ -427,13 +427,13 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("Free mint should fail if FreeMint box script changed") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val bankFeeNum = 3 // implies 0.5 % fee
     val buybackFeeNum = 2 // implies 0.5 % fee
     val feeDenom = 1000
 
-    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
-    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom / 1000000L
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom / 1000000L
 
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
@@ -564,13 +564,13 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("Free mint should fail if wrong LP NFT") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val bankFeeNum = 3 // implies 0.5 % fee
     val buybackFeeNum = 2 // implies 0.5 % fee
     val feeDenom = 1000
 
-    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
-    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom / 1000000L
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom / 1000000L
 
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
@@ -704,13 +704,13 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("Free mint should fail if wrong Oracle NFT") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val bankFeeNum = 3 // implies 0.5 % fee
     val buybackFeeNum = 2 // implies 0.5 % fee
     val feeDenom = 1000
 
-    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
-    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom / 1000000L
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom / 1000000L
 
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
@@ -844,13 +844,13 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("Free mint should fail if wrong Bank NFT in but right Bank NFT out") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val bankFeeNum = 3 // implies 0.5 % fee
     val buybackFeeNum = 2 // implies 0.5 % fee
     val feeDenom = 1000
 
-    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
-    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom / 1000000L
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom / 1000000L
 
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
@@ -986,13 +986,13 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("Free mint should fail if wrong Bank NFT") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val bankFeeNum = 3 // implies 0.5 % fee
     val buybackFeeNum = 2 // implies 0.5 % fee
     val feeDenom = 1000
 
-    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
-    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom / 1000000L
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom / 1000000L
 
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
@@ -1128,13 +1128,13 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("Free mint should fail if wrong FreeMint NFT in but right FreeMint NFT out") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val bankFeeNum = 3 // implies 0.5 % fee
     val buybackFeeNum = 2 // implies 0.5 % fee
     val feeDenom = 1000
 
-    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
-    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom / 1000000L
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom / 1000000L
 
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
@@ -1270,13 +1270,13 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("Free mint should fail if wrong FreeMint NFT") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val bankFeeNum = 3 // implies 0.5 % fee
     val buybackFeeNum = 2 // implies 0.5 % fee
     val feeDenom = 1000
 
-    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
-    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom / 1000000L
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom / 1000000L
 
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
@@ -1412,14 +1412,14 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("Free mint should fail for negative dexy minted") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     // implies 0.5 % fee in total
     val bankFeeNum = 3
     val buybackFeeNum = 2
     val feeDenom = 1000
 
-    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom
-    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom / 1000000L
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom / 1000000L
 
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
