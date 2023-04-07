@@ -22,6 +22,7 @@
   // inputs indices
   val lpInIndex = 0
   val bankInIndex = 1
+  // input #2 is SELF
 
   // outputs indices
   val lpOutIndex = 0
@@ -55,8 +56,8 @@
 
   val successor = OUTPUTS(selfOutIndex)
 
-  val lpTokenYIn    = lpBoxIn.tokens(2)
-  val lpTokenYOut    = lpBoxOut.tokens(2)
+  val lpTokenYIn = lpBoxIn.tokens(2)
+  val lpTokenYOut = lpBoxOut.tokens(2)
 
   val lpReservesXIn = lpBoxIn.value
   val lpReservesYIn = lpTokenYIn._2
@@ -100,7 +101,8 @@
 
   val validTracking = trackingHeight < HEIGHT - T_int // at least T_int blocks have passed since the tracking started
 
-  val validAmount = lpRateXyOutTimesLpReservesYOut * 1000 <= oracleRateXy * lpReservesYOut * 995    // new rate must be <= 99.5 times oracle rate
+  val validAmount = lpRateXyOutTimesLpReservesYOut * 1000 <= oracleRateXy * lpReservesYOut * 995  &&   // new rate must be <= 99.5 times oracle rate
+                    deltaBankErgs <= bankBoxIn.value / 100 // no more than 1% of reserves spent per intervention
 
   val validDeltas = deltaBankErgs <= deltaLpX  &&  // ergs reduced in bank box must be <= ergs gained in LP
                     deltaBankTokens >= deltaLpY &&   // tokens gained in bank box must be >= tokens reduced in LP

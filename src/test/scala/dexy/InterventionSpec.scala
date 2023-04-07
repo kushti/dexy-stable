@@ -17,6 +17,8 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
   val fakeNanoErgs = 10000000000000L
   val dummyNanoErgs = 100000L
 
+  // todo: check 1% spent max rule
+
   property("Intervention (transfer Ergs from Bank to Lp and Dexy from Lp to Bank) should work") {
     val lpBalanceIn = 100000000L
 
