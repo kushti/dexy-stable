@@ -115,10 +115,7 @@
                              oracleRateXY * 100 < lpRateXYOut * 101   // lpRate at output must be <= 1.01 * oracleRate
                              // ToDo: possibly tweak the 101 requirement (or remove it?)
 
-    val validReleaseAmount = oracleRateXY * 100 > lpRateXYOut * 101 && // lpRate at output must be >= 1.01 * oracleRate
-                             oracleRateXY * 100 < lpRateXYOut * 104    // lpRate at output must be <= 1.04 * oracleRate
-                             // ToDo: possibly tweak the 104 requirement (or remove it?)
-
+    val validReleaseAmount = oracleRateXY * 100 > lpRateXYOut * 101    // lpRate at output must be >= 1.01 * oracleRate
 
     val validExtract  = deltaDexy > 0                           &&
                         validTracking95Box                      &&
