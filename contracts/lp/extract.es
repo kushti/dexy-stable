@@ -111,9 +111,8 @@
     val oracleRateXY = oracleBox.R4[Long].get / 1000000L
     val lpRateXYOut = reservesXOut / reservesYOut
 
-    val validExtractAmount = oracleRateXY * 100 > lpRateXYOut * 98 && // lpRate at output must be >= 0.98 * oracleRate
-                             oracleRateXY * 100 < lpRateXYOut * 101   // lpRate at output must be <= 1.01 * oracleRate
-                             // ToDo: possibly tweak the 101 requirement (or remove it?)
+    val validExtractAmount = oracleRateXY * 100 > lpRateXYOut * 97 && // lpRate at output must be >= 0.97 * oracleRate
+                             oracleRateXY * 100 < lpRateXYOut * 98   // lpRate at output must be <= 0.98 * oracleRate
 
     val validReleaseAmount = oracleRateXY * 100 > lpRateXYOut * 101    // lpRate at output must be >= 1.01 * oracleRate
 

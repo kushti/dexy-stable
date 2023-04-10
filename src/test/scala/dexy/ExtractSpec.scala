@@ -44,7 +44,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     // final ratio of X/Y = 10204
     val lpRateXYOut = lpReservesXOut / lpReservesYOut
     assert(lpRateXYOut == 10204)
-    assert(oracleRateXy * 100 / 1000000L > lpRateXYOut * 98 && oracleRateXy * 100 / 1000000L < lpRateXYOut * 101)
+    assert(oracleRateXy * 100 / 1000000L > lpRateXYOut * 97 && oracleRateXy * 100 / 1000000L < lpRateXYOut * 101)
 
     val lpBalanceOut = lpBalanceIn
 

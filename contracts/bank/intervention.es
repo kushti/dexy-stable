@@ -102,7 +102,7 @@
   val validTracking = trackingHeight < HEIGHT - T_int // at least T_int blocks have passed since the tracking started
 
   val validMaxSpending = lpRateXyOutTimesLpReservesYOut * 1000 <= oracleRateXy * lpReservesYOut * 995  &&   // new rate must be <= 99.5 times oracle rate
-                    deltaBankErgs <= bankBoxIn.value / 100 // no more than 1% of reserves spent per intervention
+                         deltaBankErgs <= bankBoxIn.value / 100 // no more than 1% of reserves spent per intervention
 
   val validDeltas = deltaBankErgs <= deltaLpX  &&  // ergs reduced in bank box must be <= ergs gained in LP
                     deltaBankTokens >= deltaLpY &&   // tokens gained in bank box must be >= tokens reduced in LP
