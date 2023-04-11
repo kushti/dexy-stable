@@ -93,6 +93,9 @@
   val validBuybackDelta = buybackErgsAdded >= dexyMinted * buybackRate && buybackErgsAdded > 0
   val validDelta = validBankDelta && validBuybackDelta
   val oracleRateWithFee = bankRate + buybackRate
+
+  // how many dexy tokens allowed to mint per period
+  // oracle rate is in X/Y , so (X - X/Y*Y) / (X/Y) is in Y
   val maxAllowedIfReset = (lpReservesX - oracleRateWithFee * lpReservesY) / oracleRateWithFee
 
   // above formula:
