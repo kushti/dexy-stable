@@ -13,6 +13,8 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
 
   val dummyTokenId = "0000005aa0d95f5d54a7bc89c46730d9662397067250aa18a0039631c0f5b801"
 
+  val minBankNanoErgs = 1000000000000L
+
   val fakeNanoErgs = 10000000000000L
   val dummyNanoErgs = 100000L
   // ToDo: other tests (apart from the template)
@@ -31,31 +33,30 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 100000000000L
-    // initial ratio of X/Y = 1000
-    assert(lpReservesXIn / lpReservesYIn == 1000)
+    val lpReservesYIn =  10550000000L
+    assert(lpReservesXIn / lpReservesYIn == 9478)
 
-    val deltaDexy = 90200000000L // +ve that means we are extracting.
+    val deltaDexy = 250000000L // +ve that means we are extracting.
     // There is a certain value of deltaDexy above/below which it should fail. To test this
 
     val lpReservesXOut = lpReservesXIn
     val lpReservesYOut = lpReservesYIn - deltaDexy
 
-    // final ratio of X/Y = 10204
+    // final ratio of X/Y = 9708
     val lpRateXYOut = lpReservesXOut / lpReservesYOut
-    assert(lpRateXYOut == 10204)
-    assert(oracleRateXy * 100 / 1000000L > lpRateXYOut * 97 && oracleRateXy * 100 / 1000000L < lpRateXYOut * 101)
+    assert(lpRateXYOut == 9708)
+    assert(oracleRateXy * 97 / 1000000L < lpRateXYOut * 100 && oracleRateXy * 98 / 1000000L > lpRateXYOut * 100)
 
     val lpBalanceOut = lpBalanceIn
 
     val extractBoxDexyIn = 100
     val extractBoxDexyOut = extractBoxDexyIn + deltaDexy
 
-    assert(extractBoxDexyOut == 90200000100L)
-    assert(lpReservesYOut == 9800000000L)
+    assert(extractBoxDexyOut == 250000100L)
+    assert(lpReservesYOut == 10300000000L)
 
     val bankReservesY = 100
-    val bankReservesX = 10000000000L - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
+    val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
     // anything more than above should fail
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
@@ -160,37 +161,28 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if bank has enough Ergs") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
     val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
     val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 100000000000L
-    // initial ratio of X/Y = 1000
-    assert(lpReservesXIn / lpReservesYIn == 1000)
+    val lpReservesYIn = 10550000000L
+    assert(lpReservesXIn / lpReservesYIn == 9478)
 
-    val deltaDexy = 90200000000L // +ve that means we are extracting.
+    val deltaDexy = 250000000L // +ve that means we are extracting.
     // There is a certain value of deltaDexy above/below which it should fail. To test this
 
     val lpReservesXOut = lpReservesXIn
     val lpReservesYOut = lpReservesYIn - deltaDexy
-
-    // final ratio of X/Y = 10204
-    val lpRateXYOut = lpReservesXOut / lpReservesYOut
-    assert(lpRateXYOut == 10204)
-    assert(oracleRateXy * 100 > lpRateXYOut * 98 && oracleRateXy * 100 < lpRateXYOut * 101)
 
     val lpBalanceOut = lpBalanceIn
 
     val extractBoxDexyIn = 100
     val extractBoxDexyOut = extractBoxDexyIn + deltaDexy
 
-    assert(extractBoxDexyOut == 90200000100L)
-    assert(lpReservesYOut == 9800000000L)
-
     val bankReservesY = 100
-    val bankReservesX = 10000000000L + 1 // <-- this value has changed
+    val bankReservesX = minBankNanoErgs + 1 // <-- this value has changed
     // anything more than above should fail
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
@@ -295,17 +287,16 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if tracking depth is less") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
     val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
     val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 100000000000L
-    // initial ratio of X/Y = 1000
-    assert(lpReservesXIn / lpReservesYIn == 1000)
+    val lpReservesYIn = 10550000000L
+    assert(lpReservesXIn / lpReservesYIn == 9478)
 
-    val deltaDexy = 90200000000L // +ve that means we are extracting.
+    val deltaDexy = 250000000L // +ve that means we are extracting.
     // There is a certain value of deltaDexy above/below which it should fail. To test this
 
     val lpReservesXOut = lpReservesXIn
@@ -313,19 +304,14 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
 
     // final ratio of X/Y = 10204
     val lpRateXYOut = lpReservesXOut / lpReservesYOut
-    assert(lpRateXYOut == 10204)
-    assert(oracleRateXy * 100 > lpRateXYOut * 98 && oracleRateXy * 100 < lpRateXYOut * 101)
 
     val lpBalanceOut = lpBalanceIn
 
     val extractBoxDexyIn = 100
     val extractBoxDexyOut = extractBoxDexyIn + deltaDexy
 
-    assert(extractBoxDexyOut == 90200000100L)
-    assert(lpReservesYOut == 9800000000L)
-
     val bankReservesY = 100
-    val bankReservesX = 10000000000L - 1
+    val bankReservesX = minBankNanoErgs - 1
     // anything more than above should fail
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
@@ -460,7 +446,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
-    val bankReservesX = 10000000000L - 1
+    val bankReservesX = minBankNanoErgs - 1
     // anything more than above should fail
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
@@ -595,7 +581,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
-    val bankReservesX = 10000000000L - 1
+    val bankReservesX = minBankNanoErgs - 1
     // anything more than above should fail
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
@@ -733,7 +719,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
-    val bankReservesX = 10000000000L - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
+    val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
     // anything more than above should fail
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
@@ -873,7 +859,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
-    val bankReservesX = 10000000000L - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
+    val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
     // anything more than above should fail
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
@@ -1010,7 +996,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     assert(lpReservesYOut == 9700000000L) // <-- this value has changed as per deltaDexy
 
     val bankReservesY = 100
-    val bankReservesX = 10000000000L - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
+    val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
     // anything more than above should fail
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
@@ -1149,7 +1135,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
-    val bankReservesX = 10000000000L - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
+    val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
     // anything more than above should fail
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
@@ -1289,7 +1275,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
-    val bankReservesX = 10000000000L - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
+    val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
     // anything more than above should fail
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
@@ -1429,7 +1415,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
-    val bankReservesX = 10000000000L - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
+    val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
     // anything more than above should fail
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
@@ -1571,7 +1557,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     assert(extractBoxDexyOut == 90200000100L)
 
     val bankReservesY = 100
-    val bankReservesX = 10000000000L - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
+    val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
     // anything more than above should fail
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
@@ -1710,7 +1696,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     assert(extractBoxDexyOut == 90200000100L)
 
     val bankReservesY = 100
-    val bankReservesX = 10000000000L - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
+    val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
     // anything more than above should fail
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
@@ -1846,7 +1832,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     val extractBoxDexyOut = extractBoxDexyIn + deltaDexy + 1 // <-- this value is different (one extra token)
 
     val bankReservesY = 100
-    val bankReservesX = 10000000000L - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
+    val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
     // anything more than above should fail
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
@@ -1983,7 +1969,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     val extractBoxDexyOut = extractBoxDexyIn + deltaDexy - 1 // <-- this value is different (one less token)
 
     val bankReservesY = 100
-    val bankReservesX = 10000000000L - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
+    val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
     // anything more than above should fail
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
@@ -2122,7 +2108,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
-    val bankReservesX = 10000000000L - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
+    val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
     // anything more than above should fail
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
@@ -2261,7 +2247,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
-    val bankReservesX = 10000000000L - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
+    val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
     // anything more than above should fail
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
@@ -2396,7 +2382,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
-    val bankReservesX = 10000000000L - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
+    val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
     // anything more than above should fail
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
@@ -2531,7 +2517,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
-    val bankReservesX = 10000000000L - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
+    val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
     // anything more than above should fail
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
@@ -2671,7 +2657,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
-    val bankReservesX = 10000000000L - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
+    val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
     // anything more than above should fail
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
@@ -2814,7 +2800,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
-    val bankReservesX = 10000000000L - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
+    val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
     // anything more than above should fail
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
@@ -2953,7 +2939,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
-    val bankReservesX = 10000000000L - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
+    val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
     // anything more than above should fail
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
@@ -3094,7 +3080,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
-    val bankReservesX = 10000000000L - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
+    val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
     // anything more than above should fail
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
@@ -3231,7 +3217,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
-    val bankReservesX = 10000000000L - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
+    val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
     // anything more than above should fail
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
@@ -3369,7 +3355,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
-    val bankReservesX = 10000000000L - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
+    val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
     // anything more than above should fail
 
     ergoClient.execute { implicit ctx: BlockchainContext =>

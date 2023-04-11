@@ -42,7 +42,9 @@
 
     val tracking101BoxIndex = 1
 
-    val minBankNanoErgs = 10000000000L // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
+    // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
+    // 1000 Erg
+    val minBankNanoErgs = 1000000000000L
 
     val tracking95NFT = fromBase64("$tracking95NFT")
     val tracking101NFT = fromBase64("$tracking101NFT")
@@ -111,10 +113,10 @@
     val oracleRateXY = oracleBox.R4[Long].get / 1000000L
     val lpRateXYOut = reservesXOut / reservesYOut
 
-    val validExtractAmount = oracleRateXY * 100 > lpRateXYOut * 97 && // lpRate at output must be >= 0.97 * oracleRate
-                             oracleRateXY * 100 < lpRateXYOut * 98   // lpRate at output must be <= 0.98 * oracleRate
+    val validExtractAmount = oracleRateXY * 97 < lpRateXYOut * 100 && // oracleRate must be >= 0.97 * lpRate at output
+                             oracleRateXY * 98 > lpRateXYOut * 100   // oracleRate must be <= 0.98 * oracleRate at output
 
-    val validReleaseAmount = oracleRateXY * 100 > lpRateXYOut * 101    // lpRate at output must be >= 1.01 * oracleRate
+    val validReleaseAmount = oracleRateXY * 101 > lpRateXYOut * 100    // oracleRate must be >= 1.01 * lpRate at output to release
 
     val validExtract  = deltaDexy > 0                           &&
                         validTracking95Box                      &&
