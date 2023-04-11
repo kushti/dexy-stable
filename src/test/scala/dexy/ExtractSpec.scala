@@ -24,7 +24,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   //  cannot work when tracker height is more than allowed
   //  cannot work when last extraction height is more than allowed
   //  cannot change LP token amount
-  //  cannot work when Bank has enough ergs
 
   property("Extract to future (extract Dexy from Lp and store in extract box) should work") {
     val oracleRateXy = 10000L * 1000000L
@@ -416,34 +415,27 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if not enough delay in last extract") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
     val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
     val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 100000000000L
-    // initial ratio of X/Y = 1000
-    assert(lpReservesXIn / lpReservesYIn == 1000)
+    val lpReservesYIn =  10550000000L
+    assert(lpReservesXIn / lpReservesYIn == 9478)
 
-    val deltaDexy = 90200000000L // +ve that means we are extracting.
-    // There is a certain value of deltaDexy above/below which it should fail. To test this
+    val deltaDexy = 250000000L // +ve that means we are extracting.
 
     val lpReservesXOut = lpReservesXIn
     val lpReservesYOut = lpReservesYIn - deltaDexy
 
     // final ratio of X/Y = 10204
     val lpRateXYOut = lpReservesXOut / lpReservesYOut
-    assert(lpRateXYOut == 10204)
-    assert(oracleRateXy * 100 > lpRateXYOut * 98 && oracleRateXy * 100 < lpRateXYOut * 101)
 
     val lpBalanceOut = lpBalanceIn
 
     val extractBoxDexyIn = 100
     val extractBoxDexyOut = extractBoxDexyIn + deltaDexy
-
-    assert(extractBoxDexyOut == 90200000100L)
-    assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
     val bankReservesX = minBankNanoErgs - 1
@@ -551,34 +543,27 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if invalid height set in extract output box") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
     val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
     val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 100000000000L
-    // initial ratio of X/Y = 1000
-    assert(lpReservesXIn / lpReservesYIn == 1000)
+    val lpReservesYIn =  10550000000L
+    assert(lpReservesXIn / lpReservesYIn == 9478)
 
-    val deltaDexy = 90200000000L // +ve that means we are extracting.
-    // There is a certain value of deltaDexy above/below which it should fail. To test this
+    val deltaDexy = 250000000L // +ve that means we are extracting.
 
     val lpReservesXOut = lpReservesXIn
     val lpReservesYOut = lpReservesYIn - deltaDexy
 
     // final ratio of X/Y = 10204
     val lpRateXYOut = lpReservesXOut / lpReservesYOut
-    assert(lpRateXYOut == 10204)
-    assert(oracleRateXy * 100 > lpRateXYOut * 98 && oracleRateXy * 100 < lpRateXYOut * 101)
 
     val lpBalanceOut = lpBalanceIn
 
     val extractBoxDexyIn = 100
     val extractBoxDexyOut = extractBoxDexyIn + deltaDexy
-
-    assert(extractBoxDexyOut == 90200000100L)
-    assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
     val bankReservesX = minBankNanoErgs - 1
@@ -689,34 +674,27 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if LP NFT changed") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
     val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
     val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 100000000000L
-    // initial ratio of X/Y = 1000
-    assert(lpReservesXIn / lpReservesYIn == 1000)
+    val lpReservesYIn =  10550000000L
+    assert(lpReservesXIn / lpReservesYIn == 9478)
 
-    val deltaDexy = 90200000000L // +ve that means we are extracting.
-    // There is a certain value of deltaDexy above/below which it should fail. To test this
+    val deltaDexy = 250000000L // +ve that means we are extracting.
 
     val lpReservesXOut = lpReservesXIn
     val lpReservesYOut = lpReservesYIn - deltaDexy
 
     // final ratio of X/Y = 10204
     val lpRateXYOut = lpReservesXOut / lpReservesYOut
-    assert(lpRateXYOut == 10204)
-    assert(oracleRateXy * 100 > lpRateXYOut * 98 && oracleRateXy * 100 < lpRateXYOut * 101)
 
     val lpBalanceOut = lpBalanceIn
 
     val extractBoxDexyIn = 100
     val extractBoxDexyOut = extractBoxDexyIn + deltaDexy
-
-    assert(extractBoxDexyOut == 90200000100L)
-    assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
     val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
@@ -829,34 +807,27 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if LP token amount changed") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
     val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
     val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 100000000000L
-    // initial ratio of X/Y = 1000
-    assert(lpReservesXIn / lpReservesYIn == 1000)
+    val lpReservesYIn =  10550000000L
+    assert(lpReservesXIn / lpReservesYIn == 9478)
 
-    val deltaDexy = 90200000000L // +ve that means we are extracting.
-    // There is a certain value of deltaDexy above/below which it should fail. To test this
+    val deltaDexy = 250000000L // +ve that means we are extracting.
 
     val lpReservesXOut = lpReservesXIn
     val lpReservesYOut = lpReservesYIn - deltaDexy
 
     // final ratio of X/Y = 10204
     val lpRateXYOut = lpReservesXOut / lpReservesYOut
-    assert(lpRateXYOut == 10204)
-    assert(oracleRateXy * 100 > lpRateXYOut * 98 && oracleRateXy * 100 < lpRateXYOut * 101)
 
     val lpBalanceOut = lpBalanceIn - 1 // <-- this value is different
 
     val extractBoxDexyIn = 100
     val extractBoxDexyOut = extractBoxDexyIn + deltaDexy
-
-    assert(extractBoxDexyOut == 90200000100L)
-    assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
     val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
@@ -968,32 +939,26 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if more dexy taken than allowed") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
     val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
     val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 100000000000L
-    // initial ratio of X/Y = 1000
-    assert(lpReservesXIn / lpReservesYIn == 1000)
+    val lpReservesYIn =  10550000000L
+    assert(lpReservesXIn / lpReservesYIn == 9478)
 
-    val deltaDexy = 90300000000L // +ve that means we are extracting. // <-- this value has changed (original 90200000000L)
-    // There is a certain value of deltaDexy above/below which it should fail. To test this
+    val deltaDexy = 350000000L // +ve that means we are extracting. // <-- this value has changed (original 250000000L)
 
     val lpReservesXOut = lpReservesXIn
     val lpReservesYOut = lpReservesYIn - deltaDexy
 
-    // final ratio of X/Y = 10204
     val lpRateXYOut = lpReservesXOut / lpReservesYOut
-    assert(!(oracleRateXy * 100 > lpRateXYOut * 98 && oracleRateXy * 100 < lpRateXYOut * 101))
 
     val lpBalanceOut = lpBalanceIn
 
     val extractBoxDexyIn = 100
     val extractBoxDexyOut = extractBoxDexyIn + deltaDexy
-
-    assert(lpReservesYOut == 9700000000L) // <-- this value has changed as per deltaDexy
 
     val bankReservesY = 100
     val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
@@ -1105,34 +1070,27 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if LP token id changed") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
     val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
     val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 100000000000L
-    // initial ratio of X/Y = 1000
-    assert(lpReservesXIn / lpReservesYIn == 1000)
+    val lpReservesYIn =  10550000000L
+    assert(lpReservesXIn / lpReservesYIn == 9478)
 
-    val deltaDexy = 90200000000L // +ve that means we are extracting.
-    // There is a certain value of deltaDexy above/below which it should fail. To test this
+    val deltaDexy = 250000000L // +ve that means we are extracting.
 
     val lpReservesXOut = lpReservesXIn
     val lpReservesYOut = lpReservesYIn - deltaDexy
 
     // final ratio of X/Y = 10204
     val lpRateXYOut = lpReservesXOut / lpReservesYOut
-    assert(lpRateXYOut == 10204)
-    assert(oracleRateXy * 100 > lpRateXYOut * 98 && oracleRateXy * 100 < lpRateXYOut * 101)
 
     val lpBalanceOut = lpBalanceIn
 
     val extractBoxDexyIn = 100
     val extractBoxDexyOut = extractBoxDexyIn + deltaDexy
-
-    assert(extractBoxDexyOut == 90200000100L)
-    assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
     val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
@@ -1245,34 +1203,26 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if Dexy token id changed in LP box") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
     val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
     val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 100000000000L
-    // initial ratio of X/Y = 1000
-    assert(lpReservesXIn / lpReservesYIn == 1000)
+    val lpReservesYIn =  10550000000L
+    assert(lpReservesXIn / lpReservesYIn == 9478)
 
-    val deltaDexy = 90200000000L // +ve that means we are extracting.
-    // There is a certain value of deltaDexy above/below which it should fail. To test this
+    val deltaDexy = 250000000L // +ve that means we are extracting.
 
     val lpReservesXOut = lpReservesXIn
     val lpReservesYOut = lpReservesYIn - deltaDexy
 
     // final ratio of X/Y = 10204
     val lpRateXYOut = lpReservesXOut / lpReservesYOut
-    assert(lpRateXYOut == 10204)
-    assert(oracleRateXy * 100 > lpRateXYOut * 98 && oracleRateXy * 100 < lpRateXYOut * 101)
-
     val lpBalanceOut = lpBalanceIn
 
     val extractBoxDexyIn = 100
     val extractBoxDexyOut = extractBoxDexyIn + deltaDexy
-
-    assert(extractBoxDexyOut == 90200000100L)
-    assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
     val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
@@ -1385,34 +1335,27 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if Dexy token id changed in Extract box") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
     val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
     val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 100000000000L
-    // initial ratio of X/Y = 1000
-    assert(lpReservesXIn / lpReservesYIn == 1000)
+    val lpReservesYIn =  10550000000L
+    assert(lpReservesXIn / lpReservesYIn == 9478)
 
-    val deltaDexy = 90200000000L // +ve that means we are extracting.
-    // There is a certain value of deltaDexy above/below which it should fail. To test this
+    val deltaDexy = 250000000L // +ve that means we are extracting.
 
     val lpReservesXOut = lpReservesXIn
     val lpReservesYOut = lpReservesYIn - deltaDexy
 
     // final ratio of X/Y = 10204
     val lpRateXYOut = lpReservesXOut / lpReservesYOut
-    assert(lpRateXYOut == 10204)
-    assert(oracleRateXy * 100 > lpRateXYOut * 98 && oracleRateXy * 100 < lpRateXYOut * 101)
 
     val lpBalanceOut = lpBalanceIn
 
     val extractBoxDexyIn = 100
     val extractBoxDexyOut = extractBoxDexyIn + deltaDexy
-
-    assert(extractBoxDexyOut == 90200000100L)
-    assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
     val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
@@ -1528,33 +1471,27 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if extra Dexy tokens in LP box") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
     val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
     val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 100000000000L
-    // initial ratio of X/Y = 1000
-    assert(lpReservesXIn / lpReservesYIn == 1000)
+    val lpReservesYIn =  10550000000L
+    assert(lpReservesXIn / lpReservesYIn == 9478)
 
-    val deltaDexy = 90200000000L // +ve that means we are extracting.
-    // There is a certain value of deltaDexy above/below which it should fail. To test this
+    val deltaDexy = 250000000L // +ve that means we are extracting.
 
     val lpReservesXOut = lpReservesXIn
     val lpReservesYOut = lpReservesYIn - deltaDexy + 1 // <-- this value is different (one extra token)
 
     // final ratio of X/Y = 10204
     val lpRateXYOut = lpReservesXOut / lpReservesYOut
-    assert(lpRateXYOut == 10204)
-    assert(oracleRateXy * 100 > lpRateXYOut * 98 && oracleRateXy * 100 < lpRateXYOut * 101)
 
     val lpBalanceOut = lpBalanceIn
 
     val extractBoxDexyIn = 100
     val extractBoxDexyOut = extractBoxDexyIn + deltaDexy
-
-    assert(extractBoxDexyOut == 90200000100L)
 
     val bankReservesY = 100
     val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
@@ -1667,33 +1604,28 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if less Dexy tokens in LP box") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
     val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
     val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 100000000000L
-    // initial ratio of X/Y = 1000
-    assert(lpReservesXIn / lpReservesYIn == 1000)
+    val lpReservesYIn =  10550000000L
+    assert(lpReservesXIn / lpReservesYIn == 9478)
 
-    val deltaDexy = 90200000000L // +ve that means we are extracting.
-    // There is a certain value of deltaDexy above/below which it should fail. To test this
+    val deltaDexy = 250000000L // +ve that means we are extracting.
 
     val lpReservesXOut = lpReservesXIn
     val lpReservesYOut = lpReservesYIn - deltaDexy - 1 // <-- this value is different (one less token)
 
     // final ratio of X/Y = 10204
     val lpRateXYOut = lpReservesXOut / lpReservesYOut
-    assert(lpRateXYOut == 10204)
-    assert(oracleRateXy * 100 > lpRateXYOut * 98 && oracleRateXy * 100 < lpRateXYOut * 101)
 
     val lpBalanceOut = lpBalanceIn
 
     val extractBoxDexyIn = 100
     val extractBoxDexyOut = extractBoxDexyIn + deltaDexy
 
-    assert(extractBoxDexyOut == 90200000100L)
 
     val bankReservesY = 100
     val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
@@ -1805,26 +1737,21 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if extra Dexy tokens in Extract box") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
     val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
     val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 100000000000L
-    // initial ratio of X/Y = 1000
-    assert(lpReservesXIn / lpReservesYIn == 1000)
+    val lpReservesYIn =  10550000000L
+    assert(lpReservesXIn / lpReservesYIn == 9478)
 
-    val deltaDexy = 90200000000L // +ve that means we are extracting.
-    // There is a certain value of deltaDexy above/below which it should fail. To test this
+    val deltaDexy = 250000000L // +ve that means we are extracting.
 
     val lpReservesXOut = lpReservesXIn
     val lpReservesYOut = lpReservesYIn - deltaDexy
 
-    // final ratio of X/Y = 10204
     val lpRateXYOut = lpReservesXOut / lpReservesYOut
-    assert(lpRateXYOut == 10204)
-    assert(oracleRateXy * 100 > lpRateXYOut * 98 && oracleRateXy * 100 < lpRateXYOut * 101)
 
     val lpBalanceOut = lpBalanceIn
 
@@ -2078,34 +2005,26 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if Extract NFT changed") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
     val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
     val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 100000000000L
-    // initial ratio of X/Y = 1000
-    assert(lpReservesXIn / lpReservesYIn == 1000)
+    val lpReservesYIn =  10550000000L
+    assert(lpReservesXIn / lpReservesYIn == 9478)
 
-    val deltaDexy = 90200000000L // +ve that means we are extracting.
-    // There is a certain value of deltaDexy above/below which it should fail. To test this
+    val deltaDexy = 250000000L // +ve that means we are extracting.
 
     val lpReservesXOut = lpReservesXIn
     val lpReservesYOut = lpReservesYIn - deltaDexy
 
-    // final ratio of X/Y = 10204
     val lpRateXYOut = lpReservesXOut / lpReservesYOut
-    assert(lpRateXYOut == 10204)
-    assert(oracleRateXy * 100 > lpRateXYOut * 98 && oracleRateXy * 100 < lpRateXYOut * 101)
 
     val lpBalanceOut = lpBalanceIn
 
     val extractBoxDexyIn = 100
     val extractBoxDexyOut = extractBoxDexyIn + deltaDexy
-
-    assert(extractBoxDexyOut == 90200000100L)
-    assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
     val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
@@ -2217,34 +2136,27 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if LP script changed") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
     val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
     val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 100000000000L
-    // initial ratio of X/Y = 1000
-    assert(lpReservesXIn / lpReservesYIn == 1000)
+    val lpReservesYIn =  10550000000L
+    assert(lpReservesXIn / lpReservesYIn == 9478)
 
-    val deltaDexy = 90200000000L // +ve that means we are extracting.
-    // There is a certain value of deltaDexy above/below which it should fail. To test this
+    val deltaDexy = 250000000L // +ve that means we are extracting.
 
     val lpReservesXOut = lpReservesXIn
     val lpReservesYOut = lpReservesYIn - deltaDexy
 
     // final ratio of X/Y = 10204
     val lpRateXYOut = lpReservesXOut / lpReservesYOut
-    assert(lpRateXYOut == 10204)
-    assert(oracleRateXy * 100 > lpRateXYOut * 98 && oracleRateXy * 100 < lpRateXYOut * 101)
 
     val lpBalanceOut = lpBalanceIn
 
     val extractBoxDexyIn = 100
     val extractBoxDexyOut = extractBoxDexyIn + deltaDexy
-
-    assert(extractBoxDexyOut == 90200000100L)
-    assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
     val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
@@ -2352,34 +2264,27 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if Extract script changed") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
     val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
     val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 100000000000L
-    // initial ratio of X/Y = 1000
-    assert(lpReservesXIn / lpReservesYIn == 1000)
+    val lpReservesYIn =  10550000000L
+    assert(lpReservesXIn / lpReservesYIn == 9478)
 
-    val deltaDexy = 90200000000L // +ve that means we are extracting.
-    // There is a certain value of deltaDexy above/below which it should fail. To test this
+    val deltaDexy = 250000000L // +ve that means we are extracting.
 
     val lpReservesXOut = lpReservesXIn
     val lpReservesYOut = lpReservesYIn - deltaDexy
 
     // final ratio of X/Y = 10204
     val lpRateXYOut = lpReservesXOut / lpReservesYOut
-    assert(lpRateXYOut == 10204)
-    assert(oracleRateXy * 100 > lpRateXYOut * 98 && oracleRateXy * 100 < lpRateXYOut * 101)
 
     val lpBalanceOut = lpBalanceIn
 
     val extractBoxDexyIn = 100
     val extractBoxDexyOut = extractBoxDexyIn + deltaDexy
-
-    assert(extractBoxDexyOut == 90200000100L)
-    assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
     val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
@@ -2487,34 +2392,26 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if wrong LP NFT in and right LP NFT out") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
     val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
     val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 100000000000L
-    // initial ratio of X/Y = 1000
-    assert(lpReservesXIn / lpReservesYIn == 1000)
+    val lpReservesYIn =  10550000000L
+    assert(lpReservesXIn / lpReservesYIn == 9478)
 
-    val deltaDexy = 90200000000L // +ve that means we are extracting.
-    // There is a certain value of deltaDexy above/below which it should fail. To test this
+    val deltaDexy = 250000000L // +ve that means we are extracting.
 
     val lpReservesXOut = lpReservesXIn
     val lpReservesYOut = lpReservesYIn - deltaDexy
 
-    // final ratio of X/Y = 10204
     val lpRateXYOut = lpReservesXOut / lpReservesYOut
-    assert(lpRateXYOut == 10204)
-    assert(oracleRateXy * 100 > lpRateXYOut * 98 && oracleRateXy * 100 < lpRateXYOut * 101)
 
     val lpBalanceOut = lpBalanceIn
 
     val extractBoxDexyIn = 100
     val extractBoxDexyOut = extractBoxDexyIn + deltaDexy
-
-    assert(extractBoxDexyOut == 90200000100L)
-    assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
     val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
@@ -2627,34 +2524,27 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if wrong LP NFT in and same (wrong) LP NFT out") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
     val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
     val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 100000000000L
-    // initial ratio of X/Y = 1000
-    assert(lpReservesXIn / lpReservesYIn == 1000)
+    val lpReservesYIn =  10550000000L
+    assert(lpReservesXIn / lpReservesYIn == 9478)
 
-    val deltaDexy = 90200000000L // +ve that means we are extracting.
-    // There is a certain value of deltaDexy above/below which it should fail. To test this
+    val deltaDexy = 250000000L // +ve that means we are extracting.
 
     val lpReservesXOut = lpReservesXIn
     val lpReservesYOut = lpReservesYIn - deltaDexy
 
     // final ratio of X/Y = 10204
     val lpRateXYOut = lpReservesXOut / lpReservesYOut
-    assert(lpRateXYOut == 10204)
-    assert(oracleRateXy * 100 > lpRateXYOut * 98 && oracleRateXy * 100 < lpRateXYOut * 101)
 
     val lpBalanceOut = lpBalanceIn
 
     val extractBoxDexyIn = 100
     val extractBoxDexyOut = extractBoxDexyIn + deltaDexy
-
-    assert(extractBoxDexyOut == 90200000100L)
-    assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
     val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
@@ -2770,34 +2660,27 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if wrong Extract NFT in and right Extract NFT out") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
     val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
     val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 100000000000L
-    // initial ratio of X/Y = 1000
-    assert(lpReservesXIn / lpReservesYIn == 1000)
+    val lpReservesYIn =  10550000000L
+    assert(lpReservesXIn / lpReservesYIn == 9478)
 
-    val deltaDexy = 90200000000L // +ve that means we are extracting.
-    // There is a certain value of deltaDexy above/below which it should fail. To test this
+    val deltaDexy = 250000000L // +ve that means we are extracting.
 
     val lpReservesXOut = lpReservesXIn
     val lpReservesYOut = lpReservesYIn - deltaDexy
 
     // final ratio of X/Y = 10204
     val lpRateXYOut = lpReservesXOut / lpReservesYOut
-    assert(lpRateXYOut == 10204)
-    assert(oracleRateXy * 100 > lpRateXYOut * 98 && oracleRateXy * 100 < lpRateXYOut * 101)
 
     val lpBalanceOut = lpBalanceIn
 
     val extractBoxDexyIn = 100
     val extractBoxDexyOut = extractBoxDexyIn + deltaDexy
-
-    assert(extractBoxDexyOut == 90200000100L)
-    assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
     val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
@@ -2909,34 +2792,27 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if wrong Extract NFT in and same (wrong) Extract NFT out") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
     val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
     val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 100000000000L
-    // initial ratio of X/Y = 1000
-    assert(lpReservesXIn / lpReservesYIn == 1000)
+    val lpReservesYIn =  10550000000L
+    assert(lpReservesXIn / lpReservesYIn == 9478)
 
-    val deltaDexy = 90200000000L // +ve that means we are extracting.
-    // There is a certain value of deltaDexy above/below which it should fail. To test this
+    val deltaDexy = 250000000L // +ve that means we are extracting.
 
     val lpReservesXOut = lpReservesXIn
     val lpReservesYOut = lpReservesYIn - deltaDexy
 
     // final ratio of X/Y = 10204
     val lpRateXYOut = lpReservesXOut / lpReservesYOut
-    assert(lpRateXYOut == 10204)
-    assert(oracleRateXy * 100 > lpRateXYOut * 98 && oracleRateXy * 100 < lpRateXYOut * 101)
 
     val lpBalanceOut = lpBalanceIn
 
     val extractBoxDexyIn = 100
     val extractBoxDexyOut = extractBoxDexyIn + deltaDexy
-
-    assert(extractBoxDexyOut == 90200000100L)
-    assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
     val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
@@ -3050,34 +2926,27 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if wrong Oracle NFT") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
     val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
     val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 100000000000L
-    // initial ratio of X/Y = 1000
-    assert(lpReservesXIn / lpReservesYIn == 1000)
+    val lpReservesYIn =  10550000000L
+    assert(lpReservesXIn / lpReservesYIn == 9478)
 
-    val deltaDexy = 90200000000L // +ve that means we are extracting.
-    // There is a certain value of deltaDexy above/below which it should fail. To test this
+    val deltaDexy = 250000000L // +ve that means we are extracting.
 
     val lpReservesXOut = lpReservesXIn
     val lpReservesYOut = lpReservesYIn - deltaDexy
 
     // final ratio of X/Y = 10204
     val lpRateXYOut = lpReservesXOut / lpReservesYOut
-    assert(lpRateXYOut == 10204)
-    assert(oracleRateXy * 100 > lpRateXYOut * 98 && oracleRateXy * 100 < lpRateXYOut * 101)
 
     val lpBalanceOut = lpBalanceIn
 
     val extractBoxDexyIn = 100
     val extractBoxDexyOut = extractBoxDexyIn + deltaDexy
-
-    assert(extractBoxDexyOut == 90200000100L)
-    assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
     val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
@@ -3187,34 +3056,26 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if wrong Bank NFT") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
     val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
     val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 100000000000L
-    // initial ratio of X/Y = 1000
-    assert(lpReservesXIn / lpReservesYIn == 1000)
+    val lpReservesYIn =  10550000000L
+    assert(lpReservesXIn / lpReservesYIn == 9478)
 
-    val deltaDexy = 90200000000L // +ve that means we are extracting.
-    // There is a certain value of deltaDexy above/below which it should fail. To test this
+    val deltaDexy = 250000000L // +ve that means we are extracting.
 
     val lpReservesXOut = lpReservesXIn
     val lpReservesYOut = lpReservesYIn - deltaDexy
 
-    // final ratio of X/Y = 10204
     val lpRateXYOut = lpReservesXOut / lpReservesYOut
-    assert(lpRateXYOut == 10204)
-    assert(oracleRateXy * 100 > lpRateXYOut * 98 && oracleRateXy * 100 < lpRateXYOut * 101)
 
     val lpBalanceOut = lpBalanceIn
 
     val extractBoxDexyIn = 100
     val extractBoxDexyOut = extractBoxDexyIn + deltaDexy
-
-    assert(extractBoxDexyOut == 90200000100L)
-    assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
     val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
@@ -3325,34 +3186,26 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if wrong Tracking NFT") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
     val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
     val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 100000000000L
-    // initial ratio of X/Y = 1000
-    assert(lpReservesXIn / lpReservesYIn == 1000)
+    val lpReservesYIn =  10550000000L
+    assert(lpReservesXIn / lpReservesYIn == 9478)
 
-    val deltaDexy = 90200000000L // +ve that means we are extracting.
-    // There is a certain value of deltaDexy above/below which it should fail. To test this
+    val deltaDexy = 250000000L // +ve that means we are extracting.
 
     val lpReservesXOut = lpReservesXIn
     val lpReservesYOut = lpReservesYIn - deltaDexy
 
-    // final ratio of X/Y = 10204
     val lpRateXYOut = lpReservesXOut / lpReservesYOut
-    assert(lpRateXYOut == 10204)
-    assert(oracleRateXy * 100 > lpRateXYOut * 98 && oracleRateXy * 100 < lpRateXYOut * 101)
 
     val lpBalanceOut = lpBalanceIn
 
     val extractBoxDexyIn = 100
     val extractBoxDexyOut = extractBoxDexyIn + deltaDexy
-
-    assert(extractBoxDexyOut == 90200000100L)
-    assert(lpReservesYOut == 9800000000L)
 
     val bankReservesY = 100
     val bankReservesX = minBankNanoErgs - 1 // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
