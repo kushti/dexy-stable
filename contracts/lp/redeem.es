@@ -38,7 +38,7 @@
 
     val validOracleBox = oracleBox.tokens(0)._1 == oracleNFT
 
-    val validRateForRedeemingLp = validOracleBox && oracleRateXy > lpRateXyIn * 98 / 100 // lpRate must be >= 0.98 * oracleRate // these parameters need to be tweaked
+    val validRateForRedeemingLp = validOracleBox && lpRateXyIn > oracleRateXy * 98 / 100 // lpRate must be >= 0.98 * oracleRate // these parameters need to be tweaked
 
     // Note:
     //    supplyLpIn = initialLp - lpReservesIn._2

@@ -103,7 +103,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("Redeem Lp should fail if Lp address changed") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
 
     val reservesXIn = 1000000000000L
@@ -190,7 +190,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("Redeem Lp should not work if less LP deposited") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
 
     val reservesXIn = 1000000000000L
@@ -277,7 +277,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("Redeem Lp should not work if more Ergs taken") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
 
     val reservesXIn = 1000000000000L
@@ -364,7 +364,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("Redeem Lp should not work if more Dexy taken") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
 
     val reservesXIn = 1000000000000L
@@ -451,7 +451,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("Redeem Lp should not work if more Dexy and 0 Ergs taken") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
 
     val reservesXIn = 1000000000000L
@@ -538,7 +538,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("Redeem Lp should not work if 0 Dexy and more Ergs taken") {
-    val oracleRateXy = 10000L
+    val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
 
     val reservesXIn = 1000000000000L
@@ -625,11 +625,14 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("Redeem Lp should not work if oracle rate is below threshold") {
-    val oracleRateXy = 10000L * 98 / 100 // should not work if its <= 98 % of the lp Rate
+    val oracleRateXy = 10206L  * 1000000L // should not work if its <= 98 % of the lp Rate
     val lpBalanceIn = 100000000L
 
     val reservesXIn = 1000000000000L
     val reservesYIn = 100000000L
+
+    val lpRateXY = reservesXIn / reservesYIn
+    assert(lpRateXY <= (oracleRateXy / 1000000L) * 98 / 100) // condition opposite to the contract
 
     val lpRedeemed = 49950L
     val withdrawX = 500000L
