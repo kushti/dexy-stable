@@ -9,70 +9,72 @@
 * oracle pool NFT = "f2f64bab1f2e9ab65c0e4a6a65eed0b26c5276eb5dda01d4a0e0ebe8a85bfbfc"
 * oracle token ID = "cc8d50d2a9f0f1254f363ee66a3c65e73ea8046386c001544b08841743df411d"
 
-* Dexy: 27d02ebb1066506ed18c0c9fa0ce2ae5118f1de658ca475116cad1aa5381a64f
+* Dexy: 8ace0552ad1d6b054bc3ff8e04abd0c0b3b6c3877fc69f23c3ebd87d2c7d6667
 
-* Tracking 95% NFT: 9800d3987890d37c4c88427739463f07f672fd7e3c52d14d5525c2d7ecfa4f65
-* Tracking 98% NFT: 195778a09bfd57554597356e2ca002eca14e1ec29d1221c0173dfa8a832e4ee6
-* Tracking 101% NFT: 62cd3bbaac9630de4e7b0697760bffb2743a047662e63c19b6d50310debf91ec
+* Tracking 95% NFT: 6bcef8f1493353797a4d60060e100efd464f10cdd1479ecf5b77031b5f93f39c
+* Tracking 98% NFT: e5a723cfcb7c6b6609ca4979f107b78fd2905eafbb8264835f52474de291a675
+* Tracking 101% NFT: 4d5369a82f2aaf432a573cc0cba9cf5eb545ed9444d20543eba69bafffd3c57f
 
-* Bank NFT: 9ed392d75a7599307d903d9e9031e4f420c7f7ad4e3a3158d137bbce1bad5f44
-* Free mint NFT: c102df121a2c2110485893ece8a7bb33503239a6d2abecb5dcd30eb44b583dc0
-* Arbitrage mint NFT: 19ac1390e2b344d490173c8abee1676b204397693c8ce15ee0b645022fd57781
-* Intervention NFT: 34504ace677f4466ed4dbbf644787e8556cfdf376426952a53b9c253e1fefd47
-* Buyback NFT: 33e578423d26aaee6e7de28493c60103d456c60cb76e32ec553d20dc49d27a99
+* Bank NFT: d9275315fef8d97e787109d6381172184419ae91a31224b0cbe90e32ac863de8
+* Free mint NFT: 049b59a66d1a8a24aaf86e1b0c455c8ab30628da6b0ea9f67567410cc0c3c658
+* Arbitrage mint NFT: a06fa7ae18d21d13cc776fdc51dbd6d6d46912994cbaeb6ce880d09ffb536428
+* Intervention NFT: 8da8339cdadc4190f5406dd95ded5195014e374ffa1087bf5762ec2c1324f24f
+* Buyback NFT: f9de3236f3d431ccd7efe23c485602affb1e55ef3d57a1502105c91e49956334
 * Payout NFT: c811a10d4a22eaf6738434490f7b53740d09988a661ff20ed00bb71000dbc2a9
 
-* Dexy LP token: 6cc23bbb5b169a2ac17721f4208218a260659a22ae619308126f39ab6c872689
-* Dexy LP NFT: 134543f8669d1ad56717167a100f5fe7f37cd645e31d49efa8dfe39ba518007f
-* LP Swap NFT: 607a14e55d8b2c0886a3b9e9b22afe9e5b058ea90bc56a28daaa899e704cfeae
-* LP mint NFT: 6c81c73af41a4c3a8fc242119ebf2ddb3d05cd6654e33bed7e3b082cb1c11982
-* LP redeem NFT: d739272fe55556a2615006a0c0e6082785f93c44816fb52a2b4160f1aee7bcfc
-* LP extract NFT: c19e98006888d2e4ad95c4c9bcc3872eaf754c1cae2b9620071cef809b5d1b83
+* Dexy LP token: 6d64db47940f30deb37ad1ea9b34cac0c4a631a5bdeccb918b2773022041adaa
+* Dexy LP NFT: e7d59d5a70fdb4795c19677f3ac3e52a95e79c422f94a3e24434be9b8378f199
+* LP Swap NFT: 51033a3e651e3d8930f3a065509b201f098755b3e158fc4b9f777c51307a2e14
+* LP mint NFT: 9e48fd37c5763d587c0ced81d1ec9d327a63eb500814ca1d80009771d2f45af5
+* LP redeem NFT: dfa5cbc6131bfb6bdda0a35ecf3ba78906749a85e5e8c5e3e73639bb27583e24
+* LP extract NFT: 4ed32ee7fe1236564010a006a72d875da8176d7600e6e17609c0c8e5d8dbfea2
 
 * GORT LP NFT: 2f51b13d06f4e599cbfd74493701e7f3cdba32c58c567f01ccf1d20f0405d607
 
 ### Deployment transactions
 
 * Tracking 95% contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/de72bfd357206f4ce8c4ce11c5ad7fc8c77fb3016d00fab4aed761f6f02665f8
+https://testnet.ergoplatform.com/en/transactions/fa87dca190794400528107de4337408f0f141a8928caaff17ffc5d0dfe3fd908
 
 
 * Tracking 98% contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/db5254d23619359ffc0e94b3017c6ea47768ccdb3ffeb271fee1b1706478457c
+https://testnet.ergoplatform.com/en/transactions/232fcdaa12b6adc1f743c2fe1ee911693879899c84722cabdd6e18b221f8fb8c
 
 * Tracking 101% contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/b07336b06573848dd8c29b44bb1280b89f0798510a8b4d9d98289e2affbb7ef7
+https://testnet.ergoplatform.com/en/transactions/88299a29406298880c434e919fe097898f4b6fabc65cd85e0610b0a7cfc077c6
 
 * Arbitrage mint contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/f4be12ead0b8bb4b9dd4db844b4f95da9d91eb4b8117baefebc048d39acf0125
+https://testnet.ergoplatform.com/en/transactions/b66e663d9ac3342627b8b7aa967a07a65a1c80bfcda563d320cd92b7b7202c68
 
 * Bank contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/8e3e70f25c5c3f6f96544cf67eeebcb607a45acfb70f7f674d67f0bd4dc901a8
+https://testnet.ergoplatform.com/en/transactions/0e800bdb26a29ceebb431c0dab0cd7eb1a76ad2bfe2a60183b755f2d2ce4bb83
 
 * Buyback contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/6307164733021cc2a7fd10b3737e4e8df11c19231a79b0c26cff5f16d204752d
+https://testnet.ergoplatform.com/en/transactions/8ebeb3ad1e3e665036875163c4791ee0a00d6da12fff29975c69615a50f5ac42
 
 * Freemint contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/841070ed4ace0f0916a373cc7cdff5f04e9da02faf7122a7768731723bf14b4d
+https://testnet.ergoplatform.com/en/transactions/213ac646621dee8adddd74eb672d9b418ac731d152c598e2ec80e0010431e268
 
 
 * Intervention contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/0a001cd6b319de640342bc5782f1755fc9b32acb2585b3ea416d1e3b182b27b2
+https://testnet.ergoplatform.com/en/transactions/7d63539757a53c0d3d4db5d1db4a903f2be58e362fac7ea08e2be7fa8aa7056b
 
 * LP swap contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/bf1916fc76366b8d07dbf78b09f28e84979ecfb1f069ddb31be640fa40540053
+https://testnet.ergoplatform.com/en/transactions/ea9347ea2af94ce4a63b9c06b3ad442f247dc12a12e307348f25d4c18c5e3300
 
 * LP mint contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/6a58aa8e2882df6ef73b83a5fe5465963d5eb7e1c97b97040520b4d2e2c9a8f9
+https://testnet.ergoplatform.com/en/transactions/b95fa6577d69246b3c053c4d7c946d3a20c48a94f13c64406ee778e5ce4fa7f7
 
 * LP redeem contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/f5d21a14c594d7043bb7d59c61b14667dbf6e7b22466482d4a9bdd45b9c967c3
+https://testnet.ergoplatform.com/en/transactions/bc94abe30088b574b075f4b6ac058e6cb6965ef82f2ad00210cd5e2e77b5d6e0
 
 * LP extract contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/d32bbdf8ee571f87f34e20dd8460aecc8f7bc7ca4abcb6e9905bd211b2b1f014
+https://testnet.ergoplatform.com/en/transactions/7b9ee6651523ae99e3a9673c1ba419f7b2552ccd18b9cfa98c42e0603a1c9e19
 
 * LP contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/bd4d646001b33c539938d4d33ec4ab0d595c5f4eaf1370bfbb46fd8008d0d221
+https://testnet.ergoplatform.com/en/transactions/9e4cfcb890472a3c33047a976bcda2359ae9b1a09fbd0b40bf33113d484f9ae3
 
 
 // TODO: payout
+
+// TODO: gort LP
