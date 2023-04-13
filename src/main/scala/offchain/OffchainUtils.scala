@@ -4,13 +4,13 @@ import io.circe.parser.parse
 import org.ergoplatform.{DataInput, ErgoBox, ErgoBoxCandidate, ErgoScriptPredef, UnsignedInput}
 import org.ergoplatform.ErgoBox.{R4, R7}
 import org.ergoplatform.http.api.ApiCodecs
+import org.ergoplatform.modifiers.history.Header
 import org.ergoplatform.modifiers.mempool.{ErgoTransaction, ErgoTransactionSerializer, UnsignedErgoTransaction}
 import org.ergoplatform.nodeView.state.{ErgoStateContext, VotingData}
 import org.ergoplatform.settings.{ErgoSettings, ErgoValidationSettings, LaunchParameters}
 import org.ergoplatform.wallet.Constants.eip3DerivationPath
 import org.ergoplatform.wallet.interpreter.{ErgoProvingInterpreter, TransactionHintsBag}
 import org.ergoplatform.wallet.secrets.JsonSecretStorage
-import org.ergoplatform.wallet.serialization.JsonCodecsWrapper
 import org.ergoplatform.wallet.settings.SecretStorageSettings
 import scalaj.http.{Http, HttpOptions}
 import scorex.util.encode.Base16
@@ -53,6 +53,12 @@ class OffchainUtils(serverUrl: String,
     json.\\("fullHeight").head.asNumber.get.toInt.get
   }
 
+  def lastHeader(): Header = {
+    val infoUrl = s"$serverUrl/blocks/lastHeaders/1"
+    val json = parse(getJsonAsString(infoUrl)).toOption.get
+    json.as[Seq[Header]].toOption.get.head
+  }
+
   def unspentScanBoxes(scanId: Int): Seq[ErgoBox] = {
     val scanUnspentUrl = s"$serverUrl/scan/unspentBoxes/$scanId?minConfirmations=0&maxConfirmations=-1&minInclusionHeight=0&maxInclusionHeight=-1"
     val boxesUnspentJson = parse(getJsonAsString(scanUnspentUrl)).toOption.get
@@ -89,7 +95,9 @@ class OffchainUtils(serverUrl: String,
 
     val prover = ErgoProvingInterpreter(IndexedSeq(masterKey, changeKey), LaunchParameters)
 
-    val stateContext = new ErgoStateContext(Seq.empty, None, settings.chainSettings.genesisStateDigest, LaunchParameters, ErgoValidationSettings.initial,
+    val bestHeader = lastHeader()
+
+    val stateContext = new ErgoStateContext(Seq(bestHeader), None, settings.chainSettings.genesisStateDigest, LaunchParameters, ErgoValidationSettings.initial,
       VotingData.empty)(settings) {
       override val blockVersion = 2: Byte
     }
@@ -106,14 +114,14 @@ class OffchainUtils(serverUrl: String,
   def updateTracker101(alarmHeight: Option[Int]): Array[Byte] = {
     val feeInputs = fetchWalletInputs().take(3)
     val trackingBox = tracking101Box().head
-    val inputBoxes = (IndexedSeq(trackingBox) ++ feeInputs)
+    val inputBoxes = IndexedSeq(trackingBox) ++ feeInputs
     val inputsHeight = inputBoxes.map(_.creationHeight).max
 
     val inputs = inputBoxes.map(b => new UnsignedInput(b.id, ContextExtension.empty))
     val dataInputBoxes = IndexedSeq(oraclePoolBox().get, lpBox().get)
     val dataInputs = dataInputBoxes.map(b => DataInput.apply(b.id))
 
-    val changeValue = inputBoxes.map(_.value).sum - fee
+    val changeValue = feeInputs.map(_.value).sum - fee
     val changeBox = new ErgoBoxCandidate(changeValue, feeInputs.head.ergoTree, inputsHeight)
 
     val updRegisters = trackingBox.additionalRegisters.updated(R7, IntConstant(alarmHeight.getOrElse(Int.MaxValue)))
@@ -144,7 +152,7 @@ object Test extends App {
   val utils = new OffchainUtils(
     serverUrl = "http://176.9.15.237:9052",
     apiKey = "",
-    localSecretStoragePath = "/home/kushti/ergo/mainnet/.ergo/wallet/keystore",
+    localSecretStoragePath = "/home/kushti/ergo/backup/176keystore",
     localSecretUnlockPass = "",
     dexyScanIds = scanIds)
 
