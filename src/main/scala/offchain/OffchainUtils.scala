@@ -134,7 +134,12 @@ class OffchainUtils(serverUrl: String,
 }
 
 object Test extends App {
-  val scanIds = DexyScanIds(33, 34, 35, 32, 45)
+  // tracking95ScanId
+  // tracking98ScanId
+  // tracking101ScanId
+  // oraclePoolScanId
+  // lpScanId
+  val scanIds = DexyScanIds(59, 60, 61, 32, 71)
 
   val utils = new OffchainUtils(
     serverUrl = "http://176.9.15.237:9052",
@@ -147,8 +152,8 @@ object Test extends App {
   val lpBox = utils.lpBox().get
   val lpPrice = lpBox.value / lpBox.additionalTokens.apply(2)._2
 
-  println(oraclePrice / 1000000)
-  println(lpPrice)
+  println("oracle price: " + oraclePrice / 1000000)
+  println("lp price: " + lpPrice)
 
   val x = oraclePrice * 101
   val y = lpPrice * 100

@@ -9,9 +9,9 @@ import sigmastate.serialization.ValueSerializer
 
 object DexySpec {
   // oracle related tokens
-  val dexyTokenId = "8ace0552ad1d6b054bc3ff8e04abd0c0b3b6c3877fc69f23c3ebd87d2c7d6667"
+  val dexyTokenId = "db6e90dbb38e9c1c346021d05520de5aa01d3c25a38afd7431d83a88e3228ab5"
 
-  val lpTokenId = "6d64db47940f30deb37ad1ea9b34cac0c4a631a5bdeccb918b2773022041adaa"
+  val lpTokenId = "0c86784c258b6d3112525e0007c853e144695c93d7f65e312d1089ab9b30e0ab"
 
   // Gold Oracle Reward Token
   val gort = "e2636c9f0e32886954ab1f87ac2e016fdf53d63d8fa2101530d1e31ac59e365f"
@@ -22,25 +22,25 @@ object DexySpec {
   val gortLpNFT = "2f51b13d06f4e599cbfd74493701e7f3cdba32c58c567f01ccf1d20f0405d607"
 
   // tokens for main boxes
-  val bankNFT = "d9275315fef8d97e787109d6381172184419ae91a31224b0cbe90e32ac863de8"
-  val lpNFT = "e7d59d5a70fdb4795c19677f3ac3e52a95e79c422f94a3e24434be9b8378f199"
+  val bankNFT = "e6038bb582650c63e9fd30329285b3bc5ed50d56a2318888b0a0b9b77b6292cd"
+  val lpNFT = "278babbc8093487a641390842042a10cd17c0a37c1c1f67e7491b751841943fd"
 
   // all tokens below for aux boxes (1 for each type of box)
-  val interventionNFT = "8da8339cdadc4190f5406dd95ded5195014e374ffa1087bf5762ec2c1324f24f"
-  val freeMintNFT = "049b59a66d1a8a24aaf86e1b0c455c8ab30628da6b0ea9f67567410cc0c3c658"
-  val arbitrageMintNFT = "a06fa7ae18d21d13cc776fdc51dbd6d6d46912994cbaeb6ce880d09ffb536428"
-  val buybackNFT = "f9de3236f3d431ccd7efe23c485602affb1e55ef3d57a1502105c91e49956334"
+  val interventionNFT = "e66257a0f046789ecb95893f56a16e4446880b874b763d1f8cdc287abecc6c58"
+  val freeMintNFT = "ba57c53a215c8d135ff067e3e7b3a11da64690041a20f659e3a1cc14b1c7ae37"
+  val arbitrageMintNFT = "94af8793a1f7b427831dcb48368ffc55c68d319d525ea24510ac38b75e280a8c"
+  val buybackNFT = "69221297b61e24a843a3ac2d48edefe1558401fc88927eeac72701d3ff80a4c0"
   val payoutNFT = "c811a10d4a22eaf6738434490f7b53740d09988a661ff20ed00bb71000dbc2a9"
 
-  val lpSwapNFT = "51033a3e651e3d8930f3a065509b201f098755b3e158fc4b9f777c51307a2e14"
-  val lpMintNFT = "9e48fd37c5763d587c0ced81d1ec9d327a63eb500814ca1d80009771d2f45af5"
-  val lpRedeemNFT = "dfa5cbc6131bfb6bdda0a35ecf3ba78906749a85e5e8c5e3e73639bb27583e24"
-  val extractionNFT = "4ed32ee7fe1236564010a006a72d875da8176d7600e6e17609c0c8e5d8dbfea2"
+  val lpSwapNFT = "20a1f758cf488566a2ad58116a57386e5d9feb306b8b57df2e00b733a8263a26"
+  val lpMintNFT = "61a44e341441b36466ddbe2148bbe6888b000de1cf115103067855345cc364d6"
+  val lpRedeemNFT = "2676bffc90260934d622f1b78c46ae6bd62f9c2b335e13905010d21254eb6c9d"
+  val extractionNFT = "5b3d4c89d43a8520e109f067dd8f0561447e14280d6a3f95b3197f55c1d3a2db"
 
   // boxes for tracking ratio of LP rate and oracle pool rate (see details in Tracking contract)
-  val tracking95NFT = "6bcef8f1493353797a4d60060e100efd464f10cdd1479ecf5b77031b5f93f39c"
-  val tracking98NFT = "e5a723cfcb7c6b6609ca4979f107b78fd2905eafbb8264835f52474de291a675"
-  val tracking101NFT = "4d5369a82f2aaf432a573cc0cba9cf5eb545ed9444d20543eba69bafffd3c57f"
+  val tracking95NFT = "5a5c789ed9d964cd6afb4e10e61b1f7a6114c25e0eca1145095105355496159e"
+  val tracking98NFT = "593fa6a24080f9f25945816e495e72f0608d7b867df9ba29afe44bc338be3e86"
+  val tracking101NFT = "a5dc13269b4b0fc95a03f47b04e5238a5074c66da19793e57147cfeac6664052"
 
   // High level idea:
   // There are 3 main boxes in the protocol, and the others are auxiliary boxes to manage the main boxes
@@ -51,7 +51,7 @@ object DexySpec {
 
   // initial number of dexy tokens issued
   // used in payout
-  lazy val initialDexyTokens = 5000000000000L
+  lazy val initialDexyTokens = 10000000000000L
 
   val initialLp =
     100000000000L // initially how many Lp minted (and we need to add that many to tokens(1), after removing some for token burning as in UniSwap v2)
@@ -261,8 +261,8 @@ object DexySpec {
         |        }
         |      ],
         |      "registers": {
-        |        "R4": "$denum",
-        |        "R5": "$numValue",
+        |        "R4": "$numValue",
+        |        "R5": "$denum",
         |        "R6": "$isBelow",
         |        "R7": "$intMaxValue"
         |      }
@@ -433,7 +433,7 @@ object DexySpec {
          |        {
          |          "tokenId": "$dexyTokenId",
          |          "amount": 1
-         |        },
+         |        }
          |      ]
          |    }
          |  ]

@@ -5,8 +5,8 @@
     //   tokens(0): Tracking NFT
     //
     // REGISTERS
-    //   R4: Int (denumerator)
-    //   R5: Int (nominator)
+    //   R4: Int (nominator)
+    //   R5: Int (denumerator)
     //   R6: Boolean (isBelow, a flag indicating the type of tracking)
     //   R7: Int (trackingHeight)
     //
