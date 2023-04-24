@@ -98,10 +98,11 @@ in DAI), zero-coupon bonds~(as in the Yield protocol), reserve asset~(as in Djed
 In this work we present \dx{}, a stablecoin protocol where an algorithmic central bank performing interventions in case of depeg is presented explicitly as a contract with few predefined rules. The bank is trying to stabilize stablecoin value on the markets, using a liquidity pool as a reference market, by providing stablecoin liquidity, when stablecoin price is over the peg, or injecting base currency from its reserves, when the stablecoin is under the peg. In extreme case, when bank reserves are depleted and stablecoin is still under the peg, its value is restored by extracting stablecoins from the liquidity pool~(to inject back when price will go above the peg again). In some aspects \dx{} could resemble Fei or Gyroscope. \knote{make comparison subsection}  
 
 The rest of the paper is organized as follows.  In Section~\ref{design-general} we sketch \dx{} design in general and
-introduce notation used in other sections.
-
-\knote{finish}
-
+introduce notation used in other sections. Section~\ref{worst-case} is defining worst-case scenario for bank reserves~(
+and so, for stablecoin stability). Then \dx{} is detalized in Section~\ref{detailed-rules}. Stability of the rules are
+discussed in Section~\ref{stability}. Trust assumptions \dx{} protocol is based on are stated in Section~\ref{kya}.
+Section~\ref{dexygold} describes concrete \dx{} implementation, gold-pegged DexyGold stablecoin and its
+tokenomics.
 
 \section{\dx{} Design in General}
 \label{design-general}
@@ -115,9 +116,9 @@ The bank has two basic operations. It can mint new \sct{} tokens per request, us
 
 Now we are going to consider what are possible failure scenarios for such design and how to put restrictions and design rules for the system to ensure stable pricing for \sct{} tokens. 
 
-\section{Notation}
+\subsection{Notation}
 
-We start by introducing notation: 
+We are introducing notation used further:
 \begin{itemize}
   \item{} $T$ - period before intervention starts. After one intervention the bank can start another one only after $T$ time units passed. 
   \item{} $p$ - price reported by the oracle at the moment (for example, 20 USD per ERG)
@@ -131,6 +132,7 @@ We start by introducing notation:
 \end{itemize}  
 
 \section{Worst Case Scenario and Bank Reserves}
+\label{worst-case}
 
 The bank is doing interventions when the situation is far from normal in the markets, and enough time passed for markets to stabilize themselves with no interventions. In our case, the bank is doing interventions based on stablecoin price in the liquidity pool in comparison with oracle provided price. The bank's intervention then is about injecting its \bc{} reserves into the pool.  
 
@@ -153,6 +155,7 @@ Summing up $E_1$ and $E_2$, we got \bc{} reserves the bank should have to be rea
 It is simple to see why this scenario is worst-case for the bank. In this scenario, the bank~(and only the bank) is buying all the $O$ of external $\sct{}$ at the worst possible price $s$, and also set the price by burning its own reserves only.  
 
 \section{Bank and Pool Rules}
+\label{detailed-rules}
 
 Based on needed reserves for worst-case scenario estimation, we can consider minting rules accordingly. Similarly to SigUSD~(a Djed instantiation), we can, for example, target for security in case of 
 4x price drop, so to consider $R = \frac{p}{s} = 4$, and allow to mint \sct{}~while there are enough, so not less than $E_w$, \bc{}~in reserves. However, in this case most of time \sct{} would be non-mintable, and only during moments of \bc{} price going up significantly it will be possible to mint \dx{}. As worst-case scenario is based on unrealistic assumptions, unlikely a realistic protocol can be built on top of it.  
@@ -201,36 +204,38 @@ We also state following rules for the liquidity pool (which, otherwise, acts as 
 In addition, we introduce $2\%$ redemption fee to avoid excessive liquidity hopping.
 
 \section{Stability}
+\label{stability}
 
 With second stabilization mechanism~(burning or extraction) in place, the price in the reference market will be eventually stabilized. However, for liquidity holders burning is painful, extraction not so but still not desirable, thus \dx{} protocol is trying to avoid it~(unlike other protocols, such as Gyroscope or Fei, where redemption rate fails below $1$ immediately as collateralization falls under $100\%$), by giving markets time to self-stabilize, and then doing interventions. This could mean slower stabilization, in comparison with other protocols. Slower stabilization helps the bank to play with possible adversaries in the environment with information assymetry~(humans always have access to more information than algorithmic bank, with more flexible decision making as well).
 
 \dx{} is also cautios about minting new \sct{}s, which could mean slow growth of number of tokens issued. This could be inconvient, especially for big players, but the protocol is focused on stability in the first place. 
 
 Please note, that liquidity pool is disincentivizing massive bank runs due to its constant-product nature. Actually, for the bank massive bank runs are simpler for bank to resolve, in comparison with slow drain as in worst-case scenario. 
- 
 
-\section{Implementation}
-
-\subsection{Bank Contract}
-\knote{put contracts here}
-
-\section{Simulations}
-We made simulations, you can find them in \dx{} repository. \knote{finish}
 
 \section{Trust Assumptions}
+\label{kya}
 
 It is important to explicitly state assumptions the protocol is based on, so a user can choose whether to trust it or not.
 
 \begin{itemize}
   \item{Oracle: } the biggest trust issue in the protocol is oracle delivering gold price. This trust issue is unavoidable but can be relaxed by using not a single entity but a federation of oracles with an average price (after noise filtering) to be delivered to the Dexy central bank.
   \item{No governance: } unlike most of stablecoin protocols, we do not consider governance, as usually it is another trust issue. Real world instantiations can consider governance, we suppose that such instantiations should clearly inform about governance-related trust assumptions.
-\end{itemize} 
+\end{itemize}
 
-\section*{Acknowledgments}
+\section{Dexy Gold}
+\label{dexygold}
 
-Authors would like to thank Ile for his inspiring forum posts.
+\subsection{Implementation}
 
-\section*{Oracle safety and tokenomics}
+
+\subsection{Bank Contract}
+\knote{put contracts here}
+
+\subsection{Simulations}
+We made simulations, you can find them in \dx{} repository. \knote{finish}
+
+\subsection*{Oracle safety and tokenomics}
 
 As a first instantiation for the Dexy protocol, we consider DexyGold, gold-pegged and ERG-backed stablecoin.
 
@@ -252,14 +257,11 @@ Distribution would be like~(not finalized!):
 
 Part of minting
 
+\section*{Acknowledgments}
+
+Authors would like to thank Ile for his inspiring forum posts.
+
 \bibliography{sources}
 \bibliographystyle{ieeetr}
-
-% Appendices
-
-% \newpage
-% \appendix
-
-%\input{apx-tests}
 
 \end{document}
