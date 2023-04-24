@@ -71,9 +71,9 @@
 
 \begin{abstract}
 In this paper, we consider a new stablecoin protocol design called \dx. The protocol is maintaining the peg with two
-assets only~(base currency and stablecoin), and two components, namely, a reference market~(in form of a liquidity pool
-where anyone can trade base currency against stablecoins), and an algorithmic central bank, which is responsible for new
-stablecoins issuance, and also for maintaining stablecoin peg in the reference market.
+assets only~(base currency and stablecoin), and also two functional components, namely, a reference market~(in form of a liquidity pool
+where anyone can trade base currency against stablecoin), and an algorithmic central bank, which is responsible for new
+stablecoins issuance, and also for maintaining stablecoin pricing corresponding to a peg in the reference market.
 \end{abstract}
 
 
@@ -81,7 +81,7 @@ stablecoins issuance, and also for maintaining stablecoin peg in the reference m
 
 Algorithmic stablecoins is a natural extension of cryptocurrencies, trying to 
 solve problems with volatility of their prices by pegging stablecoin price to an
-asset which price is considered to be more or less stable with time (e.g. gold). 
+asset which price is considered to be more or less stable over long periods of time (e.g. gold).
 
 Having an asset with a stable value could be useful in many scenarios, for example:
 \begin{itemize}
@@ -97,10 +97,14 @@ in DAI), zero-coupon bonds~(as in the Yield protocol), reserve asset~(as in Djed
 
 In this work we present \dx{}, a stablecoin protocol where an algorithmic central bank performing interventions in case of depeg is presented explicitly as a contract with few predefined rules. The bank is trying to stabilize stablecoin value on the markets, using a liquidity pool as a reference market, by providing stablecoin liquidity, when stablecoin price is over the peg, or injecting base currency from its reserves, when the stablecoin is under the peg. In extreme case, when bank reserves are depleted and stablecoin is still under the peg, its value is restored by extracting stablecoins from the liquidity pool~(to inject back when price will go above the peg again). In some aspects \dx{} could resemble Fei or Gyroscope. \knote{make comparison subsection}  
 
-The paper is organized as follows... \knote{finish}
+The rest of the paper is organized as follows.  In Section~\ref{design-general} we sketch \dx{} design in general and
+introduce notation used in other sections.
+
+\knote{finish}
 
 
 \section{\dx{} Design in General}
+\label{design-general}
 
 Unlike popular algorithmic stablecoins based on two tokens~(in addition to base currency), such as Djed, \dx{} is based on one token but two protocols. In the first place,
 there is a reference market~(done as on-chain protocol, such as automated market maker~\cite{xu2021sok}), where trading of \dx{} vs the base currency (\bc{}) happens. In the second place, to tackle with situations when the reference market price is way too different from a target price (price of a pegged asset, as reported by a trusted oracle), there is an algorithmic central bank which is doing interventions in order to readjust the market price~(so make it closer to the oracle's one). The central bank can also mint new \dx{} tokens by selling them for \bc{}. The bank is using reserves in \bc{} it is buying for interventions. 
