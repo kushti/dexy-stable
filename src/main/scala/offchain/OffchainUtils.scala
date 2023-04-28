@@ -1,7 +1,8 @@
 package offchain
 
 import io.circe.parser.parse
-import org.ergoplatform.{DataInput, ErgoBox, ErgoBoxCandidate, ErgoScriptPredef, UnsignedInput}
+import offchain.DexyLpSwap.tokensMapToColl
+import org.ergoplatform.{DataInput, ErgoAddressEncoder, ErgoBox, ErgoBoxCandidate, ErgoScriptPredef, UnsignedInput}
 import org.ergoplatform.ErgoBox.{R4, R7}
 import org.ergoplatform.http.api.ApiCodecs
 import org.ergoplatform.modifiers.history.Header
@@ -9,6 +10,8 @@ import org.ergoplatform.modifiers.mempool.{ErgoTransaction, ErgoTransactionSeria
 import org.ergoplatform.nodeView.state.{ErgoStateContext, VotingData}
 import org.ergoplatform.settings.{ErgoSettings, ErgoValidationSettings, LaunchParameters}
 import org.ergoplatform.wallet.Constants.eip3DerivationPath
+import org.ergoplatform.wallet.boxes.BoxSelector.BoxSelectionResult
+import org.ergoplatform.wallet.boxes.DefaultBoxSelector
 import org.ergoplatform.wallet.interpreter.{ErgoProvingInterpreter, TransactionHintsBag}
 import org.ergoplatform.wallet.secrets.JsonSecretStorage
 import org.ergoplatform.wallet.settings.SecretStorageSettings
@@ -16,6 +19,7 @@ import scalaj.http.{Http, HttpOptions}
 import scorex.util.encode.Base16
 import sigmastate.interpreter.ContextExtension
 import org.ergoplatform.wallet.interface4j.SecretString
+import scorex.util.ModifierId
 import sigmastate.Values.IntConstant
 
 
@@ -23,7 +27,8 @@ case class DexyScanIds(tracking95ScanId: Int,
                        tracking98ScanId: Int,
                        tracking101ScanId: Int,
                        oraclePoolScanId: Int,
-                       lpScanId: Int)
+                       lpScanId: Int,
+                       lpSwapScanId: Int)
 
 class OffchainUtils(serverUrl: String,
                     apiKey: String,
@@ -31,6 +36,9 @@ class OffchainUtils(serverUrl: String,
                     localSecretUnlockPass: String,
                     dexyScanIds: DexyScanIds) extends ApiCodecs {
   val fee = 1000000L
+  val eae = new ErgoAddressEncoder(ErgoAddressEncoder.TestnetNetworkPrefix)
+  //todo: get change address via api from server
+  val changeAddress = eae.fromString("3WwhifgHTu7ib5ggKKVFaN1J6jFim3u9siPspDRq9JnwcKfLuuxc").get
 
   def feeOut(creationHeight: Int): ErgoBoxCandidate = {
     new ErgoBoxCandidate(fee, ErgoScriptPredef.feeProposition(720), creationHeight) // 0.002 ERG
@@ -65,6 +73,10 @@ class OffchainUtils(serverUrl: String,
     boxesUnspentJson.\\("box").map(_.as[ErgoBox].toOption.get)
   }
 
+  def fetchSingleBox(scanId: Int): ErgoBox =  {
+    unspentScanBoxes(scanId).head
+  }
+
   def fetchWalletInputs(): Seq[ErgoBox] = {
     val boxesUnspentUrl = s"$serverUrl/wallet/boxes/unspent?minConfirmations=0&maxConfirmations=-1&minInclusionHeight=0&maxInclusionHeight=-1"
     val boxesUnspentJson = parse(getJsonAsString(boxesUnspentUrl)).toOption.get
@@ -81,6 +93,13 @@ class OffchainUtils(serverUrl: String,
   def oraclePoolBox(): Option[ErgoBox] = unspentScanBoxes(dexyScanIds.oraclePoolScanId).headOption
 
   def lpBox(): Option[ErgoBox] = unspentScanBoxes(dexyScanIds.lpScanId).headOption
+
+  def changeOuts(selectionResult: BoxSelectionResult[ErgoBox], creationHeight: Int): IndexedSeq[ErgoBoxCandidate] ={
+    selectionResult.changeBoxes.toIndexedSeq.map{ba =>
+      val tokensMap = tokensMapToColl(ba.tokens)
+      new ErgoBoxCandidate(ba.value, changeAddress.script, creationHeight, tokensMap)
+    }
+  }
 
   def signTransaction(txName: String,
                       unsignedTransaction: UnsignedErgoTransaction,
@@ -112,17 +131,25 @@ class OffchainUtils(serverUrl: String,
   }
 
   def updateTracker101(alarmHeight: Option[Int]): Array[Byte] = {
-    val feeInputs = fetchWalletInputs().take(3)
+
+    val creationHeight = currentHeight()
+
+    val feeOutput = feeOut(creationHeight)
+
+    val selectionResult = DefaultBoxSelector.select[ErgoBox](
+      fetchWalletInputs().toIterator,
+      (_: ErgoBox) => true,
+      feeOutput.value,
+      Map.empty[ModifierId, Long]
+    ).right.toOption.get
+
     val trackingBox = tracking101Box().head
-    val inputBoxes = IndexedSeq(trackingBox) ++ feeInputs
+    val inputBoxes = IndexedSeq(trackingBox) ++ selectionResult.boxes
     val inputsHeight = inputBoxes.map(_.creationHeight).max
 
     val inputs = inputBoxes.map(b => new UnsignedInput(b.id, ContextExtension.empty))
     val dataInputBoxes = IndexedSeq(oraclePoolBox().get, lpBox().get)
     val dataInputs = dataInputBoxes.map(b => DataInput.apply(b.id))
-
-    val changeValue = feeInputs.map(_.value).sum - fee
-    val changeBox = new ErgoBoxCandidate(changeValue, feeInputs.head.ergoTree, inputsHeight)
 
     val updRegisters = trackingBox.additionalRegisters.updated(R7, IntConstant(alarmHeight.getOrElse(Int.MaxValue)))
     val updTracking = new ErgoBoxCandidate(trackingBox.value,
@@ -134,11 +161,15 @@ class OffchainUtils(serverUrl: String,
     println("t: " + trackingBox)
     println("ut: " + updTracking)
 
-    val outputs = IndexedSeq(updTracking, changeBox, feeOut(inputsHeight))
+    val outputs = IndexedSeq(updTracking) ++ changeOuts(selectionResult, creationHeight) ++ IndexedSeq(feeOutput)
 
     val utx = new UnsignedErgoTransaction(inputs, dataInputs, outputs)
     signTransaction("tracking101 update: ", utx, inputBoxes, dataInputBoxes)
   }
+}
+
+object OffchainUtils {
+  val scanIds = DexyScanIds(59, 60, 61, 32, 71, 67)
 }
 
 object Test extends App {
@@ -147,14 +178,13 @@ object Test extends App {
   // tracking101ScanId
   // oraclePoolScanId
   // lpScanId
-  val scanIds = DexyScanIds(59, 60, 61, 32, 71)
 
   val utils = new OffchainUtils(
     serverUrl = "http://176.9.15.237:9052",
     apiKey = "",
     localSecretStoragePath = "/home/kushti/ergo/backup/176keystore",
     localSecretUnlockPass = "",
-    dexyScanIds = scanIds)
+    dexyScanIds = OffchainUtils.scanIds)
 
   val oraclePrice = utils.oraclePoolBox().get.additionalRegisters.apply(R4).value.asInstanceOf[Long]
   val lpBox = utils.lpBox().get

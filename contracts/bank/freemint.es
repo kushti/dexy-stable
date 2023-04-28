@@ -77,6 +77,7 @@
   val lpReservesY = lpBox.tokens(2)._2 // dexyReserves
   val lpRate = lpReservesX / lpReservesY
 
+  // todo: should we limit it from both sides ?
   val validRateFreeMint = 98 * lpRate < oracleRate * 100 && oracleRate * 100 < 102 * lpRate
 
   val dexyMinted = bankBoxIn.tokens(1)._2 - bankBoxOut.tokens(1)._2
