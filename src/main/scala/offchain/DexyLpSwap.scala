@@ -39,7 +39,7 @@ object DexyLpSwap extends App {
     val creationHeight = utils.currentHeight()
 
     val feeOut = utils.feeOut(creationHeight)
-    val ergNeeded = nanoErgs + feeOut.value
+    val ergNeeded = feeOut.value + nanoErgs
 
     val targetTokens: Map[ModifierId, Long] = if (dexyAmount > 0) {
       Map(ModifierId @@ DexySpec.dexyTokenId -> dexyAmount)
@@ -58,10 +58,10 @@ object DexyLpSwap extends App {
     val inputs = inputBoxes.map(b => new UnsignedInput(b.id))
 
     val lpOutput: ErgoBoxCandidate = new ErgoBoxCandidate(
-      lpInput.value,
+      lpInput.value + nanoErgs,
       lpInput.ergoTree,
       creationHeight,
-      lpInput.additionalTokens,
+      lpInput.additionalTokens.updated(2, lpInput.additionalTokens(2)._1 -> (lpInput.additionalTokens(2)._2 + dexyAmount)),
       lpInput.additionalRegisters
     )
     val swapOutput = new ErgoBoxCandidate(
@@ -86,5 +86,6 @@ object DexyLpSwap extends App {
 
   println("DEX price: " + dexPrice)
   println("Oracle price: " + oraclePrice)
-  inject(0,0)
+  println("Ratio: " + dexPrice.toDouble / oraclePrice)
+  inject(0,40)
 }
