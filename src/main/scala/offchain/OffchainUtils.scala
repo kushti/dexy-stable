@@ -101,6 +101,16 @@ class OffchainUtils(serverUrl: String,
     }
   }
 
+  def printlnKey() = {
+    val settings = ErgoSettings.read()
+    val sss = SecretStorageSettings(localSecretStoragePath, settings.walletSettings.secretStorage.encryption)
+    val jss = JsonSecretStorage.readFile(sss).get
+    jss.unlock(SecretString.create(localSecretUnlockPass))
+    val masterKey = jss.secret.get
+    val changeKey = masterKey.derive(eip3DerivationPath)
+    println(Base16.encode(changeKey.keyBytes))
+  }
+
   def signTransaction(txName: String,
                       unsignedTransaction: UnsignedErgoTransaction,
                       boxesToSpend: IndexedSeq[ErgoBox],
@@ -166,6 +176,43 @@ class OffchainUtils(serverUrl: String,
     val utx = new UnsignedErgoTransaction(inputs, dataInputs, outputs)
     signTransaction("tracking101 update: ", utx, inputBoxes, dataInputBoxes)
   }
+
+  def updateTracker98(alarmHeight: Option[Int]): Array[Byte] = {
+
+    val creationHeight = currentHeight()
+
+    val feeOutput = feeOut(creationHeight)
+
+    val selectionResult = DefaultBoxSelector.select[ErgoBox](
+      fetchWalletInputs().toIterator,
+      (_: ErgoBox) => true,
+      feeOutput.value,
+      Map.empty[ModifierId, Long]
+    ).right.toOption.get
+
+    val trackingBox = tracking98Box().head
+    val inputBoxes = IndexedSeq(trackingBox) ++ selectionResult.boxes
+    val inputsHeight = inputBoxes.map(_.creationHeight).max
+
+    val inputs = inputBoxes.map(b => new UnsignedInput(b.id, ContextExtension.empty))
+    val dataInputBoxes = IndexedSeq(oraclePoolBox().get, lpBox().get)
+    val dataInputs = dataInputBoxes.map(b => DataInput.apply(b.id))
+
+    val updRegisters = trackingBox.additionalRegisters.updated(R7, IntConstant(alarmHeight.getOrElse(Int.MaxValue)))
+    val updTracking = new ErgoBoxCandidate(trackingBox.value,
+      trackingBox.ergoTree,
+      inputsHeight,
+      trackingBox.additionalTokens,
+      updRegisters)
+
+    println("t: " + trackingBox)
+    println("ut: " + updTracking)
+
+    val outputs = IndexedSeq(updTracking) ++ changeOuts(selectionResult, creationHeight) ++ IndexedSeq(feeOutput)
+
+    val utx = new UnsignedErgoTransaction(inputs, dataInputs, outputs)
+    signTransaction("tracking98 update: ", utx, inputBoxes, dataInputBoxes)
+  }
 }
 
 object OffchainUtils {
@@ -173,11 +220,6 @@ object OffchainUtils {
 }
 
 object Test extends App {
-  // tracking95ScanId
-  // tracking98ScanId
-  // tracking101ScanId
-  // oraclePoolScanId
-  // lpScanId
 
   val utils = new OffchainUtils(
     serverUrl = "http://176.9.15.237:9052",
@@ -200,6 +242,6 @@ object Test extends App {
 
   val currentHeight = utils.currentHeight()
 
-  utils.updateTracker101(Some(currentHeight))
+  utils.updateTracker98(Some(currentHeight))
 
 }

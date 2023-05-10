@@ -104,6 +104,7 @@
   val validMaxSpending = lpReservesXOutBigInt * 1000 <= oracleRateXy * lpReservesYOut * 995  &&   // new rate must be <= 99.5 times oracle rate
                          deltaBankErgs <= bankBoxIn.value / 100 // no more than 1% of reserves spent per intervention
 
+  // todo: add check that tokens were indeed taken from LP (here with possible slippage, or LP)?
   val validDeltas = deltaBankErgs <= deltaLpX  &&  // ergs reduced in bank box must be <= ergs gained in LP
                     deltaBankTokens >= deltaLpY &&   // tokens gained in bank box must be >= tokens reduced in LP
                     deltaLpX > 0
