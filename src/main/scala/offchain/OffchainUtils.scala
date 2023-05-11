@@ -22,6 +22,10 @@ import org.ergoplatform.wallet.interface4j.SecretString
 import scorex.util.ModifierId
 import sigmastate.Values.IntConstant
 
+sealed trait Tracker
+object Tracker95 extends Tracker
+object Tracker98 extends Tracker
+object Tracker101 extends Tracker
 
 case class DexyScanIds(tracking95ScanId: Int,
                        tracking98ScanId: Int,
@@ -140,20 +144,26 @@ class OffchainUtils(serverUrl: String,
     txBytes
   }
 
-  def updateTracker101(alarmHeight: Option[Int]): Array[Byte] = {
+
+  def updateTracker(alarmHeight: Option[Int], trackerType: Tracker): Array[Byte] = {
 
     val creationHeight = currentHeight()
 
     val feeOutput = feeOut(creationHeight)
 
-    val selectionResult = DefaultBoxSelector.select[ErgoBox](
+    val selectionResultEither = DefaultBoxSelector.select[ErgoBox](
       fetchWalletInputs().toIterator,
       (_: ErgoBox) => true,
       feeOutput.value,
       Map.empty[ModifierId, Long]
-    ).right.toOption.get
+    )
+    val selectionResult = selectionResultEither.right.toOption.get
 
-    val trackingBox = tracking101Box().head
+    val trackingBox = (trackerType match {
+      case Tracker95 => tracking95Box()
+      case Tracker98 => tracking98Box()
+      case Tracker101 => tracking101Box()
+    }).head
     val inputBoxes = IndexedSeq(trackingBox) ++ selectionResult.boxes
     val inputsHeight = inputBoxes.map(_.creationHeight).max
 
@@ -168,51 +178,12 @@ class OffchainUtils(serverUrl: String,
                                            trackingBox.additionalTokens,
                                            updRegisters)
 
-    println("t: " + trackingBox)
-    println("ut: " + updTracking)
-
     val outputs = IndexedSeq(updTracking) ++ changeOuts(selectionResult, creationHeight) ++ IndexedSeq(feeOutput)
 
     val utx = new UnsignedErgoTransaction(inputs, dataInputs, outputs)
     signTransaction("tracking101 update: ", utx, inputBoxes, dataInputBoxes)
   }
 
-  def updateTracker98(alarmHeight: Option[Int]): Array[Byte] = {
-
-    val creationHeight = currentHeight()
-
-    val feeOutput = feeOut(creationHeight)
-
-    val selectionResult = DefaultBoxSelector.select[ErgoBox](
-      fetchWalletInputs().toIterator,
-      (_: ErgoBox) => true,
-      feeOutput.value,
-      Map.empty[ModifierId, Long]
-    ).right.toOption.get
-
-    val trackingBox = tracking98Box().head
-    val inputBoxes = IndexedSeq(trackingBox) ++ selectionResult.boxes
-    val inputsHeight = inputBoxes.map(_.creationHeight).max
-
-    val inputs = inputBoxes.map(b => new UnsignedInput(b.id, ContextExtension.empty))
-    val dataInputBoxes = IndexedSeq(oraclePoolBox().get, lpBox().get)
-    val dataInputs = dataInputBoxes.map(b => DataInput.apply(b.id))
-
-    val updRegisters = trackingBox.additionalRegisters.updated(R7, IntConstant(alarmHeight.getOrElse(Int.MaxValue)))
-    val updTracking = new ErgoBoxCandidate(trackingBox.value,
-      trackingBox.ergoTree,
-      inputsHeight,
-      trackingBox.additionalTokens,
-      updRegisters)
-
-    println("t: " + trackingBox)
-    println("ut: " + updTracking)
-
-    val outputs = IndexedSeq(updTracking) ++ changeOuts(selectionResult, creationHeight) ++ IndexedSeq(feeOutput)
-
-    val utx = new UnsignedErgoTransaction(inputs, dataInputs, outputs)
-    signTransaction("tracking98 update: ", utx, inputBoxes, dataInputBoxes)
-  }
 }
 
 object OffchainUtils {
@@ -228,6 +199,8 @@ object Test extends App {
     localSecretUnlockPass = "",
     dexyScanIds = OffchainUtils.scanIds)
 
+  println(utils.fetchWalletInputs().map(_.value))
+
   val oraclePrice = utils.oraclePoolBox().get.additionalRegisters.apply(R4).value.asInstanceOf[Long]
   val lpBox = utils.lpBox().get
   val lpPrice = lpBox.value / lpBox.additionalTokens.apply(2)._2
@@ -242,6 +215,6 @@ object Test extends App {
 
   val currentHeight = utils.currentHeight()
 
-  utils.updateTracker98(Some(currentHeight))
+  utils.updateTracker(None, Tracker98)
 
 }
