@@ -1,7 +1,7 @@
-* redemption 2% fee (going to bank?)
+* add check during intervention that tokens were indeed taken from LP (here with possible slippage, or strict LP)? -
+  seems strict validSwap condition - DONE, CHECK INTERVENTION CONTRACT AND DO TEST
 
-* add check during intervention that tokens were indeed taken from LP (here with possible slippage, or strict LP)? - 
-  seems strict validSwap condition 
+* redemption 2% fee (going to bank?)
 
 * consider bigger buffers (instead of 3 blocks)
 

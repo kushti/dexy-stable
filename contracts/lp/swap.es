@@ -69,12 +69,13 @@
     val deltaReservesX = reservesXOut - reservesXIn
     val deltaReservesY = reservesYOut - reservesYIn
 
+    // unlike traditional LP contract, here we use strict == equality instead of classic >= to simplify intervention contract
     val validSwap =
       deltaSupplyLp == 0 && (
         if (deltaReservesX > 0)
-           deltaReservesY.toBigInt * reservesXIn * feeDenom >= deltaReservesX.toBigInt * (feeNum - feeDenom) * reservesYIn
+           deltaReservesY.toBigInt * reservesXIn * feeDenom == deltaReservesX.toBigInt * (feeNum - feeDenom) * reservesYIn
         else
-           deltaReservesX.toBigInt * reservesYIn * feeDenom >= deltaReservesY.toBigInt * (feeNum - feeDenom) * reservesXIn
+           deltaReservesX.toBigInt * reservesYIn * feeDenom == deltaReservesY.toBigInt * (feeNum - feeDenom) * reservesXIn
       )
 
     val selfPreserved = successor.propositionBytes == SELF.propositionBytes  &&

@@ -106,6 +106,90 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     }
   }
 
+  property("Swap (sell Ergs) should fail if less dexy taken") {
+    val lpBalance = 100000000L
+    val reservesXIn = 1000000000000L
+    val reservesYIn = 100000000L
+
+    val rate = reservesYIn.toDouble / reservesXIn
+    val sellX = 10000000L
+    val buyY = (sellX * rate * (feeDenomLp - feeNumLp) / feeDenomLp).toLong - 1 // <=== this value changed
+
+    val reservesXOut = reservesXIn + sellX
+    val reservesYOut = reservesYIn -  buyY
+
+    val deltaReservesX = reservesXOut - reservesXIn
+    val deltaReservesY = reservesYOut - reservesYIn
+
+    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp >= BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val lpBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(reservesXIn)
+          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalance), new ErgoToken(dexyUSD, reservesYIn))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
+          .build()
+          .convertToInputWith(fakeTxId2, fakeIndex)
+
+      val swapBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(lpSwapNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpSwapScript))
+          .build()
+          .convertToInputWith(fakeTxId3, fakeIndex)
+
+      val validLpOutBox = KioskBox(
+        lpAddress,
+        reservesXOut,
+        registers = Array(),
+        tokens = Array((lpNFT, 1), (lpToken, lpBalance), (dexyUSD, reservesYOut))
+      )
+
+      val validSwapOutBox = KioskBox(
+        lpSwapAddress,
+        minStorageRent,
+        registers = Array(),
+        tokens = Array((lpSwapNFT, 1))
+      )
+
+      val dummyOutputBox = KioskBox(
+        changeAddress,
+        dummyNanoErgs,
+        registers = Array(),
+        tokens = Array((dexyUSD, buyY))
+      )
+
+      // all ok, swap should work
+      the[Exception] thrownBy {
+        TxUtil.createTx(
+          Array(lpBox, swapBox, fundingBox),
+          Array(),
+          Array(validLpOutBox, validSwapOutBox, dummyOutputBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          false
+        )
+      } should have message "Script reduced to false"
+    }
+  }
+
   property("Swap (sell Ergs) should fail if Lp address changed") {
     val lpBalance = 100000000L
     val reservesXIn = 1000000000000L
