@@ -22,10 +22,21 @@ import org.ergoplatform.wallet.interface4j.SecretString
 import scorex.util.ModifierId
 import sigmastate.Values.IntConstant
 
-sealed trait Tracker
-object Tracker95 extends Tracker
-object Tracker98 extends Tracker
-object Tracker101 extends Tracker
+sealed trait Tracker {
+  val name: String
+}
+
+object Tracker95 extends Tracker {
+  override val name: String = "95% tracker"
+}
+
+object Tracker98 extends Tracker {
+  override val name: String = "98% tracker"
+}
+
+object Tracker101 extends Tracker {
+  override val name: String = "101% tracker"
+}
 
 case class DexyScanIds(tracking95ScanId: Int,
                        tracking98ScanId: Int,
@@ -164,6 +175,7 @@ class OffchainUtils(serverUrl: String,
       case Tracker98 => tracking98Box()
       case Tracker101 => tracking101Box()
     }).head
+    println("tb: " + trackingBox)
     val inputBoxes = IndexedSeq(trackingBox) ++ selectionResult.boxes
     val inputsHeight = inputBoxes.map(_.creationHeight).max
 
@@ -181,7 +193,8 @@ class OffchainUtils(serverUrl: String,
     val outputs = IndexedSeq(updTracking) ++ changeOuts(selectionResult, creationHeight) ++ IndexedSeq(feeOutput)
 
     val utx = new UnsignedErgoTransaction(inputs, dataInputs, outputs)
-    signTransaction("tracking101 update: ", utx, inputBoxes, dataInputBoxes)
+    println(utx)
+    signTransaction(trackerType.name + " update: ", utx, inputBoxes, dataInputBoxes)
   }
 
 }
@@ -215,6 +228,6 @@ object Test extends App {
 
   val currentHeight = utils.currentHeight()
 
-  utils.updateTracker(None, Tracker98)
+  utils.updateTracker(None, Tracker101)
 
 }

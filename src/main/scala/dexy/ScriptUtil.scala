@@ -12,7 +12,7 @@ import scala.collection.mutable.{Map => MMap}
 
 object ScriptUtil {
 
-  val networkPrefix = MainnetNetworkPrefix
+  val networkPrefix = TestnetNetworkPrefix
   private val compiler = SigmaCompiler(CompilerSettings(networkPrefix, TransformingSigmaBuilder, lowerMethodCalls = true))
 
   implicit val ergoAddressEncoder: ErgoAddressEncoder = new ErgoAddressEncoder(networkPrefix)

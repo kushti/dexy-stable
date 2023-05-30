@@ -87,5 +87,5 @@ object DexyLpSwap extends App {
   println("DEX price: " + dexPrice)
   println("Oracle price: " + oraclePrice)
   println("Ratio: " + dexPrice.toDouble / oraclePrice)
-  inject(500000000000L,0)
+  inject(5000000000000L,0)
 }
