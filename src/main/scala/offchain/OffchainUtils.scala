@@ -200,7 +200,7 @@ class OffchainUtils(serverUrl: String,
 }
 
 object OffchainUtils {
-  val scanIds = DexyScanIds(59, 60, 61, 32, 71, 67)
+  val scanIds = DexyScanIds(72, 73, 74, 32, 84, 80)
 }
 
 object Test extends App {
