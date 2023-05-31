@@ -1,7 +1,8 @@
 package offchain
 
 import io.circe.parser.parse
-import offchain.DexyLpSwap.tokensMapToColl
+import offchain.DexyLpSwap.{oraclePrice, tokensMapToColl}
+import offchain.Test.{lpPrice, utils}
 import org.ergoplatform.{DataInput, ErgoAddressEncoder, ErgoBox, ErgoBoxCandidate, ErgoScriptPredef, UnsignedInput}
 import org.ergoplatform.ErgoBox.{R4, R7}
 import org.ergoplatform.http.api.ApiCodecs
@@ -22,19 +23,27 @@ import org.ergoplatform.wallet.interface4j.SecretString
 import scorex.util.ModifierId
 import sigmastate.Values.IntConstant
 
-sealed trait Tracker {
+import scala.collection.mutable.ArrayBuffer
+
+sealed trait TrackerType {
   val name: String
+
+  override def toString: String = name
 }
 
-object Tracker95 extends Tracker {
+object TrackerType {
+  val all = Seq(Tracker95, Tracker98, Tracker101)
+}
+
+object Tracker95 extends TrackerType {
   override val name: String = "95% tracker"
 }
 
-object Tracker98 extends Tracker {
+object Tracker98 extends TrackerType {
   override val name: String = "98% tracker"
 }
 
-object Tracker101 extends Tracker {
+object Tracker101 extends TrackerType {
   override val name: String = "101% tracker"
 }
 
@@ -66,6 +75,18 @@ class OffchainUtils(serverUrl: String,
       .header("Charset", "UTF-8")
       .header("api_key", apiKey)
       .option(HttpOptions.readTimeout(10000))
+      .asString
+      .body
+  }
+
+  def postString(url: String, data: String): String = {
+    Http(s"$url")
+      .header("Content-Type", "application/json")
+      .header("Accept", "application/json")
+      .header("Charset", "UTF-8")
+      .header("api_key", apiKey)
+      .option(HttpOptions.readTimeout(10000))
+      .postData(data)
       .asString
       .body
   }
@@ -155,8 +176,15 @@ class OffchainUtils(serverUrl: String,
     txBytes
   }
 
+  private def fetchTrackingBox(trackerType: TrackerType) = {
+    (trackerType match {
+      case Tracker95 => tracking95Box()
+      case Tracker98 => tracking98Box()
+      case Tracker101 => tracking101Box()
+    }).head
+  }
 
-  def updateTracker(alarmHeight: Option[Int], trackerType: Tracker): Array[Byte] = {
+  def updateTracker(alarmHeight: Option[Int], trackerType: TrackerType): String = {
 
     val creationHeight = currentHeight()
 
@@ -170,11 +198,7 @@ class OffchainUtils(serverUrl: String,
     )
     val selectionResult = selectionResultEither.right.toOption.get
 
-    val trackingBox = (trackerType match {
-      case Tracker95 => tracking95Box()
-      case Tracker98 => tracking98Box()
-      case Tracker101 => tracking101Box()
-    }).head
+    val trackingBox = fetchTrackingBox(trackerType)
     println("tb: " + trackingBox)
     val inputBoxes = IndexedSeq(trackingBox) ++ selectionResult.boxes
     val inputsHeight = inputBoxes.map(_.creationHeight).max
@@ -193,8 +217,52 @@ class OffchainUtils(serverUrl: String,
     val outputs = IndexedSeq(updTracking) ++ changeOuts(selectionResult, creationHeight) ++ IndexedSeq(feeOutput)
 
     val utx = new UnsignedErgoTransaction(inputs, dataInputs, outputs)
-    println(utx)
-    signTransaction(trackerType.name + " update: ", utx, inputBoxes, dataInputBoxes)
+    val txbytes = signTransaction(trackerType.name + " update: ", utx, inputBoxes, dataInputBoxes)
+    val resp = postString(s"$serverUrl/transactions/bytes", Base16.encode(txbytes))
+    println(s"$trackerType update tx id: $resp")
+    resp
+  }
+
+  def trackersActions(): (Seq[TrackerType], Seq[TrackerType]) = {
+    val trackersToSet = ArrayBuffer[TrackerType]()
+    val trackersToReset = ArrayBuffer[TrackerType]()
+
+    TrackerType.all.foreach { trackerType =>
+      val coeff = trackerType match {
+        case Tracker95 => 95
+        case Tracker98 => 98
+        case Tracker101 => 101
+      }
+      val shouldBeSet = if (coeff < 100) {
+        coeff * oraclePrice < lpPrice * 100
+      } else {
+        coeff * oraclePrice > lpPrice * 100
+      }
+      val isSet = fetchTrackingBox(trackerType).additionalRegisters.get(R7).get.value.asInstanceOf[Int] != Int.MaxValue
+      println(s"$trackerType should be set: " + shouldBeSet + " is set: " + isSet)
+      if(shouldBeSet && !isSet) {
+        trackersToSet += trackerType
+      }
+      if(!shouldBeSet && isSet) {
+        trackersToReset += trackerType
+      }
+    }
+    trackersToSet -> trackersToReset
+  }
+
+  def updateTrackers() = {
+    val (trackersToSet, trackersToReset) = trackersActions()
+    if (trackersToSet.nonEmpty) {
+      val height = currentHeight()
+      trackersToSet.foreach { trackerType =>
+        updateTracker(Some(height), trackerType)
+        Thread.sleep(200)
+      }
+    }
+    trackersToReset.foreach { trackerType =>
+      updateTracker(None, trackerType)
+      Thread.sleep(200)
+    }
   }
 
 }
@@ -226,8 +294,6 @@ object Test extends App {
 
   println(x > y)
 
-  val currentHeight = utils.currentHeight()
-
-  utils.updateTracker(None, Tracker101)
+  utils.updateTrackers()
 
 }
