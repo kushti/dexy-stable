@@ -28,6 +28,7 @@
     val reservesXOut = lpBoxOut.value
     val reservesYOut = lpBoxOut.tokens(2)._2
 
+    // circulating supply of LP tokens
     val supplyLpIn = initialLp - lpReservesIn._2
 
     // oracle delivers nanoErgs per 1 kg of gold
@@ -55,7 +56,8 @@
     val validRedemption = deltaSupplyLp < 0 && deltaReservesX < 0 && deltaReservesY < 0 && {
         val _deltaSupplyLp = deltaSupplyLp.toBigInt
         // note: _deltaSupplyLp, deltaReservesX and deltaReservesY are negative
-        deltaReservesX.toBigInt * supplyLpIn >= _deltaSupplyLp * reservesXIn && deltaReservesY.toBigInt * supplyLpIn >= _deltaSupplyLp * reservesYIn
+        deltaReservesX.toBigInt * supplyLpIn * 100 / 98 >= _deltaSupplyLp * reservesXIn &&
+            deltaReservesY.toBigInt * supplyLpIn * 100 / 98 >= _deltaSupplyLp * reservesYIn
     } && validRateForRedeemingLp
 
     val selfPreserved = successor.propositionBytes == SELF.propositionBytes  &&

@@ -22,8 +22,8 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     val reservesYIn = 100000000L
 
     val lpRedeemed = 49950L
-    val withdrawX = 500000L
-    val withdrawY = 50L
+    val withdrawX = 500000L / 100 * 98
+    val withdrawY = 49L
 
     val reservesXOut = reservesXIn - withdrawX
     val reservesYOut = reservesYIn - withdrawY
@@ -110,8 +110,8 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     val reservesYIn = 100000000L
 
     val lpRedeemed = 49950L
-    val withdrawX = 500000L
-    val withdrawY = 50L
+    val withdrawX = 500000L / 100 * 98
+    val withdrawY = 49L
 
     val reservesXOut = reservesXIn - withdrawX
     val reservesYOut = reservesYIn - withdrawY
@@ -197,8 +197,8 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     val reservesYIn = 100000000L
 
     val lpRedeemed = 49950L - 1 // one less than needed
-    val withdrawX = 500000L
-    val withdrawY = 50L
+    val withdrawX = 500000L / 100 * 98
+    val withdrawY = 49L
 
     val reservesXOut = reservesXIn - withdrawX
     val reservesYOut = reservesYIn - withdrawY
@@ -284,8 +284,8 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     val reservesYIn = 100000000L
 
     val lpRedeemed = 49950L
-    val withdrawX = 500000L + 1 // one more than needed
-    val withdrawY = 50L
+    val withdrawX = 500000L / 100 * 98 + 1 // one more than needed
+    val withdrawY = 49L
 
     val reservesXOut = reservesXIn - withdrawX
     val reservesYOut = reservesYIn - withdrawY
@@ -371,8 +371,8 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     val reservesYIn = 100000000L
 
     val lpRedeemed = 49950L
-    val withdrawX = 500000L
-    val withdrawY = 50L + 1 // one more than needed
+    val withdrawX = 500000L / 100 * 98
+    val withdrawY = 49L + 1 // one more than needed
 
     val reservesXOut = reservesXIn - withdrawX
     val reservesYOut = reservesYIn - withdrawY
@@ -545,7 +545,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     val reservesYIn = 100000000L
 
     val lpRedeemed = 49950L
-    val withdrawX = 500000L + 1 // 1 more than needed
+    val withdrawX = 500000L / 100 * 98 + 1 // 1 more than needed
     val withdrawY = 0 // 0 Dexy
 
     val reservesXOut = reservesXIn - withdrawX
@@ -635,8 +635,8 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     assert(lpRateXY <= (oracleRateXy / 1000000L) * 98 / 100) // condition opposite to the contract
 
     val lpRedeemed = 49950L
-    val withdrawX = 500000L
-    val withdrawY = 50L
+    val withdrawX = 500000L / 100 * 98
+    val withdrawY = 49L
 
     val reservesXOut = reservesXIn - withdrawX
     val reservesYOut = reservesYIn - withdrawY
