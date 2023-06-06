@@ -51,7 +51,6 @@
 
   val validOracle = oracleBox.tokens(0)._1 == oracleNFT
 
-  val payoutScriptHash = SELF.R4[Coll[Byte]].get // payout script hash
   val successorR4 = successor.R4[Coll[Byte]].get // should be same as selfR4
 
   val bankDexy = bankBoxIn.tokens(1)._2
