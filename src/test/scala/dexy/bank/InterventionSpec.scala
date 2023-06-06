@@ -1,5 +1,6 @@
-package dexy
+package dexy.bank
 
+import dexy.{Common, DexySpec}
 import dexy.DexySpec._
 import kiosk.ergo.{DhtData, KioskBoolean, KioskBox, KioskInt, KioskLong}
 import kiosk.tx.TxUtil

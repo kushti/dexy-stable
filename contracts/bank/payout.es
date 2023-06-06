@@ -5,15 +5,15 @@
   //   tokens(0): Payout NFT
   //
   // REGISTERS
-  //   R4: (Coll[Byte]) payout script hash
+  //   R4: (Int) height when last payment was done. Non-nullable, so set to 0 initially
   //
   // TRANSACTIONS
   // [1] Payout
   //   Input    |  Output   |   Data-Input
   // -------------------------------------
   // 0 Payout   |  Payout   |   Oracle
-  // 1 Bank     |  Bank     |   LP
-  // 2          |  Reward   |
+  // 1 Bank     |  Bank     |
+  // 2 BuyBack  |  BuyBack  |
 
   // In the above transaction, the "payouts" (rewards) will be stored in a "Reward" box
   // The payout box just enforces the correct logic for such rewards and does not store the actual rewards
@@ -25,65 +25,69 @@
 
   val oracleNFT = fromBase64("$oracleNFT") // to identify oracle pool box
   val lpNFT = fromBase64("$lpNFT")
+  val buybackNft = fromBase64("$buybackNFT")
 
   // inputs indices
   val bankInIndex = 1
+  val buybackInIndex = 2
 
   // outputs indices
   val selfOutIndex = 0
   val bankOutIndex = 1
-  val rewardOutIndex = 2
+  val buybackOutIndex = 2
 
   // data inputs indices
   val oracleIndex = 0
   val lpIndex = 1
 
   val bankBoxIn = INPUTS(bankInIndex)
+  val buybackBoxIn = INPUTS(buybackInIndex)
 
   val bankBoxOut = OUTPUTS(bankOutIndex)
   val successor = OUTPUTS(selfOutIndex)
-  val rewardBoxOut = OUTPUTS(rewardOutIndex)
+  val buybackBoxOut = OUTPUTS(buybackOutIndex)
 
   val oracleBox = CONTEXT.dataInputs(oracleIndex)
-  val lpBox = CONTEXT.dataInputs(lpIndex)
 
   val validOracle = oracleBox.tokens(0)._1 == oracleNFT
-  val validLP = lpBox.tokens(0)._1 == lpNFT
 
   val payoutScriptHash = SELF.R4[Coll[Byte]].get // payout script hash
   val successorR4 = successor.R4[Coll[Byte]].get // should be same as selfR4
 
-  val lpReservesX = lpBox.value
-  val lpReservesY = lpBox.tokens(2)._2 // dexyReserves
-
   val bankDexy = bankBoxIn.tokens(1)._2
-
-  val ergsRemoved = bankBoxOut.value - bankBoxIn.value
-  val ergsTaken = rewardBoxOut.value
 
   // oracle delivers nanoErgs per 1 kg of gold
   // we divide it by 1000000 to get nanoErg per dexy, i.e. 1mg of gold
   // can assume always > 0 (ref oracle pool contracts) NanoErgs per USD
   val oracleRate = oracleBox.R4[Long].get / 1000000L
 
-  val lpRate = lpReservesX / lpReservesY
-
   val dexyInCirculation = $initialDexyTokens - bankDexy
-  val collateralized = oracleRate * bankBoxIn.value > dexyInCirculation * 2 // > 200% collateralization
+  val collateralized = oracleRate * bankBoxIn.value > dexyInCirculation * 5 // > 500% collateralization
+
+  val paymentAmount = bankBoxIn.value / 200 // 0.5 % max can be taken
+  val properPayment = (bankBoxIn.value - bankBoxOut.value == paymentAmount) &&
+                        (buybackBoxOut. value - buybackBoxIn.value == paymentAmount)
+  val lastPayment = SELF.R4[Int].get
+  val buffer = 5 // error margin in height
+  val delayInPayments = 5040 // ~ 1 week
+  val properHeight = lastPayment + delayInPayments <= HEIGHT
+  val properNewR4 = successor.R4[Int].get >= HEIGHT - buffer
 
   // no need to validate bank NFT and proposition here
-  val validBank = bankBoxOut.tokens == bankBoxIn.tokens                     && // tokens preserved
-                  ergsRemoved == ergsTaken
+  // value is checked in validPayout
+  val validBank = bankBoxOut.tokens == bankBoxIn.tokens                     // tokens preserved
 
   val validSuccessor = successor.propositionBytes == SELF.propositionBytes && // script preserved
                        successor.tokens == SELF.tokens                     && // NFT preserved
                        successor.value >= SELF.value                       && // Ergs preserved or increased
-                       successor.R4[Coll[Byte]].get == payoutScriptHash
+                       properNewR4
 
-  val validPayout = blake2b256(rewardBoxOut.propositionBytes) == payoutScriptHash && // script of reward box is correct
-                    bankBoxIn.value >= payoutThreshold                            && // bank box must had large balance
-                    ergsTaken >= minPayOut                                        && // cannot take too little (dust, etc)
-                    ergsTaken <= maxPayOut                                           // cannot take too much
+  val validBuyBackIn = buybackBoxIn.tokens(0)._1 == buybackNft
 
-  sigmaProp(validBank && validSuccessor && validPayout && validOracle && validLP && collateralized)
+  val validPayout = validBuyBackIn                                                && // script of reward box is correct
+                    collateralized                                                && // enough over-collateralization
+                    properPayment                                                 && // bank paying 0.5% of its reserves out
+                    properHeight                                                     // after enough delay
+
+  sigmaProp(validBank && validSuccessor && validPayout && validOracle)
 }

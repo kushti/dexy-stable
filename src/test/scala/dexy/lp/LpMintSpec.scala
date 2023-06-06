@@ -1,7 +1,8 @@
-package dexy
+package dexy.lp
 
+import dexy.Common
 import dexy.DexySpec._
-import kiosk.ergo.{DhtData, KioskBox, KioskLong}
+import kiosk.ergo.{DhtData, KioskBox}
 import kiosk.tx.TxUtil
 import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoToken, HttpClientTesting}
 import org.scalatest.{Matchers, PropSpec}

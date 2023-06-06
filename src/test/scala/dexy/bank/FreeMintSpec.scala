@@ -1,9 +1,10 @@
-package dexy
+package dexy.bank
 
+import dexy.Common
 import dexy.DexySpec._
 import kiosk.ergo.{DhtData, KioskBox, KioskInt, KioskLong}
 import kiosk.tx.TxUtil
-import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ContextVar, ErgoToken, HttpClientTesting}
+import org.ergoplatform.appkit._
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 

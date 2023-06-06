@@ -368,6 +368,27 @@ object DexySpec {
          |""".stripMargin
     }
 
+    def payoutDeploymentRequest() = {
+      s"""
+         |  [
+         |    {
+         |      "address": "$payoutAddress",
+         |      "value": 1000000000,
+         |      "assets": [
+         |        {
+         |          "tokenId": "$payoutNFT",
+         |          "amount": 1
+         |        }
+         |      ],
+         |      "registers": {
+         |        "R4": "$intZero"
+         |      }
+         |    }
+         |  ]
+         |""".stripMargin
+    }
+
+
     def lpSwapDeploymentRequest() = {
       s"""
          |  [
@@ -508,6 +529,11 @@ object DexySpec {
     println(scanRequest("Intervention", interventionNFT))
     println("Intervention contract deployment request: ")
     println(interventionDeploymentRequest())
+
+    println("Payout scan request: ")
+    println(scanRequest("Payout", payoutNFT))
+    println("Payout contract deployment request: ")
+    println(payoutDeploymentRequest())
 
     println("LP swap scan request: ")
     println(scanRequest("LP swap", lpSwapNFT))

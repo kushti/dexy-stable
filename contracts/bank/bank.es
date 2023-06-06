@@ -16,12 +16,14 @@
   // ------------------------------------------------
   // 0 ArbitrageMint |  ArbitrageMint  |   Oracle
   // 1 Bank          |  Bank           |   LP
+  // 2 Buyback       |  Buyback        |
   //
   // [2] Free Mint
   //   Input    |  Output   |   Data-Input
   // -------------------------------------
   // 0 FreeMint |  FreeMint |   Oracle
   // 1 Bank     |  Bank     |   LP
+  // 2 Buyback  |  Buyback  |
   //
   // [3] Intervention
   //   Input         |  Output        |   Data-Input
@@ -34,8 +36,8 @@
   //   Input         |  Output        |   Data-Input
   // -----------------------------------------------
   // 0 Payout        |  Payout        |   Oracle
-  // 1 Bank          |  Bank          |   LP
-  // 2               |  Reward        |
+  // 1 Bank          |  Bank          |
+  // 2 Buyback       |  Buyback       |
 
   // This box emits DexyUSD. The contract only enforces some basic rules (such as the contract and token Ids) are preserved.
   // It does not does not encode the emission logic. It just requires certain boxes in the inputs to contain certain NFTs.
