@@ -39,6 +39,12 @@
   // 1 Bank          |  Bank          |
   // 2 Buyback       |  Buyback       |
 
+  // [5] Update
+  //   Input         |  Output        |   Data-Input
+  // -----------------------------------------------
+  // 0 Update        |  Update        |
+  // 1 Bank          |  Bank          |
+
   // This box emits DexyUSD. The contract only enforces some basic rules (such as the contract and token Ids) are preserved.
   // It does not does not encode the emission logic. It just requires certain boxes in the inputs to contain certain NFTs.
   // Those boxes in turn encode the emission logic (and logic for other auxiliary flows, such as intervention).
@@ -59,6 +65,7 @@
   val arbitrageMintNFT = fromBase64("$arbitrageMintNFT")
   val interventionNFT = fromBase64("$interventionNFT")
   val payoutNFT = fromBase64("$payoutNFT")
+  val updateNFT = fromBase64("$updateNFT")
 
   val successor = OUTPUTS(selfOutIndex)
 
@@ -73,5 +80,7 @@
 
   val validPayout = INPUTS(payoutInIndex).tokens(0)._1 == payoutNFT
 
-  sigmaProp(validSuccessor && (validMint || validIntervention || validPayout))
+  val validUpdate = INPUTS(0).tokens(0)._1 == updateNFT
+
+  sigmaProp((validSuccessor && (validMint || validIntervention || validPayout)) || validUpdate)
 }

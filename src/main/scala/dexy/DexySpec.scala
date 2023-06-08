@@ -25,6 +25,10 @@ object DexySpec {
   val bankNFT = "b40ca7aec3f38d286692661a92aecffc431f096877428ee735f72ddb4ea38fb4"
   val lpNFT = "1aa26bc8d5e8c55f62816f6015b4201baf87322a6b4e2d407766af7740c4ed7c"
 
+  // update tokens
+  val updateNFT = ""
+  val ballotTokenId = ""
+
   // all tokens below for aux boxes (1 for each type of box)
   val interventionNFT = "99c9caa94816a0da9b5d4d653ac3a04d4ad107fa279ac7a2aadd7e3e66de8cca"
   val freeMintNFT = "9a8648530229195e31422ce6b1b587541972b2e0a73d54df33b2e248a42eb153"
@@ -70,6 +74,8 @@ object DexySpec {
     "oracleNFT" -> oraclePoolNFT,
     "bankNFT" -> bankNFT,
     "buybackNFT" -> buybackNFT,
+    "updateNFT" -> updateNFT,
+    "ballotTokenId" -> ballotTokenId,
     "lpNFT" -> lpNFT,
     "tracking95NFT" -> tracking95NFT,
     "tracking98NFT" -> tracking98NFT,
