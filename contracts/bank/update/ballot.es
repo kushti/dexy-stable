@@ -18,14 +18,13 @@
 
   val castVote = proveDlog(pubKey)
 
-  val notVoted = output.R6[Coll[Byte]].isDefined == false
-
+  val notVoted = output.R5[Coll[Byte]].isDefined == false
   val update = INPUTS(0).tokens(0)._1 == updateNFT && notVoted
 
   // Note: We want that during an update, a new valid vote should not be generated
   // notVoted ensures that the update action does not generate a new vote.
-  // This is already prevented by having R6 contain the id of the update box,
-  // This guarantees that R6 can never contain this box Id (because it depends on the outputs)
+  // This is already prevented by having R5 contain the id of the update box,
+  // This guarantees that R5 can never contain this box Id (because it depends on the outputs)
   // However, notVoted is used for additional security
 
   sigmaProp(

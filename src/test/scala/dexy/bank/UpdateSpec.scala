@@ -67,7 +67,7 @@ class UpdateSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
         .build()
         .convertToInputWith(fakeTxId3, fakeIndex)
 
-      val ballot0BoxToCreate = Voters.ballot0Box.copy(
+      val ballot0InputToCreate = Voters.ballot0Box.copy(
         registers = Array(
           Voters.ballot0Box.registers(0),
           KioskCollByte(updateBox.getId.getBytes),
@@ -75,7 +75,7 @@ class UpdateSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
         )
       )
 
-      val ballot1BoxToCreate = Voters.ballot1Box.copy(
+      val ballot1InputToCreate = Voters.ballot1Box.copy(
         registers = Array(
           Voters.ballot1Box.registers(0),
           KioskCollByte(updateBox.getId.getBytes),
@@ -83,7 +83,7 @@ class UpdateSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
         )
       )
 
-      val ballot2BoxToCreate = Voters.ballot2Box.copy(
+      val ballot2InputToCreate = Voters.ballot2Box.copy(
         registers = Array(
           Voters.ballot2Box.registers(0),
           KioskCollByte(updateBox.getId.getBytes),
@@ -95,7 +95,7 @@ class UpdateSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
       val ballot0 = TxUtil.createTx(
         inputBoxes = Array(Voters.ballot0Box.toInBox(fakeTxId5, 0), fundingBox),
         dataInputs = Array(),
-        boxesToCreate = Array(ballot0BoxToCreate),
+        boxesToCreate = Array(ballot0InputToCreate),
         fee,
         changeAddress,
         proveDlogSecrets = Array[String](Voters.privateKey0),
@@ -106,7 +106,7 @@ class UpdateSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
       val ballot1 = TxUtil.createTx(
         inputBoxes = Array(Voters.ballot1Box.toInBox(fakeTxId6, 0), fundingBox),
         dataInputs = Array(),
-        boxesToCreate = Array(ballot1BoxToCreate),
+        boxesToCreate = Array(ballot1InputToCreate),
         fee,
         changeAddress,
         proveDlogSecrets = Array[String](Voters.privateKey1),
@@ -117,7 +117,7 @@ class UpdateSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
       val ballot2 = TxUtil.createTx(
         inputBoxes = Array(Voters.ballot2Box.toInBox(fakeTxId7, 0), fundingBox),
         dataInputs = Array(),
-        boxesToCreate = Array(ballot2BoxToCreate),
+        boxesToCreate = Array(ballot2InputToCreate),
         fee,
         changeAddress,
         proveDlogSecrets = Array[String](Voters.privateKey2),
@@ -134,8 +134,7 @@ class UpdateSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
           .contract(ctx.compileContract(ConstantsBuilder.empty(), bankScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
-
-
+      
       val validUpdateOutBox = KioskBox(
         updateAddress,
         minStorageRent,
@@ -150,11 +149,29 @@ class UpdateSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
         tokens = Array((bankNFT, 1), (dexyUSD, fakeNanoErgs))
       )
 
+      val validBallot0Output = Voters.ballot0Box.copy(
+        registers = Array(
+          Voters.ballot0Box.registers(0)
+        )
+      )
+
+      val validBallot1Output = Voters.ballot1Box.copy(
+        registers = Array(
+          Voters.ballot1Box.registers(0)
+        )
+      )
+
+      val validBallot2Output = Voters.ballot2Box.copy(
+        registers = Array(
+          Voters.ballot2Box.registers(0)
+        )
+      )
+
       noException shouldBe thrownBy {
         TxUtil.createTx(
           Array(updateBox, bankBox, ballot0, ballot1, ballot2, fundingBox),
           Array(),
-          Array(validUpdateOutBox, validBankOutBox, ballot0BoxToCreate, ballot1BoxToCreate, ballot2BoxToCreate),
+          Array(validUpdateOutBox, validBankOutBox, validBallot0Output, validBallot1Output, validBallot2Output),
           fee,
           changeAddress,
           Array[String](),

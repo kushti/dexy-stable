@@ -26,8 +26,8 @@ object DexySpec {
   val lpNFT = "1aa26bc8d5e8c55f62816f6015b4201baf87322a6b4e2d407766af7740c4ed7c"
 
   // update tokens
-  val updateNFT = ""
-  val ballotTokenId = ""
+  val updateNFT = "1bb26bc8d5e8c55f62816f6015b4201baf87322a6b4e2d407766af7740c4ed7c"
+  val ballotTokenId = "1cc26bc8d5e8c55f62816f6015b4201baf87322a6b4e2d407766af7740c4ed7c"
 
   // all tokens below for aux boxes (1 for each type of box)
   val interventionNFT = "99c9caa94816a0da9b5d4d653ac3a04d4ad107fa279ac7a2aadd7e3e66de8cca"

@@ -1,9 +1,10 @@
 { // This box (update box):
   // Registers empty
   //
-  // ballot boxes (Inputs)
-  // R4 the box id of this box [Coll[Byte]]
-  // R5 the value voted for [Coll[Byte]]
+  // ballot boxes (in other inputs)
+  // R4 the group element of the owner of the ballot token [GroupElement]
+  // R5 the box id of this box [Coll[Byte]]
+  // R6 the value voted for [Coll[Byte]]
 
   val bankNFT = fromBase64("$bankNFT")
 
