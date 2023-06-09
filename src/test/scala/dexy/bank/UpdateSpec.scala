@@ -1,7 +1,7 @@
 package dexy.bank
 
 import dexy.Common
-import dexy.DexySpec.{ballotAddress, ballotTokenId, bankAddress, bankNFT, bankScript, payoutAddress, payoutNFT, updateAddress, updateNFT}
+import dexy.DexySpec.{ballotAddress, ballotTokenId, bankAddress, bankErgoTree, bankNFT, bankScript, payoutAddress, payoutNFT, updateAddress, updateNFT}
 import kiosk.ErgoUtil
 import kiosk.encoding.ScalaErgoConverters
 import kiosk.encoding.ScalaErgoConverters.stringToGroupElement
@@ -45,7 +45,7 @@ class UpdateSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
       }
 
       // value to vote for; hash of new pool box script
-      val valueVotedFor = KioskCollByte(Blake2b256.hash(""))
+      val valueVotedFor = KioskCollByte(Blake2b256.hash(bankErgoTree.bytes)) //todo: real update
 
       // dummy custom input box for funding various transactions
       val fundingBox =

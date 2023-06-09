@@ -22,7 +22,7 @@
   // compute the hash of the bank output box. This should be the value voted for
   val bankBoxOutHash = blake2b256(bankBoxOut.propositionBytes)
 
-  val validBankIn = bankBoxIn.tokens.size == 3 && bankBoxIn.tokens(2)._1 == bankNFT
+  val validBankIn = bankBoxIn.tokens.size == 2 && bankBoxIn.tokens(0)._1 == bankNFT
   val validBankOut = bankBoxIn.tokens == bankBoxOut.tokens &&
                      bankBoxIn.value == bankBoxOut.value
 
@@ -35,7 +35,7 @@
     b.tokens.size > 0 &&
     b.tokens(0)._1 == ballotTokenId &&
     b.R5[Coll[Byte]].get == SELF.id && // ensure vote corresponds to this box ****
-    b.R5[Coll[Byte]].get == bankBoxOutHash // check value voted for
+    b.R6[Coll[Byte]].get == bankBoxOutHash // check value voted for
   }
 
   val ballotBoxes = INPUTS.filter(isValidBallot)
