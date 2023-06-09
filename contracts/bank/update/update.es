@@ -9,7 +9,7 @@
 
   val ballotTokenId = fromBase64("$ballotTokenId")
 
-  // todo: consider before deployment
+  // todo: consider proper value before deployment
   val minVotes = 3
 
   // collect and update in one step

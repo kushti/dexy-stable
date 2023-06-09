@@ -1,15 +1,16 @@
 package dexy.bank
 
 import dexy.Common
-import dexy.DexySpec.{ballotTokenId, bankNFT, bankScript, updateNFT}
+import dexy.DexySpec.{ballotAddress, ballotTokenId, bankAddress, bankNFT, bankScript, payoutAddress, payoutNFT, updateAddress, updateNFT}
 import kiosk.ErgoUtil
 import kiosk.encoding.ScalaErgoConverters
 import kiosk.encoding.ScalaErgoConverters.stringToGroupElement
-import kiosk.ergo.{KioskBox, KioskGroupElement}
-import oracles.OracleContracts.{ballotAddress, updateAddress}
-import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoToken, HttpClientTesting}
+import kiosk.ergo.{DhtData, KioskBox, KioskCollByte, KioskGroupElement, KioskInt}
+import kiosk.tx.TxUtil
+import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ContextVar, ErgoToken, HttpClientTesting}
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
+import scorex.crypto.hash.Blake2b256
 
 class UpdateSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks
   with HttpClientTesting with Common {
@@ -17,6 +18,8 @@ class UpdateSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
   val ergoClient = createMockedErgoClient(MockData(Nil, Nil))
 
   val fakeNanoErgs = 10000000000000L
+
+  val fee = 1500000
 
   property("Update should work") {
     ergoClient.execute { implicit ctx: BlockchainContext =>
@@ -41,6 +44,8 @@ class UpdateSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
         val ballot2Box = KioskBox(ballotAddress, value = 200000000, registers = Array(r4voter2), tokens = Array((ballotTokenId, 1L)))
       }
 
+      // value to vote for; hash of new pool box script
+      val valueVotedFor = KioskCollByte(Blake2b256.hash(""))
 
       // dummy custom input box for funding various transactions
       val fundingBox =
@@ -53,13 +58,72 @@ class UpdateSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
           .convertToInputWith(fakeTxId1, fakeIndex)
 
       // current update box
-      val updateOutBox = ctx
+      val updateBox = ctx
         .newTxBuilder()
         .outBoxBuilder
         .value(minStorageRent)
         .tokens(new ErgoToken(updateNFT, 1))
         .contract(ctx.newContract(ScalaErgoConverters.getAddressFromString(updateAddress).script))
         .build()
+        .convertToInputWith(fakeTxId3, fakeIndex)
+
+      val ballot0BoxToCreate = Voters.ballot0Box.copy(
+        registers = Array(
+          Voters.ballot0Box.registers(0),
+          KioskCollByte(updateBox.getId.getBytes),
+          valueVotedFor
+        )
+      )
+
+      val ballot1BoxToCreate = Voters.ballot1Box.copy(
+        registers = Array(
+          Voters.ballot1Box.registers(0),
+          KioskCollByte(updateBox.getId.getBytes),
+          valueVotedFor
+        )
+      )
+
+      val ballot2BoxToCreate = Voters.ballot2Box.copy(
+        registers = Array(
+          Voters.ballot2Box.registers(0),
+          KioskCollByte(updateBox.getId.getBytes),
+          valueVotedFor
+        )
+      )
+
+      // create ballots
+      val ballot0 = TxUtil.createTx(
+        inputBoxes = Array(Voters.ballot0Box.toInBox(fakeTxId5, 0), fundingBox),
+        dataInputs = Array(),
+        boxesToCreate = Array(ballot0BoxToCreate),
+        fee,
+        changeAddress,
+        proveDlogSecrets = Array[String](Voters.privateKey0),
+        Array[DhtData](),
+        false
+      ).getOutputsToSpend.get(0)
+
+      val ballot1 = TxUtil.createTx(
+        inputBoxes = Array(Voters.ballot1Box.toInBox(fakeTxId6, 0), fundingBox),
+        dataInputs = Array(),
+        boxesToCreate = Array(ballot1BoxToCreate),
+        fee,
+        changeAddress,
+        proveDlogSecrets = Array[String](Voters.privateKey1),
+        Array[DhtData](),
+        false
+      ).getOutputsToSpend.get(0)
+
+      val ballot2 = TxUtil.createTx(
+        inputBoxes = Array(Voters.ballot2Box.toInBox(fakeTxId7, 0), fundingBox),
+        dataInputs = Array(),
+        boxesToCreate = Array(ballot2BoxToCreate),
+        fee,
+        changeAddress,
+        proveDlogSecrets = Array[String](Voters.privateKey2),
+        Array[DhtData](),
+        false
+      ).getOutputsToSpend.get(0)
 
       val bankBox =
         ctx
@@ -70,6 +134,34 @@ class UpdateSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
           .contract(ctx.compileContract(ConstantsBuilder.empty(), bankScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
+
+
+      val validUpdateOutBox = KioskBox(
+        updateAddress,
+        minStorageRent,
+        registers = Array(),
+        tokens = Array((updateNFT, 1))
+      )
+
+      val validBankOutBox = KioskBox(
+        bankAddress,
+        fakeNanoErgs,
+        registers = Array(),
+        tokens = Array((bankNFT, 1), (dexyUSD, fakeNanoErgs))
+      )
+
+      noException shouldBe thrownBy {
+        TxUtil.createTx(
+          Array(updateBox, bankBox, ballot0, ballot1, ballot2, fundingBox),
+          Array(),
+          Array(validUpdateOutBox, validBankOutBox, ballot0BoxToCreate, ballot1BoxToCreate, ballot2BoxToCreate),
+          fee,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          false
+        )
+      }
     }
   }
 

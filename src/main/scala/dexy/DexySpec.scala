@@ -134,6 +134,14 @@ object DexySpec {
   val bankErgoTree = ScriptUtil.compile(Map(), bankScript)
   val bankAddress = getStringFromAddress(getAddressFromErgoTree(bankErgoTree))
 
+  val ballotScript = readContract("bank/update/ballot.es")
+  val ballotErgoTree = ScriptUtil.compile(Map(), ballotScript)
+  val ballotAddress = getStringFromAddress(getAddressFromErgoTree(ballotErgoTree))
+
+  val updateScript = readContract("bank/update/update.es")
+  val updateErgoTree = ScriptUtil.compile(Map(), updateScript)
+  val updateAddress = getStringFromAddress(getAddressFromErgoTree(updateErgoTree))
+
   val arbitrageMintErgoTree = ScriptUtil.compile(Map(), arbitrageMintScript)
   val arbitrageMintAddress = getStringFromAddress(getAddressFromErgoTree(arbitrageMintErgoTree))
   val freeMintErgoTree = ScriptUtil.compile(Map(), freeMintScript)
