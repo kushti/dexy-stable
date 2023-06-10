@@ -46,6 +46,7 @@
 \newcommand{\stc}{stablecoin}
 \newcommand{\sct}{stablecoin}
 \newcommand{\dx}{Dexy}
+\newcommand{\dxg}{DexyGold}
 
 \newcommand{\ma}{\mathcal{A}}
 \newcommand{\mb}{\mathcal{B}}
@@ -220,11 +221,31 @@ It is important to explicitly state assumptions the protocol is based on, so a u
 
 \begin{itemize}
   \item{Oracle: } the biggest trust issue in the protocol is oracle delivering gold price. This trust issue is unavoidable but can be relaxed by using not a single entity but a federation of oracles with an average price (after noise filtering) to be delivered to the Dexy central bank.
+  It is important to reward oracles from protocol activities~(such as minting), otherwise, they will be incentivized to attack the protocol. See Section~\ref{oracle-incentivization} for details.
+
   \item{No governance: } unlike most of stablecoin protocols, we do not consider governance, as usually it is another trust issue. Real world instantiations can consider governance, we suppose that such instantiations should clearly inform about governance-related trust assumptions.
 \end{itemize}
 
 \section{Dexy Gold}
 \label{dexygold}
+
+In this section we consider concrete implementation of the \dx{} protocol, gold-pegged stablecoin named \dxg{}.
+
+\subsection{Oracle incentivization and tokenomics}
+\label{oracle-incentivization}
+
+Oracles security is the most important issue for our stablecoin protocol, as this is the only component which is
+not working autonomously on-chain. Thus the protocol needs to reward oracles.
+
+Oracle Pools 2.0 framework \knote{link} has support for paying rewards in custom tokens. So we will create GORT (Gold
+Oracle Reward Token), which will be used to reward oracles and also developers.
+
+$X$ oracles wil get up to $2 \cdot X$ GORTs per epoch (one datapoint update), per Oracle Pool v2 design~(\knote{link})~(
+$2 \cdot X$ if all the oracles are active). We consider $X = 30$ oracles with one hour long epoch, which means up to $60$
+GORTs will be released to oracles.
+
+To reward developers, we consider an emission contract, which is releasing the same amount per one hour, so 2 GORT per block
+during initial period (2 years). 
 
 \subsection{Implementation}
 
@@ -235,27 +256,6 @@ It is important to explicitly state assumptions the protocol is based on, so a u
 \subsection{Simulations}
 We made simulations, you can find them in \dx{} repository. \knote{finish}
 
-\subsection*{Oracle safety and tokenomics}
-
-As a first instantiation for the Dexy protocol, we consider DexyGold, gold-pegged and ERG-backed stablecoin.
-
-Oracles security is the most important issue for our stablecoin protocol, as this is the only component which is
-not working autonomously on-chain. Thus the protocol needs to reward oracles.
-
-Oracle Pools 2.0 framework \knote{link} has support for paying rewards in custom tokens. So we will create GERT (Gold
-Ecosystem Rewards Token), which will be used to reward oracles and also developers.
-
-Distribution would be like~(not finalized!):
-
-\begin{itemize}
-\item{Oracle rewards} - 50\%
-\item \item{dev team} - 35\%
-\item{ecosystem devs (exchanges, wallets, payout distribution and staking solutions providers)} - 11\%
-\item{Sigmanauts Treasury} - 2\%
-\item{Ergo Foundation Treasury} - 2\%
-\end{itemize}
-
-Part of minting
 
 \section*{Acknowledgments}
 
