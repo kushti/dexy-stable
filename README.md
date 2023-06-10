@@ -7,3 +7,13 @@ This repository contains everything related to Dexy stablecoin protocol.
 * [Whitepaper](paper/dexy.pdf)
 * [Contracts](contracts/)
 
+## TODO
+
+* add check during intervention that tokens were indeed taken from LP (here with possible slippage, or strict LP)? -
+  seems strict validSwap condition - DONE, CHECK INTERVENTION CONTRACT AND DO TEST
+
+* consider bigger buffers (instead of 3 blocks) -- 5 blocks ?
+
+* made final contracts audit
+
+* check tests coverage
