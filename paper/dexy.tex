@@ -240,12 +240,12 @@ not working autonomously on-chain. Thus the protocol needs to reward oracles.
 Oracle Pools 2.0 framework \knote{link} has support for paying rewards in custom tokens. So we will create GORT (Gold
 Oracle Reward Token), which will be used to reward oracles and also developers.
 
-$X$ oracles wil get up to $2 \cdot X$ GORTs per epoch (one datapoint update), per Oracle Pool v2 design~(\knote{link})~(
+$X$ oracles wil get up to $2 \cdot X$ GORTs per epoch (one datapoint update), per Oracle Pool v2 design~\cite{eip23}~(
 $2 \cdot X$ if all the oracles are active). We consider $X = 30$ oracles with one hour long epoch, which means up to $60$
 GORTs will be released to oracles.
 
-To reward developers, we consider an emission contract, which is releasing the same amount per one hour, so 2 GORT per block
-during initial period (2 years). 
+In addition to oracles, GORT is used to reward developers. To do that, we consider a flat emission contract, which is
+releasing the same amount per one hour, so 2 GORT per block during initial period (2 years).
 
 \subsection{Implementation}
 
