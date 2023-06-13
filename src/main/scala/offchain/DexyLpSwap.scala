@@ -21,8 +21,8 @@ object DexyLpSwap extends App {
     dexyScanIds = OffchainUtils.scanIds)
 
   val oracleScanId = 32 // oracle box
-  val dexyLpScanId = 71  // ERG/dexy LP scan id
-  val dexySwapScanId = 67 // swap action scan id
+  val dexyLpScanId = 84  // ERG/dexy LP scan id
+  val dexySwapScanId = 80 // swap action scan id
 
   def oracleBox() = utils.fetchSingleBox(oracleScanId)
 
@@ -87,5 +87,6 @@ object DexyLpSwap extends App {
   println("DEX price: " + dexPrice)
   println("Oracle price: " + oraclePrice)
   println("Ratio: " + dexPrice.toDouble / oraclePrice)
-  inject(5000000000000L,0)
+  println("Pool size: " + lpBox().value / 1000000000L + " ERG")
+  inject(500000000000L,0)
 }
