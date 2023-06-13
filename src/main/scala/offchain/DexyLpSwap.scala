@@ -5,7 +5,7 @@ import org.ergoplatform.ErgoBox.{R4, TokenId}
 import org.ergoplatform.modifiers.mempool.UnsignedErgoTransaction
 import org.ergoplatform.wallet.TokensMap
 import org.ergoplatform.wallet.boxes.DefaultBoxSelector
-import org.ergoplatform.{ErgoAddressEncoder, ErgoBox, ErgoBoxCandidate, UnsignedInput}
+import org.ergoplatform.{ErgoBox, ErgoBoxCandidate, UnsignedInput}
 import scorex.crypto.hash.Digest32
 import scorex.util.{ModifierId, idToBytes}
 import special.collection.Coll
@@ -31,7 +31,7 @@ object DexyLpSwap extends App {
   def tokensMapToColl(tokens: TokensMap): Coll[(TokenId, Long)] =
     tokens.toSeq.map {t => (Digest32 @@ idToBytes(t._1)) -> t._2}.toArray.toColl
 
-  def inject(nanoErgs: Long, dexyAmount: Long) = {
+  def inject(nanoErgs: Long, dexyAmount: Long): Array[Byte] = {
     require(nanoErgs == 0 || dexyAmount == 0, "One of nanoErgs, dexyAmount should be 0")
     val lpInput = lpBox()
     val swapInput = utils.fetchSingleBox(dexySwapScanId)
@@ -54,14 +54,36 @@ object DexyLpSwap extends App {
       targetTokens
     ).right.toOption.get
 
+    val inputErg = lpInput.value
+    val inputDexy = lpInput.additionalTokens(2)._2
+
+    val outputErg = if (nanoErgs > 0) {
+      inputErg + nanoErgs
+    } else {
+      ???
+    }
+
+    val outputDexy  = if (dexyAmount > 0) {
+      inputDexy + dexyAmount
+    } else {
+      val feeNum = 3
+      val feeDenom = 1000
+      val deltaDexy = (outputErg - inputErg).toBigInt * (feeNum - feeDenom).toBigInt * inputDexy.toBigInt / (inputErg * feeDenom).toBigInt
+      inputDexy + deltaDexy.toLong
+    }
+
+    println(s"In ERG: $inputErg, dexy: $inputDexy")
+    println(s"Out ERG: $outputErg, dexy: $outputDexy")
+    println(s"check: ${(inputDexy - outputDexy) * dexPrice} : ${outputErg - inputErg}")
+
     val inputBoxes = IndexedSeq(lpInput, swapInput) ++ selectionResult.boxes
     val inputs = inputBoxes.map(b => new UnsignedInput(b.id))
 
     val lpOutput: ErgoBoxCandidate = new ErgoBoxCandidate(
-      lpInput.value + nanoErgs,
+      outputErg,
       lpInput.ergoTree,
       creationHeight,
-      lpInput.additionalTokens.updated(2, lpInput.additionalTokens(2)._1 -> (lpInput.additionalTokens(2)._2 + dexyAmount)),
+      lpInput.additionalTokens.updated(2, lpInput.additionalTokens(2)._1 -> outputDexy),
       lpInput.additionalRegisters
     )
     val swapOutput = new ErgoBoxCandidate(
