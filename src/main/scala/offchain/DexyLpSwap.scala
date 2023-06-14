@@ -1,6 +1,7 @@
 package offchain
 
 import dexy.DexySpec
+import dexy.DexySpec.feeDenomLp
 import org.ergoplatform.ErgoBox.{R4, TokenId}
 import org.ergoplatform.modifiers.mempool.UnsignedErgoTransaction
 import org.ergoplatform.wallet.TokensMap
@@ -75,6 +76,11 @@ object DexyLpSwap extends App {
     println(s"In ERG: $inputErg, dexy: $inputDexy")
     println(s"Out ERG: $outputErg, dexy: $outputDexy")
     println(s"check: ${(inputDexy - outputDexy) * dexPrice} : ${outputErg - inputErg}")
+
+    val rate = inputDexy.toDouble / inputErg
+    val sellX = nanoErgs
+    val buyY = (sellX * rate * (feeDenomLp - 3) / feeDenomLp).toLong
+    println(s"Double-check: $buyY vs ${inputDexy - outputDexy}")
 
     val inputBoxes = IndexedSeq(lpInput, swapInput) ++ selectionResult.boxes
     val inputs = inputBoxes.map(b => new UnsignedInput(b.id))

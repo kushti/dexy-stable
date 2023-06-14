@@ -38,7 +38,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val deltaReservesX = reservesXOut - reservesXIn
     val deltaReservesY = reservesYOut - reservesYIn
 
-    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp >= BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
+    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp == BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val fundingBox =
@@ -122,7 +122,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val deltaReservesX = reservesXOut - reservesXIn
     val deltaReservesY = reservesYOut - reservesYIn
 
-    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp >= BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
+    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp > BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val fundingBox =
@@ -207,7 +207,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val deltaReservesX = reservesXOut - reservesXIn
     val deltaReservesY = reservesYOut - reservesYIn
 
-    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp >= BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
+    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp == BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val fundingBox =
@@ -291,7 +291,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val deltaReservesX = reservesXOut - reservesXIn
     val deltaReservesY = reservesYOut - reservesYIn
 
-    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp >= BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
+    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp == BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val fundingBox =
@@ -375,7 +375,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val deltaReservesX = reservesXOut - reservesXIn
     val deltaReservesY = reservesYOut - reservesYIn
 
-    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp >= BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
+    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp == BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val fundingBox =
@@ -464,7 +464,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val deltaReservesX = reservesXOut - reservesXIn
     val deltaReservesY = reservesYOut - reservesYIn
 
-    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp >= BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
+    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp == BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val fundingBox =
@@ -555,7 +555,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val deltaReservesX = reservesXOut - reservesXIn
     val deltaReservesY = reservesYOut - reservesYIn
 
-    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp >= BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
+    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp == BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val fundingBox =
@@ -644,7 +644,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val deltaReservesX = reservesXOut - reservesXIn
     val deltaReservesY = reservesYOut - reservesYIn
 
-    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp >= BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
+    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp == BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val fundingBox =
