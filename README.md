@@ -10,7 +10,7 @@ This repository contains everything related to Dexy stablecoin protocol.
 ## TODO
 
 * add check during intervention that tokens were indeed taken from LP (here with possible slippage, or strict LP)? -
-  seems strict validSwap condition - DONE, CHECK INTERVENTION CONTRACT AND DO TEST
+  without strict validSwap condition 
 
 * consider bigger buffers (instead of 3 blocks) -- 5 blocks ?
 

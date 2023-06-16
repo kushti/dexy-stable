@@ -12,6 +12,10 @@ import scorex.util.{ModifierId, idToBytes}
 import special.collection.Coll
 import sigmastate.eval._
 import sigmastate.eval.Extensions._
+import sigmastate.eval.OrderingOps.BigIntOrdering
+
+import scala.math.Ordered.orderingToOrdered
+
 
 object DexyLpSwap extends App {
   val utils = new OffchainUtils(
@@ -70,6 +74,7 @@ object DexyLpSwap extends App {
       val feeNum = 3
       val feeDenom = 1000
       val deltaDexy = (outputErg - inputErg).toBigInt * (feeNum - feeDenom).toBigInt * inputDexy.toBigInt / (inputErg * feeDenom).toBigInt
+      // deltaDexy is negative
       inputDexy + deltaDexy.toLong
     }
 
@@ -81,6 +86,17 @@ object DexyLpSwap extends App {
     val sellX = nanoErgs
     val buyY = (sellX * rate * (feeDenomLp - 3) / feeDenomLp).toLong
     println(s"Double-check: $buyY vs ${inputDexy - outputDexy}")
+
+    val outputDexy2 = ((outputErg - inputErg).toBigInt * (3 - 1000).toBigInt * inputDexy.toBigInt * 1000.toBigInt / (inputErg.toBigInt)) + inputDexy.toBigInt * 1000000L.toBigInt
+    println("2: " + (outputDexy2 / 1000000.toBigInt).toLong)
+
+    val outputErg2 = (outputDexy2 - inputDexy.toBigInt) * inputErg.toBigInt * 1000.toBigInt / (inputDexy.toBigInt * (3 - 1000).toBigInt) + inputErg.toBigInt
+    println(outputErg2)
+    println("left: " + (outputDexy2 - inputDexy.toBigInt) * inputErg.toBigInt * 1000.toBigInt)
+    println("right: " + (outputErg2 - inputErg.toBigInt) * (3 - 1000).toBigInt * inputDexy.toBigInt)
+    assert((outputDexy2 - inputDexy.toBigInt) * inputErg.toBigInt * 1000.toBigInt >= (outputErg - inputErg).toBigInt * inputDexy.toBigInt * (3 - 1000).toBigInt)
+
+
 
     val inputBoxes = IndexedSeq(lpInput, swapInput) ++ selectionResult.boxes
     val inputs = inputBoxes.map(b => new UnsignedInput(b.id))
