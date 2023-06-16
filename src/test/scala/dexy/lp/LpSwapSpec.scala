@@ -107,22 +107,23 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     }
   }
 
-  property("Swap (sell Ergs) should fail if less dexy taken") {
+  property("Taking too many dexy should fail") {
     val lpBalance = 100000000L
     val reservesXIn = 1000000000000L
     val reservesYIn = 100000000L
 
     val rate = reservesYIn.toDouble / reservesXIn
     val sellX = 10000000L
-    val buyY = (sellX * rate * (feeDenomLp - feeNumLp) / feeDenomLp).toLong - 1 // <=== this value changed
+    val buyY = (sellX * rate * (feeDenomLp - feeNumLp) / feeDenomLp).toLong * 101 / 100 // <-- taking +1%
 
     val reservesXOut = reservesXIn + sellX
-    val reservesYOut = reservesYIn -  buyY
+    val reservesYOut = reservesYIn - buyY
 
     val deltaReservesX = reservesXOut - reservesXIn
     val deltaReservesY = reservesYOut - reservesYIn
 
-    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp > BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
+    // condition reverse to normal one used in LP contract
+    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp < BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val fundingBox =

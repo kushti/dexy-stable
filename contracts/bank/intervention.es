@@ -109,6 +109,7 @@
 
   val validDeltas = deltaBankErgs <= deltaLpX  &&  // ergs reduced in bank box must be <= ergs gained in LP
                     deltaBankTokens >= deltaLpY &&   // tokens gained in bank box must be >= tokens reduced in LP
+                    deltaLpY.toBigInt * lpReservesXIn <= deltaLpX.toBigInt * lpReservesYIn && // swap condition w/out fees
                     deltaLpX > 0 &&
                     deltaBankErgs <= price * deltaBankTokens / 100 * 102 // max slippage 2%
 
