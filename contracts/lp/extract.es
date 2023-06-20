@@ -52,9 +52,9 @@
     val lpNFT = fromBase64("$lpNFT")
     val oracleNFT = fromBase64("$oracleNFT")
 
-    val T_extract = 10 // blocks for which the rate is below 95%
+    val T_extract = 720 // blocks for which the rate is below 95%
     val T_release = 2 // blocks for which the rate is above 101%
-    val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
+    val T_delay = 360 // delay between any burn/release operation  ("T_burn" in the paper)
 
     val buffer = 5 // allowable error in setting height due to congestion
 
