@@ -41,7 +41,7 @@
   val oracleNFT = fromBase64("$oracleNFT") // to identify oracle pool box
   val lpNFT = fromBase64("$lpNFT")
 
-  val T_free = 100
+  val T_free = 360 // free mint period length (1/2 day in the mainnet)
   val T_buffer = 5 // max delay permitted after broadcasting and confirmation of the tx spending this box
 
   val bankFeeNum = 3
@@ -89,7 +89,7 @@
   val validBuybackDelta = buybackErgsAdded >= dexyMinted * buybackRate && buybackErgsAdded > 0
   val validDelta = validBankDelta && validBuybackDelta
 
-  val maxAllowedIfReset = lpReservesY / 100
+  val maxAllowedIfReset = lpReservesY / 100 // max 1% of LP dexy reserves to free-mint per period
 
   val availableToMint = if (isCounterReset) maxAllowedIfReset else selfInR5
 

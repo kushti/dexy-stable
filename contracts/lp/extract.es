@@ -56,7 +56,7 @@
     val T_release = 2 // blocks for which the rate is above 101%
     val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
 
-    val buffer = 3 // allowable error in setting height due to congestion
+    val buffer = 5 // allowable error in setting height due to congestion
 
     // tracking box should record at least T_extract blocks of < 95%
     val tracking95Box = CONTEXT.dataInputs(tracking95BoxIndex)

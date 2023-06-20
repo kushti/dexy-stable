@@ -34,8 +34,8 @@
   val trackingBoxIndex = 1
 
   val lastIntervention = SELF.creationInfo._1
-  val buffer = 3 // error margin in height
-  val T = 100 // from paper, gap between two interventions
+  val buffer = 5 // error margin in height
+  val T = 360 // from paper, gap between two interventions
   val T_int = 20 // blocks after which a trigger swap event can be completed, provided rate has not crossed oracle pool rate
 
   val bankNFT = fromBase64("$bankNFT")
