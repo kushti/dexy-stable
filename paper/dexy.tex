@@ -168,10 +168,10 @@ Instead, we always allow for cautios minting. That is, we whether allow minting 
 \begin{itemize}
   \item{Arbitrage mint: } if price reported by the oracle is higher than in the pool, i.e. $p > \frac{u}{e}$, we allow to print enough \sct{} tokens to bring the price to $p$. That is, the bank allows to mint up to $\delta_u = \sqrt{p*e*u}-u$ \sct{} by accepting up to $\delta_e = \frac{\delta_u}{p}$ \bc{}s into reserves. 
 
-  \em{To instantiate the rule, we can allow for arbitrage minting if the price $p$ is more than $\frac{u}{e}$ by at least $1\%$ for time period $T_{arb}$ (e.g. 1 hour), also, the bank is charging $0.6\%$ fee for the operation. After arbitrage mint it is not possible to do another one within 30 minutes (to prevent aggressive liquidity minting via chained transactions etc).}
+  \em{To instantiate the rule, we can allow for arbitrage minting if the price $p$ is more than $\frac{u}{e}$ by at least $1\%$ for time period $T_{arb}$ (e.g. 1 hour), also, the bank is charging $0.5\%$ fee for the operation. After arbitrage mint it is not possible to do another one within 30 minutes (to prevent aggressive liquidity minting via chained transactions etc).}
 
   \item{Free mint: } we allow to mint up to $\frac{u}{100}$ \sct{}s within time period $T_{free}$. 
-  \em{To instantiate the rule, we propose to allow for free mint if $0.98 < r < 1.02$. Minting fee in this case is also $0.6\%$. We propose to set $T_free$ to $12$ hours, then bank reserves can grow by $2\%$ of LP volume per day when the peg is okay.}.
+  \em{To instantiate the rule, we propose to allow for free mint if $0.98 < r < 1.02$. Minting fee in this case is also $0.5\%$. We propose to set $T_free$ to $12$ hours, then bank reserves can grow by $2\%$ of LP volume per day when the peg is okay.}.
 \end{itemize}  
 
 In addition to minting actions, which increase bank reserves, we define following two actions which decrease them: 

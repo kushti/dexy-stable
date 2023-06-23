@@ -18,6 +18,8 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
   val fakeNanoErgs = 10000000000000L
   val dummyNanoErgs = 100000L
 
+  val T = 360
+
   // todo: check 1% max spending rule
 
   property("Intervention (transfer Ergs from Bank to Lp and Dexy from Lp to Bank) should work") {
@@ -52,7 +54,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
       val T_int = 20
-      val T = 100
+
       val trackingHeightIn = ctx.getHeight - T_int - 1
 
       val lastInterventionHeight = ctx.getHeight - T - 1
@@ -193,7 +195,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
       val T_int = 20
-      val T = 100
+
       val trackingHeightIn = ctx.getHeight - T_int - 1
 
       val lastInterventionHeight = ctx.getHeight - T - 1
@@ -337,7 +339,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
       val T_int = 20
-      val T = 100
+
       val trackingHeightIn = ctx.getHeight - T_int - 1
 
       val lastInterventionHeight = ctx.getHeight - T - 1
@@ -477,7 +479,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
       val T_int = 20
-      val T = 100
+
       val trackingHeightIn = ctx.getHeight - T_int - 1
 
       val lastInterventionHeight = ctx.getHeight - T - 1
@@ -617,7 +619,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
       val T_int = 20
-      val T = 100
+
       val trackingHeightIn = ctx.getHeight - T_int - 1
 
       val lastInterventionHeight = ctx.getHeight - T - 1
@@ -757,7 +759,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
       val T_int = 20
-      val T = 100
+
       val trackingHeightIn = ctx.getHeight - T_int - 1
 
       val lastInterventionHeight = ctx.getHeight - T - 1
@@ -897,7 +899,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
       val T_int = 20
-      val T = 100
+
       val trackingHeightIn = ctx.getHeight - T_int - 1
 
       val lastInterventionHeight = ctx.getHeight - T - 1
@@ -1037,7 +1039,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
       val T_int = 20
-      val T = 100
+
       val trackingHeightIn = ctx.getHeight - T_int - 1
 
       val lastInterventionHeight = ctx.getHeight - T - 1
@@ -1177,7 +1179,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
       val T_int = 20
-      val T = 100
+
       val trackingHeightIn = ctx.getHeight - T_int // <--------------- this value is changed
 
       val lastInterventionHeight = ctx.getHeight - T - 1
@@ -1317,7 +1319,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
       val T_int = 20
-      val T = 100
+
       val trackingHeightIn = ctx.getHeight - T_int - 1
 
       val lastInterventionHeight = ctx.getHeight - T // <--------------- this value is changed
@@ -1457,7 +1459,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
       val T_int = 20
-      val T = 100
+
       val trackingHeightIn = ctx.getHeight - T_int - 1
 
       val lastInterventionHeight = ctx.getHeight - T - 1
@@ -1597,7 +1599,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
       val T_int = 20
-      val T = 100
+
       val trackingHeightIn = ctx.getHeight - T_int - 1
 
       val lastInterventionHeight = ctx.getHeight - T - 1
@@ -1736,8 +1738,6 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
-      val T = 100
-
       val lastInterventionHeight = ctx.getHeight - T - 1
 
       val fundingBox =
@@ -1875,7 +1875,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
       val T_int = 20
-      val T = 100
+
       val trackingHeightIn = ctx.getHeight - T_int - 1
 
       val lastInterventionHeight = ctx.getHeight - T - 1
@@ -2019,7 +2019,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
       val T_int = 20
-      val T = 100
+
       val trackingHeightIn = ctx.getHeight - T_int - 1
 
       val lastInterventionHeight = ctx.getHeight - T - 1
@@ -2159,7 +2159,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
       val T_int = 20
-      val T = 100
+
       val trackingHeightIn = ctx.getHeight - T_int - 1
 
       val lastInterventionHeight = ctx.getHeight - T - 1
@@ -2298,7 +2298,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
       val T_int = 20
-      val T = 100
+
       val trackingHeightIn = ctx.getHeight - T_int - 1
 
       val lastInterventionHeight = ctx.getHeight - T - 1
@@ -2441,7 +2441,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
       val T_int = 20
-      val T = 100
+
       val trackingHeightIn = ctx.getHeight - T_int - 1
 
       val lastInterventionHeight = ctx.getHeight - T - 1
@@ -2581,7 +2581,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
       val T_int = 20
-      val T = 100
+
       val trackingHeightIn = ctx.getHeight - T_int - 1
 
       val lastInterventionHeight = ctx.getHeight - T - 1
@@ -2721,7 +2721,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
       val T_int = 20
-      val T = 100
+
       val trackingHeightIn = ctx.getHeight - T_int - 1
 
       val lastInterventionHeight = ctx.getHeight - T - 1
@@ -2859,7 +2859,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
       val T_int = 20
-      val T = 100
+
       val trackingHeightIn = ctx.getHeight - T_int - 1
 
       val lastInterventionHeight = ctx.getHeight - T - 1

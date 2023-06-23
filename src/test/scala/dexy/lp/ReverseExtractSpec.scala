@@ -20,7 +20,8 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
   property("Reverse Extract (remove Dexy from extract box and put in Lp box) should work") {
     val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
-    val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
+
+    val T_delay = 360 // delay between any burn/release operation  ("T_burn" in the paper)
     val T_release = 2 // blocks for which the rate is above 101%
 
     val lpReservesXIn = 100000000000000L

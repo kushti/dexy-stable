@@ -26,11 +26,12 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   //  cannot work when last extraction height is more than allowed
   //  cannot change LP token amount
 
+  val T_delay = 360 // delay between any burn/release operation  ("T_burn" in the paper)
+  val T_extract = 720 // blocks for which the rate is below 95%
+
   property("Extract to future (extract Dexy from Lp and store in extract box) should work") {
     val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
-    val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
-    val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
     val lpReservesYIn =  10550000000L
@@ -163,8 +164,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Extract to future should fail if bank has enough Ergs") {
     val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
-    val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
-    val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
     val lpReservesYIn = 10550000000L
@@ -289,8 +288,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Extract to future should fail if tracking depth is less") {
     val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
-    val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
-    val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
     val lpReservesYIn = 10550000000L
@@ -418,8 +415,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Extract to future should fail if not enough delay in last extract") {
     val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
-    val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
-    val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
     val lpReservesYIn =  10550000000L
@@ -546,8 +541,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Extract to future should fail if invalid height set in extract output box") {
     val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
-    val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
-    val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
     val lpReservesYIn =  10550000000L
@@ -677,8 +670,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Extract to future should fail if LP NFT changed") {
     val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
-    val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
-    val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
     val lpReservesYIn =  10550000000L
@@ -810,8 +801,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Extract to future should fail if LP token amount changed") {
     val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
-    val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
-    val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
     val lpReservesYIn =  10550000000L
@@ -942,8 +931,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Extract to future should fail if more dexy taken than allowed") {
     val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
-    val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
-    val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
     val lpReservesYIn =  10550000000L
@@ -1073,8 +1060,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Extract to future should fail if LP token id changed") {
     val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
-    val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
-    val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
     val lpReservesYIn =  10550000000L
@@ -1206,8 +1191,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Extract to future should fail if Dexy token id changed in LP box") {
     val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
-    val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
-    val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
     val lpReservesYIn =  10550000000L
@@ -1338,8 +1321,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Extract to future should fail if Dexy token id changed in Extract box") {
     val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
-    val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
-    val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
     val lpReservesYIn =  10550000000L
@@ -1474,8 +1455,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Extract to future should fail if extra Dexy tokens in LP box") {
     val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
-    val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
-    val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
     val lpReservesYIn =  10550000000L
@@ -1607,8 +1586,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Extract to future should fail if less Dexy tokens in LP box") {
     val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
-    val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
-    val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
     val lpReservesYIn =  10550000000L
@@ -1740,8 +1717,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Extract to future should fail if extra Dexy tokens in Extract box") {
     val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
-    val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
-    val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
     val lpReservesYIn =  10550000000L
@@ -1872,8 +1847,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Extract to future should fail if less Dexy tokens in Extract box") {
     val oracleRateXy = 10000L
     val lpBalanceIn = 100000000L
-    val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
-    val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
     val lpReservesYIn = 100000000000L
@@ -2008,8 +1981,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Extract to future should fail if Extract NFT changed") {
     val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
-    val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
-    val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
     val lpReservesYIn =  10550000000L
@@ -2139,8 +2110,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Extract to future should fail if LP script changed") {
     val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
-    val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
-    val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
     val lpReservesYIn =  10550000000L
@@ -2267,8 +2236,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Extract to future should fail if Extract script changed") {
     val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
-    val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
-    val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
     val lpReservesYIn =  10550000000L
@@ -2395,8 +2362,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Extract to future should fail if wrong LP NFT in and right LP NFT out") {
     val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
-    val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
-    val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
     val lpReservesYIn =  10550000000L
@@ -2527,8 +2492,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Extract to future should fail if wrong LP NFT in and same (wrong) LP NFT out") {
     val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
-    val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
-    val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
     val lpReservesYIn =  10550000000L
@@ -2663,8 +2626,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Extract to future should fail if wrong Extract NFT in and right Extract NFT out") {
     val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
-    val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
-    val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
     val lpReservesYIn =  10550000000L
@@ -2795,8 +2756,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Extract to future should fail if wrong Extract NFT in and same (wrong) Extract NFT out") {
     val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
-    val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
-    val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
     val lpReservesYIn =  10550000000L
@@ -2929,8 +2888,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Extract to future should fail if wrong Oracle NFT") {
     val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
-    val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
-    val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
     val lpReservesYIn =  10550000000L
@@ -3059,8 +3016,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Extract to future should fail if wrong Bank NFT") {
     val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
-    val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
-    val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
     val lpReservesYIn =  10550000000L
@@ -3189,8 +3144,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   property("Extract to future should fail if wrong Tracking NFT") {
     val oracleRateXy = 10000L * 1000000L
     val lpBalanceIn = 100000000L
-    val T_delay = 20 // delay between any burn/release operation  ("T_burn" in the paper)
-    val T_extract = 10 // blocks for which the rate is below 95%
 
     val lpReservesXIn = 100000000000000L
     val lpReservesYIn =  10550000000L
