@@ -113,10 +113,10 @@
     val oracleRateXY = oracleBox.R4[Long].get / 1000000L
     val lpRateXYOut = reservesXOut / reservesYOut
 
-    val validExtractAmount = oracleRateXY * 97 < lpRateXYOut * 100 && // oracleRate must be >= 0.97 * lpRate at output
-                             oracleRateXY * 98 > lpRateXYOut * 100   // oracleRate must be <= 0.98 * oracleRate at output
+    val validExtractAmount = oracleRateXY * 97 < lpRateXYOut * 100 && // oracleRate must be > 0.97 * lpRate at output
+                             oracleRateXY * 98 > lpRateXYOut * 100   // oracleRate must be < 0.98 * oracleRate at output
 
-    val validReleaseAmount = oracleRateXY * 101 > lpRateXYOut * 100    // oracleRate must be >= 1.01 * lpRate at output to release
+    val validReleaseAmount = oracleRateXY * 101 > lpRateXYOut * 100    // oracleRate must be > 1.01 * lpRate at output to release
 
     val validExtract  = deltaDexy > 0                           &&
                         validTracking95Box                      &&
