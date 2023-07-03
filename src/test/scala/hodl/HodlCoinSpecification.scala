@@ -31,7 +31,7 @@ class HodlCoinSpecification extends PropSpec with Matchers
   val dev2Address = "9gnBtmSRBMaNTkLQUABoAqmU2wzn27hgqVvezAC9SU1VqFKZCp8"
   val dev3Address = "9iE2MadGSrn1ivHmRZJWRxzHffuAk6bPmEv6uJmPHuadBY8td5u"
 
-  property("hodlhack scenario") {
+  property("hodlhack #1 scenario") {
 
     val ergAmount = 1000 * 1000000000L
 
@@ -95,6 +95,86 @@ class HodlCoinSpecification extends PropSpec with Matchers
         hackAmount,
         registers = Array(),
         tokens = Array()
+      )
+
+      the[Exception] thrownBy {
+        TxUtil.createTx(
+          Array(hodlBox, fundingBox),
+          Array(),
+          Array(hodlOutBox, dev1OutBox, dev2OutBox, dev3OutBox, hackOutBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          broadcast = false
+        )
+      } should have message "Script reduced to false"
+    }
+  }
+
+
+  property("hodl - should be impossible to drain hodlerg") {
+
+    val ergAmount = 1000 * 1000000000L
+
+    val hodlErgAmount = 100 * 1000000000L
+
+    val devFeesCollected = 30 * 1000000000L
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      val hodlBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(ergAmount)
+          .tokens(new ErgoToken(hodlTokenId, hodlErgAmount), new ErgoToken(hodlContractNft, 1))
+          .registers(KioskLong(devFeesCollected).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), hodlScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(2000000L)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val hodlOutBox = KioskBox(
+        hodlAddress,
+        ergAmount - devFeesCollected,
+        registers = Array(KioskLong(0L)),
+        tokens = Array((hodlTokenId, hodlErgAmount / 2), (hodlContractNft, 1))
+      )
+
+      val dev1OutBox = KioskBox(
+        dev1Address,
+        devFeesCollected / 3,
+        registers = Array(),
+        tokens = Array()
+      )
+
+      val dev2OutBox = KioskBox(
+        dev2Address,
+        devFeesCollected / 3,
+        registers = Array(),
+        tokens = Array()
+      )
+
+      val dev3OutBox = KioskBox(
+        dev3Address,
+        devFeesCollected / 3,
+        registers = Array(),
+        tokens = Array()
+      )
+
+      val hackOutBox = KioskBox(
+        dev3Address,
+        1000000L,
+        registers = Array(),
+        tokens = Array(hodlTokenId -> hodlErgAmount / 2)
       )
 
       the[Exception] thrownBy {

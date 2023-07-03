@@ -8,38 +8,40 @@ import sigmastate.Values.{BooleanConstant, IntConstant, LongConstant}
 import sigmastate.serialization.ValueSerializer
 
 object DexySpec {
+
+  val dexyTokenId = "1c0861f19af92ea7526d124a0e9523d8942c0de736ed5610e24625e89988e52d"
+
+  val lpTokenId = "d91b401f39c49114d5fba84a1b01e087bf99f63d1ca9383ea63fe6569b6bb351"
+
   // oracle related tokens
-  val dexyTokenId = "20e901376d96816a407916c42c5ad789a9698c3041b77ddb46d19b78fedba649"
-
-  val lpTokenId = "0ebc7e8fd7739ad3fb62430f600c59bca4ed1ee351d34eeabe99e9965207b0b6"
-
+  // take token IDs below from oracle pool UI
   // Gold Oracle Reward Token
-  val gort = "e2636c9f0e32886954ab1f87ac2e016fdf53d63d8fa2101530d1e31ac59e365f"
-  val oracleTokenId = "cc8d50d2a9f0f1254f363ee66a3c65e73ea8046386c001544b08841743df411d"
-  val oraclePoolNFT = "f2f64bab1f2e9ab65c0e4a6a65eed0b26c5276eb5dda01d4a0e0ebe8a85bfbfc"
+  val gort = "56aeed3ba3f677ffb5462b0b1f83da3e1d06c8946ba978ef7e706221bac5e982"
+  val oracleTokenId = "001e182cc3f04aec4486c7a5018d198e9591a7cfb0b372f5f95fa3e5ddbd24d3"
+  val oraclePoolNFT = "d94bfac40b516353983443209104dcdd5b7ca232a01ccb376ee8014df6330907"
 
   // GORT / ERG LP
-  val gortLpNFT = "73d715bca9f5c40be602f664f9590c20c4be7aeebc2792aa236b06518d22d265"
+  val gortLpNFT = "ffcd3ccf29896b364d7f1d80a15cde6a2f2ca3102dbe6e1b2337c88789a92caa"
 
   // tokens for main boxes
-  val bankNFT = "b40ca7aec3f38d286692661a92aecffc431f096877428ee735f72ddb4ea38fb4"
-  val lpNFT = "1aa26bc8d5e8c55f62816f6015b4201baf87322a6b4e2d407766af7740c4ed7c"
+  val bankNFT = "0b88b64dee03623476a1db3baff8c29b558a0cbc68a55b6a1ec8c888fc10e7ac"
+  val lpNFT = "53a09fa20578ad612ca3d0441f64373c516203425dd75dc518fd3b624a97516b"
 
   // update tokens
-  val updateNFT = "1bb26bc8d5e8c55f62816f6015b4201baf87322a6b4e2d407766af7740c4ed7c"
-  val ballotTokenId = "1cc26bc8d5e8c55f62816f6015b4201baf87322a6b4e2d407766af7740c4ed7c"
+  val updateNFT = "13f0c941dc32d63bde31d1421e22a12ce092843a9ef29b7232aaf4c93eebbe5d"
+  val ballotTokenId = "22dd3a071ecbccefef9f7d33a70132c6f9933e5b565584c1c66575f554c10a1b"
 
   // all tokens below for aux boxes (1 for each type of box)
-  val interventionNFT = "99c9caa94816a0da9b5d4d653ac3a04d4ad107fa279ac7a2aadd7e3e66de8cca"
-  val freeMintNFT = "9a8648530229195e31422ce6b1b587541972b2e0a73d54df33b2e248a42eb153"
-  val arbitrageMintNFT = "d8d96710cc66f21d1ae6e83438826ad611b7e181df5d59e5b6e796fdc603e5dd"
-  val buybackNFT = "2cbabc2be7292e2e857a1f2c34a8b0c090de2f30fa44c68ab71454e5586bd45e"
-  val payoutNFT = "1aa26bc8d5e8c55f62816f6015b4201baf87322a6b4e2d407766af7740c4ed7c"
+  val interventionNFT = "1245fd71addf2c84b7892407fce838d9f88eb0272713d10d765d57409765e8ec"
+  val freeMintNFT = "1b6a0b475b520ede63a31b3859f2aff327c18dc9aba27d0b706b015c65b342ab"
+  val arbitrageMintNFT = "09dee506d7ef368972314266868497ee347d4f56b32ccd1bef0ab50f766b1309"
+  val buybackNFT = "4d7d196c6c703110f314cf0fbe1320b3b0be735f2a9414758c5e980deb0e76f9"
+  val payoutNFT = "84e5d77894648fc36ce7723f51abb45837283bb75b3d216c529de925fd8e964d"
 
-  val lpSwapNFT = "1049da47189d0a525329e92ebbb12fd8a36595ced38cec38f6bc2f979c214095"
-  val lpMintNFT = "71c44ddda3121592762cebc67c345cd0fa4c4c5cc7276834cbd1462c27b6c40f"
-  val lpRedeemNFT = "32d8b9524509af5f456c9104401d600f77f66d1c0547c83ed8bed867d6684867"
-  val extractionNFT = "1aea0f37c54736a2c2ea5629dfeab31c40b011bb4eb74d43e4aaeeffafdcac24"
+  val lpSwapNFT = "8a5e89e9d890ae2969d8c9026d02bd0be83f566f33a6889024d3f6970ee9e0a7"
+  val lpMintNFT = "a30518fa7df111337cac2ad57fea9eec8ded40863d792f37de0aee14040cd6fc"
+  val lpRedeemNFT = "4e72dc153043da6bfe178e56054d063d482ac7808075ea658a5e9b82808e8d9a"
+  val extractionNFT = "3077810ae98861c9c708688e64113be1a30d20eddf4cc1dcc76b9a31e07ebf69"
 
   // boxes for tracking ratio of LP rate and oracle pool rate (see details in Tracking contract)
   val tracking95NFT = "899ce775313b36395046eef952575752efbbfabc75dc64193e0c4feafeb1c793"
