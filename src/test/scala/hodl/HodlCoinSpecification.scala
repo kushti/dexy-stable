@@ -97,7 +97,7 @@ class HodlCoinSpecification extends PropSpec with Matchers
         tokens = Array()
       )
 
-      noException shouldBe thrownBy {
+      the[Exception] thrownBy {
         TxUtil.createTx(
           Array(hodlBox, fundingBox),
           Array(),
@@ -106,9 +106,9 @@ class HodlCoinSpecification extends PropSpec with Matchers
           changeAddress,
           Array[String](),
           Array[DhtData](),
-          false
+          broadcast = false
         )
-      }
+      } should have message "Script reduced to false"
     }
   }
 
