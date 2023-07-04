@@ -54,7 +54,7 @@ case class DexyScanIds(tracking95ScanId: Int,
                        lpScanId: Int,
                        lpSwapScanId: Int)
 
-class OffchainUtils(serverUrl: String,
+case class OffchainUtils(serverUrl: String,
                     apiKey: String,
                     localSecretStoragePath: String,
                     localSecretUnlockPass: String,
@@ -268,7 +268,7 @@ class OffchainUtils(serverUrl: String,
 }
 
 object OffchainUtils {
-  val scanIds = DexyScanIds(72, 73, 74, 32, 84, 80)
+  val scanIds = DexyScanIds(98, 99, 100, 85, 111, 107)
 }
 
 object Test extends App {
@@ -284,6 +284,7 @@ object Test extends App {
 
   val oraclePrice = utils.oraclePoolBox().get.additionalRegisters.apply(R4).value.asInstanceOf[Long]
   val lpBox = utils.lpBox().get
+  println(lpBox.additionalTokens)
   val lpPrice = lpBox.value / lpBox.additionalTokens.apply(2)._2
 
   println("oracle price: " + oraclePrice / 1000000)
@@ -293,7 +294,6 @@ object Test extends App {
   val y = lpPrice * 100
 
   println(x > y)
-
-  utils.updateTrackers()
+  utils.updateTrackers() //todo: fix for 101%
 
 }

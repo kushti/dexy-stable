@@ -25,9 +25,9 @@ object DexyLpSwap extends App {
     localSecretUnlockPass = "",
     dexyScanIds = OffchainUtils.scanIds)
 
-  val oracleScanId = 32 // oracle box
-  val dexyLpScanId = 84  // ERG/dexy LP scan id
-  val dexySwapScanId = 80 // swap action scan id
+  val oracleScanId = utils.dexyScanIds.oraclePoolScanId // oracle box
+  val dexyLpScanId = utils.dexyScanIds.lpScanId  // ERG/dexy LP scan id
+  val dexySwapScanId = utils.dexyScanIds.lpSwapScanId // swap action scan id
 
   def oracleBox() = utils.fetchSingleBox(oracleScanId)
 
@@ -132,5 +132,5 @@ object DexyLpSwap extends App {
   println("Oracle price: " + oraclePrice)
   println("Ratio: " + dexPrice.toDouble / oraclePrice)
   println("Pool size: " + lpBox().value / 1000000000L + " ERG")
-  inject(500000000000L,0)
+  inject(5000000000000L,0)
 }

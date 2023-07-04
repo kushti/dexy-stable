@@ -146,7 +146,7 @@ class HodlCoinSpecification extends PropSpec with Matchers
         hodlAddress,
         ergAmount - devFeesCollected,
         registers = Array(KioskLong(0L)),
-        tokens = Array((hodlTokenId, hodlErgAmount / 2), (hodlContractNft, 1))
+        tokens = Array((hodlTokenId, hodlErgAmount - 1), (hodlContractNft, 1))
       )
 
       val dev1OutBox = KioskBox(
@@ -174,7 +174,7 @@ class HodlCoinSpecification extends PropSpec with Matchers
         dev3Address,
         1000000L,
         registers = Array(),
-        tokens = Array(hodlTokenId -> hodlErgAmount / 2)
+        tokens = Array(hodlTokenId -> 1)
       )
 
       the[Exception] thrownBy {
