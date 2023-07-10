@@ -7,7 +7,7 @@ import scorex.util.encode.Base64
 import sigmastate.Values.{BooleanConstant, IntConstant, LongConstant}
 import sigmastate.serialization.ValueSerializer
 
-object DexySpec {
+object DexySpec extends ContractUtils {
 
   val dexyTokenId = "f4b0a10d38ed5d40bf1f09485ea4d6d9e9e49b9cab2de74bd8697e10391d7f02"
 
@@ -96,16 +96,7 @@ object DexySpec {
     "epochLength" -> 30.toString
   )
 
-  // totally inefficient substitution method, but ok for our contracts
-  def substitute(contract: String): String = {
-    nftDictionary.foldLeft(contract){case (c, (k,v)) =>
-      c.replace("$"+k, v)
-    }
-  }
-
-  def readContract(path: String) = {
-    substitute(scala.io.Source.fromFile("contracts/" + path, "utf-8").getLines.mkString("\n"))
-  }
+  override val substitutionMap = nftDictionary
 
   // arbitrage mint box
   val arbitrageMintScript = readContract("bank/arbmint.es")

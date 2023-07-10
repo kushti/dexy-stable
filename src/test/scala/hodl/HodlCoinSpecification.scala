@@ -14,7 +14,7 @@ import sigmastate.Values
 class HodlCoinSpecification extends PropSpec with Matchers
   with ScalaCheckDrivenPropertyChecks with HttpClientTesting with Common {
 
-  val hodlScript = readContract("hodlcoin.es")
+  val hodlScript = readContract("hodlcoin/hodlcoin.es")
 
   val hodlErgoTree: Values.ErgoTree = ScriptUtil.compile(Map(), hodlScript)
   println(hodlErgoTree.root)
