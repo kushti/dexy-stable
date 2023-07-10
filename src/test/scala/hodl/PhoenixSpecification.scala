@@ -8,20 +8,24 @@ import kiosk.tx.TxUtil
 import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoToken, HttpClientTesting, InputBox}
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
+import scorex.crypto.hash.Blake2b256
 import scorex.util.encode.Base64
 import sigmastate.Values
+import sigmastate.serialization.ErgoTreeSerializer.DefaultSerializer
 
 class PhoenixSpecification extends PropSpec with Matchers
   with ScalaCheckDrivenPropertyChecks with HttpClientTesting with Common with ContractUtils {
 
-  val phoenixFeeContractBytesHash = Array.fill(32)(0: Byte)
+  val feeScript = readContract("hodlcoin/phoenix/fee.es", Map.empty)
+  val feeErgoTree: Values.ErgoTree = ScriptUtil.compile(Map(), feeScript)
+  val feeScriptBytesHash = Blake2b256.apply(DefaultSerializer.serializeErgoTree(feeErgoTree))
+  val feeAddress: String = getStringFromAddress(getAddressFromErgoTree(feeErgoTree))
 
-  override val substitutionMap: Map[String, String] = Map(
-    "phoenixFeeContractBytesHash" -> Base64.encode(phoenixFeeContractBytesHash)
+  override def defaultSubstitutionMap: Map[String, String] = Map(
+    "phoenixFeeContractBytesHash" -> Base64.encode(feeScriptBytesHash)
   )
 
   val phoenixScript = readContract("hodlcoin/phoenix/phoenix.es")
-
   val phoenixErgoTree: Values.ErgoTree = ScriptUtil.compile(Map(), phoenixScript)
   val phoenixAddress: String = getStringFromAddress(getAddressFromErgoTree(phoenixErgoTree))
 
@@ -61,12 +65,12 @@ class PhoenixSpecification extends PropSpec with Matchers
   def mintAmount(hodlBoxIn: InputBox, hodlMintAmt: Long): Long = {
     val price = hodlPrice(hodlBoxIn)
     val precisionFactor = extractPrecisionFactor(hodlBoxIn)
-    (hodlMintAmt * price) / precisionFactor
+    ((BigInt(hodlMintAmt) * BigInt(price)) / BigInt(precisionFactor)).toLong
   }
 
 
   property("phoenix mint works if all the conditions satisfied") {
-    val ergAmount = 1000000 * 1000000000L
+    val ergAmount = 10000000 * 1000000000L
     val hodlErgAmount = totalSupply / 10 * 9
 
     val hodlMintAmount = 20
@@ -91,18 +95,17 @@ class PhoenixSpecification extends PropSpec with Matchers
 
       val price = hodlPrice(hodlBox)
 
-      // require(hodlBox.getValue >= totalSupply - hodlErgAmount, "never-decreasing theorem does not hold")
-
-      println("hodl price: " + price)
+      require(hodlBox.getValue >= totalSupply - hodlErgAmount, "never-decreasing theorem does not hold")
+      require(price == 2000000, "Price does not correspond to manually calculated value")
 
       val ergMintAmount = mintAmount(hodlBox, hodlMintAmount)
-      println("ea: " + ergMintAmount)
+      require(ergMintAmount == 40, "Erg delta does not correspond to manually calculated value ")
 
       val fundingBox =
         ctx
           .newTxBuilder()
           .outBoxBuilder
-          .value(10000000 * 1000000000L)
+          .value(50000000 * 1000000000L)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
@@ -134,6 +137,71 @@ class PhoenixSpecification extends PropSpec with Matchers
           broadcast = false
         )
       }
+    }
+  }
+
+  property("phoenix mint fails if less ERGs provided") {
+    val ergAmount = 10000000 * 1000000000L
+    val hodlErgAmount = totalSupply / 10 * 9
+
+    val hodlMintAmount = 20
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      val hodlBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(ergAmount)
+          .tokens(new ErgoToken(hodlBankNft, 1), new ErgoToken(hodlTokenId, hodlErgAmount))
+          .registers(
+            KioskLong(totalSupply).getErgoValue,
+            KioskLong(precisionFactor).getErgoValue,
+            KioskLong(minBankValue).getErgoValue,
+            KioskLong(bankFee).getErgoValue,
+            KioskLong(devFee).getErgoValue
+          )
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), phoenixScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val ergMintAmount = mintAmount(hodlBox, hodlMintAmount) - 1 // this line changed - 1 nanoERG less to the bank
+
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(50000000 * 1000000000L)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val hodlOutBox = KioskBox(
+        phoenixAddress,
+        ergAmount + ergMintAmount,
+        registers = Array(KioskLong(totalSupply), KioskLong(precisionFactor), KioskLong(minBankValue),
+          KioskLong(bankFee), KioskLong(devFee)),
+        tokens = Array((hodlBankNft, 1), (hodlTokenId, hodlErgAmount - hodlMintAmount))
+      )
+
+      val userBox = KioskBox(
+        phoenixAddress,
+        ergAmount,
+        registers = Array(),
+        tokens = Array((hodlTokenId, hodlMintAmount))
+      )
+
+      the[Exception] thrownBy {
+        TxUtil.createTx(
+          Array(hodlBox, fundingBox),
+          Array(),
+          Array(hodlOutBox, userBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          broadcast = false
+        )
+      } should have message "Script reduced to false"
     }
   }
 

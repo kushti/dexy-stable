@@ -3,17 +3,17 @@ package dexy
 import dexy.DexySpec.nftDictionary
 
 trait ContractUtils {
-  def substitutionMap: Map[String, String]
+  def defaultSubstitutionMap: Map[String, String]
 
   // totally inefficient substitution method, but ok for our contracts
-  def substitute(contract: String): String = {
+  def substitute(contract: String, substitutionMap: Map[String, String] = defaultSubstitutionMap): String = {
     substitutionMap.foldLeft(contract){case (c, (k,v)) =>
       c.replace("$"+k, v)
     }
   }
 
-  def readContract(path: String) = {
-    substitute(scala.io.Source.fromFile("contracts/" + path, "utf-8").getLines.mkString("\n"))
+  def readContract(path: String, substitutionMap: Map[String, String] = defaultSubstitutionMap) = {
+    substitute(scala.io.Source.fromFile("contracts/" + path, "utf-8").getLines.mkString("\n"), substitutionMap)
   }
 
 }

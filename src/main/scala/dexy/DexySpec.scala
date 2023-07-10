@@ -96,7 +96,7 @@ object DexySpec extends ContractUtils {
     "epochLength" -> 30.toString
   )
 
-  override val substitutionMap = nftDictionary
+  override val defaultSubstitutionMap = nftDictionary
 
   // arbitrage mint box
   val arbitrageMintScript = readContract("bank/arbmint.es")
