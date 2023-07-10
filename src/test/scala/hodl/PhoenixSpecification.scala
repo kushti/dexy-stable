@@ -5,7 +5,7 @@ import kiosk.encoding.ScalaErgoConverters.{getAddressFromErgoTree, getStringFrom
 import kiosk.ergo.{DhtData, KioskBox, KioskLong}
 import kiosk.script.ScriptUtil
 import kiosk.tx.TxUtil
-import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoToken, HttpClientTesting}
+import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoToken, HttpClientTesting, InputBox}
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import scorex.util.encode.Base64
@@ -23,7 +23,6 @@ class PhoenixSpecification extends PropSpec with Matchers
   val phoenixScript = readContract("hodlcoin/phoenix.es")
 
   val phoenixErgoTree: Values.ErgoTree = ScriptUtil.compile(Map(), phoenixScript)
-  println(phoenixErgoTree.root)
   val phoenixAddress: String = getStringFromAddress(getAddressFromErgoTree(phoenixErgoTree))
 
   val hodlTokenId = "2cbabc2be7292e2e857a1f2c34a8b0c090de2f30fa44c68ab71454e5586bd45e"
@@ -43,10 +42,33 @@ class PhoenixSpecification extends PropSpec with Matchers
   val bankFee = 30L
   val devFee = 3L
 
+  def extractPrecisionFactor(hodlBoxIn: InputBox): Long = {
+    val precisionFactor = hodlBoxIn.getRegisters.get(1).getValue.asInstanceOf[Long] // R5
+    precisionFactor
+  }
+
+  def hodlPrice(hodlBoxIn: InputBox): Long = {
+    // preserving terminology from the contract
+    val reserveIn = hodlBoxIn.getValue
+    val totalTokenSupply = hodlBoxIn.getRegisters.get(0).getValue.asInstanceOf[Long] // R5
+    val hodlCoinsIn: Long       = hodlBoxIn.getTokens.get(1).getValue
+    val hodlCoinsCircIn: Long   = totalTokenSupply - hodlCoinsIn
+    (reserveIn * extractPrecisionFactor(hodlBoxIn)) / hodlCoinsCircIn
+  }
+
+  // amount of (nano) ERGs needed to mint given amount of hodlcoins against given hodl bank
+  def mintAmount(hodlBoxIn: InputBox, hodlMintAmt: Long): Long = {
+    val price = hodlPrice(hodlBoxIn)
+    val precisionFactor = extractPrecisionFactor(hodlBoxIn)
+    (hodlMintAmt * price) / precisionFactor
+  }
+
 
   property("phoenix mint works if all the conditions satisfied") {
-    val ergAmount = 1000 * 1000000000L
+    val ergAmount = 100000 * 1000000000L
     val hodlErgAmount = 100 * 1000000000L
+
+    val hodlMintAmount = 20
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val hodlBox =
@@ -66,6 +88,13 @@ class PhoenixSpecification extends PropSpec with Matchers
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
 
+      val price = hodlPrice(hodlBox)
+
+      println("hodl price: " + price)
+
+      val ergMintAmount = mintAmount(hodlBox, hodlMintAmount)
+      println("ea: " + ergMintAmount)
+
       val fundingBox =
         ctx
           .newTxBuilder()
@@ -77,7 +106,7 @@ class PhoenixSpecification extends PropSpec with Matchers
 
       val hodlOutBox = KioskBox(
         phoenixAddress,
-        ergAmount,
+        ergAmount - ergMintAmount,
         registers = Array(KioskLong(totalSupply), KioskLong(precisionFactor), KioskLong(minBankValue),
           KioskLong(bankFee), KioskLong(devFee)),
         tokens = Array((hodlBankNft, 1), (hodlTokenId, hodlErgAmount))
