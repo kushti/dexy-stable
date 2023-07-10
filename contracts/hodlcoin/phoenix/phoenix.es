@@ -55,7 +55,7 @@
 
     // Bank Info
     val hodlCoinsCircDelta: Long    = hodlCoinsIn - hodlCoinsOut // When minting hodlCoin, this is the amount of coins the buyer gets.
-    val price: Long                 = (reserveIn * precisionFactor) / hodlCoinsCircIn
+    val price: Long                 = (reserveIn.toBigInt * precisionFactor) / hodlCoinsCircIn
     val isMintTx: Boolean           = (hodlCoinsCircDelta > 0L)
 
     val validBankRecreation: Boolean = {
@@ -106,7 +106,7 @@
 
             val expectedAmountDeposited: Long = (hodlCoinsCircDelta * price) / precisionFactor // Price of hodlCoin in nanoERG.
 
-            val validBankDeposit: Boolean = (reserveOut == reserveIn + expectedAmountDeposited)
+            val validBankDeposit: Boolean = (reserveOut >= reserveIn + expectedAmountDeposited)
 
             allOf(Coll(
                 validBankRecreation,

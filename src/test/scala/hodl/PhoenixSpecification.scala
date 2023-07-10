@@ -20,7 +20,7 @@ class PhoenixSpecification extends PropSpec with Matchers
     "phoenixFeeContractBytesHash" -> Base64.encode(phoenixFeeContractBytesHash)
   )
 
-  val phoenixScript = readContract("hodlcoin/phoenix.es")
+  val phoenixScript = readContract("hodlcoin/phoenix/phoenix.es")
 
   val phoenixErgoTree: Values.ErgoTree = ScriptUtil.compile(Map(), phoenixScript)
   val phoenixAddress: String = getStringFromAddress(getAddressFromErgoTree(phoenixErgoTree))
@@ -53,7 +53,8 @@ class PhoenixSpecification extends PropSpec with Matchers
     val totalTokenSupply = hodlBoxIn.getRegisters.get(0).getValue.asInstanceOf[Long] // R5
     val hodlCoinsIn: Long       = hodlBoxIn.getTokens.get(1).getValue
     val hodlCoinsCircIn: Long   = totalTokenSupply - hodlCoinsIn
-    (reserveIn * extractPrecisionFactor(hodlBoxIn)) / hodlCoinsCircIn
+    val precisionFactor = extractPrecisionFactor(hodlBoxIn)
+    ((BigInt(reserveIn) * BigInt(precisionFactor)) / BigInt(hodlCoinsCircIn)).toLong
   }
 
   // amount of (nano) ERGs needed to mint given amount of hodlcoins against given hodl bank
@@ -65,8 +66,8 @@ class PhoenixSpecification extends PropSpec with Matchers
 
 
   property("phoenix mint works if all the conditions satisfied") {
-    val ergAmount = 100000 * 1000000000L
-    val hodlErgAmount = 100 * 1000000000L
+    val ergAmount = 1000000 * 1000000000L
+    val hodlErgAmount = totalSupply / 10 * 9
 
     val hodlMintAmount = 20
 
@@ -90,6 +91,8 @@ class PhoenixSpecification extends PropSpec with Matchers
 
       val price = hodlPrice(hodlBox)
 
+      // require(hodlBox.getValue >= totalSupply - hodlErgAmount, "never-decreasing theorem does not hold")
+
       println("hodl price: " + price)
 
       val ergMintAmount = mintAmount(hodlBox, hodlMintAmount)
@@ -99,24 +102,24 @@ class PhoenixSpecification extends PropSpec with Matchers
         ctx
           .newTxBuilder()
           .outBoxBuilder
-          .value(10000000000000L)
+          .value(10000000 * 1000000000L)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
 
       val hodlOutBox = KioskBox(
         phoenixAddress,
-        ergAmount - ergMintAmount,
+        ergAmount + ergMintAmount,
         registers = Array(KioskLong(totalSupply), KioskLong(precisionFactor), KioskLong(minBankValue),
           KioskLong(bankFee), KioskLong(devFee)),
-        tokens = Array((hodlBankNft, 1), (hodlTokenId, hodlErgAmount))
+        tokens = Array((hodlBankNft, 1), (hodlTokenId, hodlErgAmount - hodlMintAmount))
       )
 
       val userBox = KioskBox(
         phoenixAddress,
         ergAmount,
         registers = Array(),
-        tokens = Array((hodlTokenId, hodlErgAmount))
+        tokens = Array((hodlTokenId, hodlMintAmount))
       )
 
       noException shouldBe thrownBy {
