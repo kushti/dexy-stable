@@ -16,10 +16,14 @@ import sigmastate.serialization.ErgoTreeSerializer.DefaultSerializer
 class PhoenixSpecification extends PropSpec with Matchers
   with ScalaCheckDrivenPropertyChecks with HttpClientTesting with Common with ContractUtils {
 
+  val userAddress = "9eiuh5bJtw9oWDVcfJnwTm1EHfK5949MEm5DStc2sD1TLwDSrpx"
+
   val feeScript = readContract("hodlcoin/phoenix/fee.es", Map.empty)
   val feeErgoTree: Values.ErgoTree = ScriptUtil.compile(Map(), feeScript)
   val feeScriptBytesHash = Blake2b256.apply(DefaultSerializer.serializeErgoTree(feeErgoTree))
   val feeAddress: String = getStringFromAddress(getAddressFromErgoTree(feeErgoTree))
+
+  private val fundingBoxValue = 50000000 * 1000000000L
 
   override def defaultSubstitutionMap: Map[String, String] = Map(
     "phoenixFeeContractBytesHash" -> Base64.encode(feeScriptBytesHash)
@@ -54,7 +58,7 @@ class PhoenixSpecification extends PropSpec with Matchers
   def hodlPrice(hodlBoxIn: InputBox): Long = {
     // preserving terminology from the contract
     val reserveIn = hodlBoxIn.getValue
-    val totalTokenSupply = hodlBoxIn.getRegisters.get(0).getValue.asInstanceOf[Long] // R5
+    val totalTokenSupply = hodlBoxIn.getRegisters.get(0).getValue.asInstanceOf[Long] // R4
     val hodlCoinsIn: Long       = hodlBoxIn.getTokens.get(1).getValue
     val hodlCoinsCircIn: Long   = totalTokenSupply - hodlCoinsIn
     val precisionFactor = extractPrecisionFactor(hodlBoxIn)
@@ -65,7 +69,28 @@ class PhoenixSpecification extends PropSpec with Matchers
   def mintAmount(hodlBoxIn: InputBox, hodlMintAmt: Long): Long = {
     val price = hodlPrice(hodlBoxIn)
     val precisionFactor = extractPrecisionFactor(hodlBoxIn)
-    ((BigInt(hodlMintAmt) * BigInt(price)) / BigInt(precisionFactor)).toLong
+    hodlMintAmt * price / precisionFactor
+  }
+
+  // amount of (nano) ERGs which can be released to when given amount of hodlcoins burnt
+
+  /**
+   * @return amount of (nano) ERGs which can be released to when given amount of hodlcoins burnt to user,
+   *         and also dev fee
+   */
+  def burnAmount(hodlBoxIn: InputBox, hodlBurnAmt: Long): (Long, Long) = {
+    val feeDenom = 1000
+
+    val bankFee = hodlBoxIn.getRegisters.get(3).getValue.asInstanceOf[Long] // R7
+    val devFee = hodlBoxIn.getRegisters.get(3).getValue.asInstanceOf[Long] // R8
+
+    val price = hodlPrice(hodlBoxIn)
+    val precisionFactor = extractPrecisionFactor(hodlBoxIn)
+    val beforeFees = hodlBurnAmt * price / precisionFactor
+    val bankFeeAmount: Long = (beforeFees * bankFee) / feeDenom
+    val devFeeAmount: Long = (beforeFees * devFee) / feeDenom
+    val expectedAmountWithdrawn: Long = beforeFees - bankFeeAmount - devFeeAmount
+    (expectedAmountWithdrawn, devFeeAmount)
   }
 
 
@@ -105,7 +130,7 @@ class PhoenixSpecification extends PropSpec with Matchers
         ctx
           .newTxBuilder()
           .outBoxBuilder
-          .value(50000000 * 1000000000L)
+          .value(fundingBoxValue)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
@@ -119,7 +144,7 @@ class PhoenixSpecification extends PropSpec with Matchers
       )
 
       val userBox = KioskBox(
-        phoenixAddress,
+        userAddress,
         ergAmount,
         registers = Array(),
         tokens = Array((hodlTokenId, hodlMintAmount))
@@ -170,7 +195,7 @@ class PhoenixSpecification extends PropSpec with Matchers
         ctx
           .newTxBuilder()
           .outBoxBuilder
-          .value(50000000 * 1000000000L)
+          .value(fundingBoxValue)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
@@ -184,7 +209,7 @@ class PhoenixSpecification extends PropSpec with Matchers
       )
 
       val userBox = KioskBox(
-        phoenixAddress,
+        userAddress,
         ergAmount,
         registers = Array(),
         tokens = Array((hodlTokenId, hodlMintAmount))
@@ -235,7 +260,7 @@ class PhoenixSpecification extends PropSpec with Matchers
         ctx
           .newTxBuilder()
           .outBoxBuilder
-          .value(50000000 * 1000000000L)
+          .value(fundingBoxValue)
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
@@ -249,7 +274,7 @@ class PhoenixSpecification extends PropSpec with Matchers
       )
 
       val userBox = KioskBox(
-        phoenixAddress,
+        userAddress,
         ergAmount,
         registers = Array(),
         tokens = Array((hodlTokenId, hodlMintAmount))
@@ -274,6 +299,8 @@ class PhoenixSpecification extends PropSpec with Matchers
     val ergAmount = 1000 * 1000000000L
     val hodlErgAmount = 100 * 1000000000L
 
+    val hodlBurnAmount = 20
+
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val hodlBox =
         ctx
@@ -292,14 +319,53 @@ class PhoenixSpecification extends PropSpec with Matchers
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
 
+      val (userBoxAmount, devFeeAmount) = burnAmount(hodlBox, hodlBurnAmount)
+
       val fundingBox =
         ctx
           .newTxBuilder()
           .outBoxBuilder
-          .value(1000000L)
+          .value(fundingBoxValue)
+          .tokens(new ErgoToken(hodlTokenId, hodlBurnAmount))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val hodlOutBox = KioskBox(
+        phoenixAddress,
+        ergAmount - userBoxAmount - devFeeAmount,
+        registers = Array(KioskLong(totalSupply), KioskLong(precisionFactor), KioskLong(minBankValue),
+          KioskLong(bankFee), KioskLong(devFee)),
+        tokens = Array((hodlBankNft, 1), (hodlTokenId, hodlErgAmount + hodlBurnAmount))
+      )
+
+      val userBox = KioskBox(
+        userAddress,
+        userBoxAmount,
+        registers = Array(),
+        tokens = Array()
+      )
+
+      val devFeeBox = KioskBox(
+        feeAddress,
+        devFeeAmount,
+        registers = Array(),
+        tokens = Array()
+      )
+
+
+      noException shouldBe thrownBy {
+        TxUtil.createTx(
+          Array(hodlBox, fundingBox),
+          Array(),
+          Array(hodlOutBox, userBox, devFeeBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          broadcast = false
+        )
+      }
     }
   }
 }

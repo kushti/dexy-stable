@@ -120,7 +120,7 @@
         // ===== Burn Tx ===== //
         val validBurnTx: Boolean = {
 
-            val hodlCoinsBurned: Long = hodlCoinsOut - hodlCoinsIn
+            val hodlCoinsBurned: Long = hodlCoinsOut - hodlCoinsIn // - hodlCoinCircDelta ?
             val expectedAmountBeforeFees: Long = (hodlCoinsBurned * price) / precisionFactor
             val bankFeeAmount: Long = (expectedAmountBeforeFees * bankFee) / feeDenom
             val devFeeAmount: Long = (expectedAmountBeforeFees * devFee) / feeDenom
@@ -139,7 +139,8 @@
 
             allOf(Coll(
                 validBankRecreation,
-                validBankWithdraw
+                validBankWithdraw,
+                validPhoenixFee
             ))
 
         }
