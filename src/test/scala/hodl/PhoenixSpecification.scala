@@ -368,4 +368,225 @@ class PhoenixSpecification extends PropSpec with Matchers
       }
     }
   }
+
+
+  property("phoenix burn fails if user box takes more erg") {
+    val ergAmount = 1000 * 1000000000L
+    val hodlErgAmount = 100 * 1000000000L
+
+    val hodlBurnAmount = 20
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      val hodlBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(ergAmount)
+          .tokens(new ErgoToken(hodlBankNft, 1), new ErgoToken(hodlTokenId, hodlErgAmount))
+          .registers(
+            KioskLong(totalSupply).getErgoValue,
+            KioskLong(precisionFactor).getErgoValue,
+            KioskLong(minBankValue).getErgoValue,
+            KioskLong(bankFee).getErgoValue,
+            KioskLong(devFee).getErgoValue,
+          )
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), phoenixScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val (userBoxAmount, devFeeAmount) = burnAmount(hodlBox, hodlBurnAmount)
+
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fundingBoxValue)
+          .tokens(new ErgoToken(hodlTokenId, hodlBurnAmount))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val hodlOutBox = KioskBox(
+        phoenixAddress,
+        ergAmount - userBoxAmount - devFeeAmount - 1, // <-- this line changed
+        registers = Array(KioskLong(totalSupply), KioskLong(precisionFactor), KioskLong(minBankValue),
+          KioskLong(bankFee), KioskLong(devFee)),
+        tokens = Array((hodlBankNft, 1), (hodlTokenId, hodlErgAmount + hodlBurnAmount))
+      )
+
+      val userBox = KioskBox(
+        userAddress,
+        userBoxAmount + 1, // <-- this line changed
+        registers = Array(),
+        tokens = Array()
+      )
+
+      val devFeeBox = KioskBox(
+        feeAddress,
+        devFeeAmount,
+        registers = Array(),
+        tokens = Array()
+      )
+
+      the[Exception] thrownBy {
+        TxUtil.createTx(
+          Array(hodlBox, fundingBox),
+          Array(),
+          Array(hodlOutBox, userBox, devFeeBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          broadcast = false
+        )
+      } should have message "Script reduced to false"
+    }
+  }
+
+  property("phoenix burn fails if dev box takes more erg") {
+    val ergAmount = 1000 * 1000000000L
+    val hodlErgAmount = 100 * 1000000000L
+
+    val hodlBurnAmount = 20
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      val hodlBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(ergAmount)
+          .tokens(new ErgoToken(hodlBankNft, 1), new ErgoToken(hodlTokenId, hodlErgAmount))
+          .registers(
+            KioskLong(totalSupply).getErgoValue,
+            KioskLong(precisionFactor).getErgoValue,
+            KioskLong(minBankValue).getErgoValue,
+            KioskLong(bankFee).getErgoValue,
+            KioskLong(devFee).getErgoValue,
+          )
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), phoenixScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val (userBoxAmount, devFeeAmount) = burnAmount(hodlBox, hodlBurnAmount)
+
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fundingBoxValue)
+          .tokens(new ErgoToken(hodlTokenId, hodlBurnAmount))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val hodlOutBox = KioskBox(
+        phoenixAddress,
+        ergAmount - userBoxAmount - devFeeAmount,
+        registers = Array(KioskLong(totalSupply), KioskLong(precisionFactor), KioskLong(minBankValue),
+          KioskLong(bankFee), KioskLong(devFee)),
+        tokens = Array((hodlBankNft, 1), (hodlTokenId, hodlErgAmount + hodlBurnAmount))
+      )
+
+      val userBox = KioskBox(
+        userAddress,
+        userBoxAmount,
+        registers = Array(),
+        tokens = Array()
+      )
+
+      val devFeeBox = KioskBox(
+        feeAddress,
+        devFeeAmount + 1, // <-- this line changed
+        registers = Array(),
+        tokens = Array()
+      )
+
+      the[Exception] thrownBy {
+        TxUtil.createTx(
+          Array(hodlBox, fundingBox),
+          Array(),
+          Array(hodlOutBox, userBox, devFeeBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          broadcast = false
+        )
+      } should have message "Script reduced to false"
+    }
+  }
+
+  property("phoenix burn fails if dev box has improper script") {
+    val ergAmount = 1000 * 1000000000L
+    val hodlErgAmount = 100 * 1000000000L
+
+    val hodlBurnAmount = 20
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      val hodlBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(ergAmount)
+          .tokens(new ErgoToken(hodlBankNft, 1), new ErgoToken(hodlTokenId, hodlErgAmount))
+          .registers(
+            KioskLong(totalSupply).getErgoValue,
+            KioskLong(precisionFactor).getErgoValue,
+            KioskLong(minBankValue).getErgoValue,
+            KioskLong(bankFee).getErgoValue,
+            KioskLong(devFee).getErgoValue,
+          )
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), phoenixScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val (userBoxAmount, devFeeAmount) = burnAmount(hodlBox, hodlBurnAmount)
+
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fundingBoxValue)
+          .tokens(new ErgoToken(hodlTokenId, hodlBurnAmount))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val hodlOutBox = KioskBox(
+        phoenixAddress,
+        ergAmount - userBoxAmount - devFeeAmount,
+        registers = Array(KioskLong(totalSupply), KioskLong(precisionFactor), KioskLong(minBankValue),
+          KioskLong(bankFee), KioskLong(devFee)),
+        tokens = Array((hodlBankNft, 1), (hodlTokenId, hodlErgAmount + hodlBurnAmount))
+      )
+
+      val userBox = KioskBox(
+        userAddress,
+        userBoxAmount,
+        registers = Array(),
+        tokens = Array()
+      )
+
+      val devFeeBox = KioskBox(
+        userAddress,
+        devFeeAmount,
+        registers = Array(),
+        tokens = Array()
+      )
+
+      the[Exception] thrownBy {
+        TxUtil.createTx(
+          Array(hodlBox, fundingBox),
+          Array(),
+          Array(hodlOutBox, userBox, devFeeBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          broadcast = false
+        )
+      } should have message "Script reduced to false"
+    }
+  }
+
 }
