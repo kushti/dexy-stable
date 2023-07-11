@@ -205,6 +205,71 @@ class PhoenixSpecification extends PropSpec with Matchers
     }
   }
 
+  property("phoenix mint fails if more hodl taken") {
+    val ergAmount = 10000000 * 1000000000L
+    val hodlErgAmount = totalSupply / 10 * 9
+
+    val hodlMintAmount = Long.MaxValue - 1  // this line changed - 1 hodl more from the bank
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      val hodlBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(ergAmount)
+          .tokens(new ErgoToken(hodlBankNft, 1), new ErgoToken(hodlTokenId, hodlErgAmount))
+          .registers(
+            KioskLong(totalSupply).getErgoValue,
+            KioskLong(precisionFactor).getErgoValue,
+            KioskLong(minBankValue).getErgoValue,
+            KioskLong(bankFee).getErgoValue,
+            KioskLong(devFee).getErgoValue
+          )
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), phoenixScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val ergMintAmount = mintAmount(hodlBox, hodlMintAmount - 1) // this line changed - still old amount of ERG paid
+
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(50000000 * 1000000000L)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val hodlOutBox = KioskBox(
+        phoenixAddress,
+        ergAmount + ergMintAmount,
+        registers = Array(KioskLong(totalSupply), KioskLong(precisionFactor), KioskLong(minBankValue),
+          KioskLong(bankFee), KioskLong(devFee)),
+        tokens = Array((hodlBankNft, 1), (hodlTokenId, hodlErgAmount - hodlMintAmount))
+      )
+
+      val userBox = KioskBox(
+        phoenixAddress,
+        ergAmount,
+        registers = Array(),
+        tokens = Array((hodlTokenId, hodlMintAmount))
+      )
+
+      the[Exception] thrownBy {
+        TxUtil.createTx(
+          Array(hodlBox, fundingBox),
+          Array(),
+          Array(hodlOutBox, userBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          broadcast = false
+        )
+      } should have message "Script reduced to false"
+    }
+  }
+
   property("phoenix burn works if all the conditions satisfied") {
     val ergAmount = 1000 * 1000000000L
     val hodlErgAmount = 100 * 1000000000L
