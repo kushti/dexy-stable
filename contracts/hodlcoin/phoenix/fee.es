@@ -32,7 +32,7 @@
     val dev2Address: SigmaProp              = PK("9gnBtmSRBMaNTkLQUABoAqmU2wzn27hgqVvezAC9SU1VqFKZCp8")
     val dev3Address: SigmaProp              = PK("9iE2MadGSrn1ivHmRZJWRxzHffuAk6bPmEv6uJmPHuadBY8td5u")
     val phoenixAddress: SigmaProp           = PK("9iPs1ujGj2eKXVg82aGyAtUtQZQWxFaki48KFixoaNmUAoTY6wV")
-    val minerFeeErgoTreeBytes: Coll[Byte]   = fromBase16("1005040004000e36100204a00b08cd0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ea02d192a39a8cc7a701730073011001020402d19683030193a38cc7b2a57300000193c2b2a57301007473027303830108cdeeac93b1a57304")
+    val minerFeeErgoTreeBytes: Coll[Byte]   = fromBase64("$minerTree")
 
     // ===== Fee Distribution Tx ===== //
     val validFeeDistributionTx: Boolean = {
@@ -61,7 +61,7 @@
                 (dev1BoxOUT.value == devAllocation),
                 (dev1BoxOUT.propositionBytes == dev1Address.propBytes),
                 (dev2BoxOUT.value == devAllocation),
-                (dev2BoxOUT.propositionBytes = dev2Address.propBytes),
+                (dev2BoxOUT.propositionBytes == dev2Address.propBytes),
                 (dev3BoxOUT.value == devAllocation),
                 (dev3BoxOUT.propositionBytes == dev3Address.propBytes)
             ))
@@ -81,7 +81,7 @@
 
             allOf(Coll(
                 (minerFeeBoxOUT.value >= $minerFee), // In case the miner fee increases in the future
-                (minerFeeBoxOUT.propositionBytes = minerFeeErgoTreeBytes)
+                (minerFeeBoxOUT.propositionBytes == minerFeeErgoTreeBytes)
             ))
 
         }

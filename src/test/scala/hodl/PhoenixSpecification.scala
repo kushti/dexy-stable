@@ -9,7 +9,7 @@ import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoToken, 
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import scorex.crypto.hash.Blake2b256
-import scorex.util.encode.Base64
+import scorex.util.encode.{Base16, Base64}
 import sigmastate.Values
 import sigmastate.serialization.ErgoTreeSerializer.DefaultSerializer
 
@@ -17,6 +17,10 @@ class PhoenixSpecification extends PropSpec with Matchers
   with ScalaCheckDrivenPropertyChecks with HttpClientTesting with Common with ContractUtils {
 
   val userAddress = "9eiuh5bJtw9oWDVcfJnwTm1EHfK5949MEm5DStc2sD1TLwDSrpx"
+
+  def feeSubstitutionMap: Map[String, String] = Map(
+    "minerTree" -> Base64.encode(Base16.decode("1005040004000e36100204a00b08cd0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ea02d192a39a8cc7a701730073011001020402d19683030193a38cc7b2a57300000193c2b2a57301007473027303830108cdeeac93b1a57304").get)
+  )
 
   val feeScript = readContract("hodlcoin/phoenix/fee.es", Map.empty)
   val feeErgoTree: Values.ErgoTree = ScriptUtil.compile(Map(), feeScript)
