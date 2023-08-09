@@ -41,15 +41,15 @@ Thus there are few feedback loops here:
 Also, there's need for Gold Cooperative (GC) to pay the bills (for man-hours, servers and other infrastructure etc). Other ways of rewarding GC 
 could be used, such as separate protocol-level fee, UI-level fee, and so on, but we are going to propose to reward developers with GORTs as well, to have interests of oracle pool operators and developers aligned.
 
-We propose to launch emission contract which is releasing about 60 GORTs per one hour (1 GORT per block) as well for bootstrapping period of 2 years. GORTs are going to GC DAO. 
+We propose to launch emission contract which is releasing about 60 GORTs per one hour (2 GORT per block) as well for bootstrapping period of 2 years. GORTs are going to GC DAO. 
 
 
 Tokenomics
 ----------
 
 Summarizing tokenomics details from above: 
-* up to 60 GORTs per hour are released to oracle pool operators
-* for first two years, 60 GORTs per block also going to Gold Cooperative, developers behind DexyGold and (Gluon-Based) SigGold
+* up to 60 GORTs per hour are released to oracle pool operators (on average, 2 GORTs per hour per operator)
+* for first two years, 60 GORTs per hour also going to Gold Cooperative, developers behind DexyGold and (Gluon-Based) SigGold
 * Dexy and SigGold (and maybe more gold-related products in future) are sending 0.2% of fees to buyback contract which is buying back GORTs from GORT/ERG LP and sending them to oracle pool contract 
 
 
