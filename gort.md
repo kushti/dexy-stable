@@ -7,19 +7,19 @@ Motivation
 
 In Ergo, there are no calls from one contract to another, composability is done differently, via a transaction possibly using multiple input
 boxes with different (composable) contracts. And as there are read-only inputs here, oracle pool is delivering data in a box to be only read.
-This is very efficient, but does not allow for charging for using oracle's data. However, applications are interested in maintaining seecurity of oracles.
+This is very efficient, but does not allow for charging for using oracle's data. However, applications are interested in maintaining security of oracles.
 
 In this proposal, we provide a solution for rewarding oracles in a trustless way. Hopefully, the proposal could be
-useful for other applications.
+useful for other applications as well.
 
 
 Oracle Pool And Its Token
 -------------------------
 
-In oracle pool 2.0[1] oracles are rewarded with custom tokens. For gold oracle, we call this token GORT (Gold Oracle Reward Token). 
+In oracle pool 2.0 [1] oracles are rewarded with custom tokens. For gold oracle, we call this token GORT (Gold Oracle Reward Token). 
 
 Oracle pool is consensus protocol on data, where time is divided into epochs, and at the end of each epoch updated data point is delivered. 
-On delivering new data point, the oracle pool 2.0 [2] is rewarding oracles with 1 token, except for the oracle assembling rewarding transaction, getting n tokens, where n is number of oracles getting 1 token. Thus if there are N active oracles in epoch, oracle pool contract is spending 2*(N-1) tokens per epoch.
+On delivering new data point, the oracle pool 2.0 contract [2] is rewarding oracles with 1 token, except for an oracle assembling a rewarding transaction, which is getting n tokens, where n is number of oracles getting 1 token. Thus if there are N active oracles in epoch, oracle pool contract is spending 2*(N-1) tokens per epoch.
 
 For simplicity, we embed constants into our model. For gold oracle, epoch is about 1 hour. Assuming that oracle pool will have 30 operators, we are getting up to 60 tokens released per 1 hour, and we build tokenomics on top of that.
 
@@ -57,4 +57,5 @@ References
 ----------
 
 [1] Oracle pool 2.0 specification https://github.com/ergoplatform/eips/pull/41
+
 [2] Buying back tokens from liqudity pool https://www.ergoforum.org/t/buying-back-tokens-from-liqudity-pool/4275
