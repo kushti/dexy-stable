@@ -21,7 +21,7 @@ In oracle pool 2.0 [1] oracles are rewarded with custom tokens. For gold oracle,
 Oracle pool is consensus protocol on data, where time is divided into epochs, and at the end of each epoch updated data point is delivered. 
 On delivering new data point, the oracle pool 2.0 contract [2] is rewarding oracles with 1 token, except for an oracle assembling a rewarding transaction, which is getting n tokens, where n is number of oracles getting 1 token. Thus if there are N active oracles in epoch, oracle pool contract is spending 2*(N-1) tokens per epoch.
 
-For simplicity, we embed constants into our model. For gold oracle, epoch is about 1 hour. Assuming that oracle pool will have 30 operators, we are getting up to 60 tokens released per 1 hour, and we build tokenomics on top of that.
+For simplicity, we embed constants into our model. For gold oracle, epoch is about 1 hour. Assuming that oracle pool will have 31 operators, we are getting up to 60 tokens released per 1 hour, and we build tokenomics on top of that.
 
 
 Gold Cooperative
@@ -30,9 +30,9 @@ Gold Cooperative
 Gold Cooperative (GC) consists of development and marketing teams of Dexy and Gluon stablecoins. Initial deployments for both the stablecoins will be pegged to gold, thus using the gold oracle pool data. For both protocols, it is important to reward the oracle pool, as for both protocols the oracle pool is the only trusted part.
 
 Thus for every mint in Dexy bank, in addition to bank fee which is going into back reserves, there's 0.2% fee going to buyback contract [2]. If
-Dexy bank has too much reserves (overcollateralization above 1,000%), the bank is sending GORTs to the buyback contract while reserves are above the threshold. Buyback contract is then buying GORTs from GORT/ERG LP with fees coming in form of ERGs and sending GORTs bought back to the oracle pool contract.
+Dexy bank has too much reserves (overcollateralization above 1,000%), the bank is sending ERGs to the buyback contract while reserves are above the threshold. Buyback contract is then buying GORTs from GORT/ERG LP with fees coming in form of ERGs and sending GORTs bought back to the oracle pool contract.
 
-Thus there are few feedback loops here:
+Thus there are few feedback loops here:апщке
 
 * oracle operators are dumping ERGs received from the oracle pool contract in the LP, and buyback contract is buying them from the LP. GORT price is then defined by these supply and demand factors. There could be other players in the LP, for example, speculators may come after big dumps but before buybacks to make quick profit, in case of visible or expected long-term trends investors can participate in the game also.
 
