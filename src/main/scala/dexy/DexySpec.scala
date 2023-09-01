@@ -109,17 +109,17 @@ object DexySpec extends ContractUtils {
   val payoutScript = readContract("bank/payout.es")
 
   // below contract is adapted from N2T DEX contract in EIP-14 https://github.com/ergoplatform/eips/blob/de30f94ace1c18a9772e1dd0f65f00caf774eea3/eip-0014.md?plain=1#L558-L636
-  lazy val lpScript = readContract("lp/lp.es")
+  lazy val lpScript = readContract("lp/pool/main.es")
 
-  val lpSwapScript = readContract("lp/swap.es")
+  val lpSwapScript = readContract("lp/pool/swap.es")
 
-  val lpMintScript = readContract("lp/mint.es")
+  val lpMintScript = readContract("lp/pool/mint.es")
 
-  val lpRedeemScript = readContract("lp/redeem.es")
+  val lpRedeemScript = readContract("lp/pool/redeem.es")
+
+  val extractScript = readContract("lp/pool/extract.es")
 
   val trackingScript = readContract("tracking.es")
-
-  val extractScript = readContract("lp/extract.es")
 
   val trackingErgoTree = ScriptUtil.compile(Map(), trackingScript)
   val trackingAddress = getStringFromAddress(getAddressFromErgoTree(trackingErgoTree))
