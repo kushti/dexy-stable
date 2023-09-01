@@ -56,6 +56,7 @@
     val validRedemption = deltaSupplyLp < 0 && deltaReservesX < 0 && deltaReservesY < 0 && {
         val _deltaSupplyLp = deltaSupplyLp.toBigInt
         // note: _deltaSupplyLp, deltaReservesX and deltaReservesY are negative
+        // 2% fee
         deltaReservesX.toBigInt * supplyLpIn * 100 / 98 >= _deltaSupplyLp * reservesXIn &&
             deltaReservesY.toBigInt * supplyLpIn * 100 / 98 >= _deltaSupplyLp * reservesYIn
     } && validRateForRedeemingLp
