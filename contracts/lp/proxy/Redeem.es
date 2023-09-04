@@ -13,6 +13,9 @@
 
   val validRedeem =
     if (INPUTS.size >= 2 && poolIn.tokens.size == 3) {
+      // in Dexy, first two outputs occupied with the pool box & action box
+      val returnOut = OUTPUTS(2)
+
       val selfLP = SELF.tokens(0)
 
       val validPoolIn = poolIn.tokens(0)._1 == PoolNFT
@@ -25,8 +28,6 @@
 
       val minReturnX = selfLP._2.toBigInt * reservesXAmount / supplyLP / 100 * 98  // 2% fee
       val minReturnY = selfLP._2.toBigInt * reservesY._2 / supplyLP / 100 * 98     // 2% fee
-
-      val returnOut = OUTPUTS(1)
 
       val returnXAmount = returnOut.value - SELF.value + DexFee
       val returnY       = returnOut.tokens(0)

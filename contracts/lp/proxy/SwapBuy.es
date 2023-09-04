@@ -1,0 +1,43 @@
+{
+    // taken from https://github.com/spectrum-finance/ergo-dex/blob/master/contracts/amm/cfmm/v2/n2t/SwapBuy.sc
+    // Token -> ERG
+    val FeeDenom            = 1000
+    val FeeNum              = 996
+    val DexFeePerTokenNum   = 1L
+    val DexFeePerTokenDenom = 10L
+    val MinQuoteAmount      = 800L
+
+    val poolIn = INPUTS(0)
+
+    val validTrade =
+        if (INPUTS.size == 2 && poolIn.tokens.size == 3) {
+            // in Dexy, first two outputs occupied with the pool box & action box
+            val rewardBox = OUTPUTS(2)
+
+            val baseAmount = SELF.tokens(0)._2
+
+            val poolNFT = poolIn.tokens(0)._1  // first token id is NFT
+
+            val poolReservesX = poolIn.value.toBigInt   // nanoErgs is X asset amount
+            val poolReservesY = poolIn.tokens(2)._2.toBigInt // third token amount is Y asset amount
+
+            val validPoolIn = poolNFT == PoolNFT
+
+            val deltaNErgs    = rewardBox.value - SELF.value // this is quoteAmount - fee
+            val quoteAmount   = deltaNErgs.toBigInt * DexFeePerTokenDenom / (DexFeePerTokenDenom - DexFeePerTokenNum)
+            val relaxedOutput = quoteAmount + 1 // handle rounding loss
+            val fairPrice     = poolReservesX * baseAmount * FeeNum <= relaxedOutput * (poolReservesY * FeeDenom + baseAmount * FeeNum)
+
+            val validMinerFee = OUTPUTS.map { (o: Box) =>
+                if (o.propositionBytes == MinerPropBytes) o.value else 0L
+            }.fold(0L, { (a: Long, b: Long) => a + b }) <= MaxMinerFee
+
+            validPoolIn &&
+            rewardBox.propositionBytes == RedeemerPropBytes &&
+            quoteAmount >= MinQuoteAmount &&
+            fairPrice &&
+            validMinerFee
+        } else false
+
+    sigmaProp(RefundProp || validTrade)
+}
