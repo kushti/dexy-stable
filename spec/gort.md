@@ -1,4 +1,4 @@
-Gort tokenomics
+Gort Tokenomics
 ===============
 
 
@@ -32,7 +32,7 @@ Gold Cooperative (GC) consists of development and marketing teams of Dexy and Gl
 Thus for every mint in Dexy bank, in addition to bank fee which is going into back reserves, there's 0.2% fee going to buyback contract [2]. If
 Dexy bank has too much reserves (overcollateralization above 1,000%), the bank is sending ERGs to the buyback contract while reserves are above the threshold. Buyback contract is then buying GORTs from GORT/ERG LP with fees coming in form of ERGs and sending GORTs bought back to the oracle pool contract.
 
-Thus there are few feedback loops here:апщке
+Thus there are few feedback loops here:
 
 * oracle operators are dumping ERGs received from the oracle pool contract in the LP, and buyback contract is buying them from the LP. GORT price is then defined by these supply and demand factors. There could be other players in the LP, for example, speculators may come after big dumps but before buybacks to make quick profit, in case of visible or expected long-term trends investors can participate in the game also.
 
@@ -52,6 +52,7 @@ Summarizing tokenomics details from above:
 * for first two years, 60 GORTs per hour also going to Gold Cooperative, developers behind DexyGold and (Gluon-Based) SigGold
 * Dexy and SigGold (and maybe more gold-related products in future) are sending 0.2% of fees to buyback contract which is buying back GORTs from GORT/ERG LP and sending them to oracle pool contract 
 
+In total, 1,051,200 GORT will be released to Gold Cooperative. 
 
 References
 ----------
