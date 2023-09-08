@@ -1,7 +1,6 @@
 Gort Tokenomics
 ===============
 
-
 Motivation
 ----------
 
@@ -49,10 +48,25 @@ Tokenomics
 
 Summarizing tokenomics details from above: 
 * up to 60 GORTs per hour are released to oracle pool operators (on average, 2 GORTs per hour per operator)
-* for first two years, 60 GORTs per hour also going to Gold Cooperative, developers behind DexyGold and (Gluon-Based) SigGold
+* for first two years, 60 GORTs per hour also going to Gold Cooperative, developers behind DexyGold and (Gluon-Based) SigGold. In addition,
+ Gold Cooperative will have some pre-minted tokens to cover work done before the launch.
 * Dexy and SigGold (and maybe more gold-related products in future) are sending 0.2% of fees to buyback contract which is buying back GORTs from GORT/ERG LP and sending them to oracle pool contract 
 
-In total, 1,051,200 GORT will be released to Gold Cooperative. 
+In total, 1,301,200 GORT will be released to Gold Cooperative. 1,051,200 will be released via emission. 250,000 will be released immediately to cover 
+initial expenses and work in following way:
+
+kushti - 40000
+greenhat - 30000
+kii - 30000
+Spectrum - 30000
+code_for_uss - 30000
+Bruno - 30000
+EF - 50000
+Noah - 5000
+GORT/ERG LP - 5000
+
+50,000,000 GORT tokens will be issued. However, total supply will be defined by buyback as well, so will be always lower than
+emitted amount.
 
 References
 ----------
