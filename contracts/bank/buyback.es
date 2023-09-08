@@ -74,7 +74,7 @@
   } else {
     // return path
     // we allow to return GORT tokens to oracle pool
-    // hovewer, oracle pool contract does not have dedicated top-up action,
+    // however, oracle pool contract does not have dedicated top-up action,
     // but it allows to add tokens when paying rewards to oracles.
     // Thus we need to copy reward logic from oracle pool contract here to be sure the contract
     // is receiving all the tokens deducted from this box

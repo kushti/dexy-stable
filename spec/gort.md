@@ -34,7 +34,7 @@ Dexy bank has too much reserves (overcollateralization above 1,000%), the bank i
 
 Thus there are few feedback loops here:
 
-* oracle operators are dumping ERGs received from the oracle pool contract in the LP, and buyback contract is buying them from the LP. GORT price is then defined by these supply and demand factors. There could be other players in the LP, for example, speculators may come after big dumps but before buybacks to make quick profit, in case of visible or expected long-term trends investors can participate in the game also.
+* oracle operators are dumping GORTs received from the oracle pool contract in the LP, and buyback contract is buying them from the LP. GORT price is then defined by these supply and demand factors. There could be other players in the LP, for example, speculators may come after big dumps but before buybacks to make quick profit, in case of visible or expected long-term trends investors can participate in the game also.
 
 * if GORT price is too low at some point, some oracle pool operators may shut down operations, maybe even selling operator tokens (as oracle operator token is transferrable in 2.0). However, with reduced number of active operators there's less emission of new GORTs, with the same demand from the buyback contract, means some price recovery. 
 
