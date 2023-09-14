@@ -11,7 +11,7 @@
     val poolIn = INPUTS(0)
 
     val validTrade =
-        if (INPUTS.size == 2 && poolIn.tokens.size == 3) {
+        if (INPUTS.size == 3 && poolIn.tokens.size == 3) {
             // in Dexy, first two outputs occupied with the pool box & action box
             val rewardBox = OUTPUTS(2)
 
