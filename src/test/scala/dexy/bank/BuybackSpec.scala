@@ -124,9 +124,9 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
       )
       val dataInputs = Array[InputBox]()
       val outputs = Array[KioskBox](
-        KioskBox(oraclePoolAddress, minStorageRent, Array(KioskLong(1002), KioskInt(1)), Array((config.poolNFT, 1), (rewardTokenId, defaultGortSupply - 10 + 500))),
+        KioskBox(oraclePoolAddress, minStorageRent, Array(KioskLong(1002), KioskInt(1)), Array((config.poolNFT, 1), (rewardTokenId, defaultGortSupply - 10 + 500 - 1))),
         KioskBox(refreshAddress, minStorageRent, Array.empty, Array((config.refreshNFT, 1))),
-        KioskBox(buybackAddress, minStorageRent, Array.empty, Array((buybackNFT, 1))),
+        KioskBox(buybackAddress, minStorageRent, Array.empty, Array((buybackNFT, 1), (gort, 1))),
         KioskBox(oracleAddress, minStorageRent, Array(pubKey1), Array((config.oracleTokenId, 1), (rewardTokenId, 16))),
         KioskBox(oracleAddress, minStorageRent, Array(pubKey2), Array((config.oracleTokenId, 1), (rewardTokenId, 21))),
         KioskBox(oracleAddress, minStorageRent, Array(pubKey3), Array((config.oracleTokenId, 1), (rewardTokenId, 31))),

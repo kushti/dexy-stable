@@ -93,11 +93,12 @@
     val rewardEmitted = dataPoints.size * 2
     // finishing copying from oracle pool contract
 
-    val selfGort = SELF.tokens(1)._2
+    val selfGort = SELF.tokens(1)._2 - 1
     val properGiving =  poolIn.tokens(0)._1 == fromBase64("$oracleNFT") &&
                         OUTPUTS(0).tokens(1)._2 >= poolIn.tokens(1)._2 + selfGort - rewardEmitted
 
     val giveback = OUTPUTS(2).tokens(0) == SELF.tokens(0) &&
+                   OUTPUTS(2).tokens(1)._1 == SELF.tokens(1)._1 &&
                    OUTPUTS(2).propositionBytes == SELF.propositionBytes &&
                    SELF.value == OUTPUTS(2).value &&
                    properGiving

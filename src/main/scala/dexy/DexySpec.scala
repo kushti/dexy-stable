@@ -12,12 +12,16 @@ object DexySpec extends ContractUtils {
   // oracle related tokens
   // take token IDs below from oracle pool UI
   // Gold Oracle Reward Token
-  val gort = "56aeed3ba3f677ffb5462b0b1f83da3e1d06c8946ba978ef7e706221bac5e982"
-  val oracleTokenId = "001e182cc3f04aec4486c7a5018d198e9591a7cfb0b372f5f95fa3e5ddbd24d3"
-  val oraclePoolNFT = "d94bfac40b516353983443209104dcdd5b7ca232a01ccb376ee8014df6330907"
+  val gort = "7ba2a85fdb302a181578b1f64cb4a533d89b3f8de4159efece75da41041537f9"
+  val oracleTokenId = "6183680b1c4caaf8ede8c60dc5128e38417bc5b656321388b22baa43a9d150c2"
+  val oraclePoolNFT = "3c45f29a5165b030fdb5eaf5d81f8108f9d8f507b31487dd51f4ae08fe07cf4a"
 
   // GORT / ERG LP
-  val gortLpNFT = "043ea12f03769748e436c003886c455ddf1a7cd4aafbd214602822d5213f4e68"
+  val gortLpNFT = "d1c9e20657b4e37de3cd279a994266db34b18e6e786371832ad014fd46583198"
+
+  val buybackNFT = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
+
+  // todo: further tokens not modified for the mainnet
 
   val dexyTokenId = "f4b0a10d38ed5d40bf1f09485ea4d6d9e9e49b9cab2de74bd8697e10391d7f02"
 
@@ -35,7 +39,6 @@ object DexySpec extends ContractUtils {
   val interventionNFT = "aa0e81687ba21f97dbca367d4384e2d7c17cb92bf24a280372d26ca4b878bb82"
   val freeMintNFT = "7cb30eb71aa184d53db7e784e79eaa433f5849a8867eaa7bac61bf5b9883add0"
   val arbitrageMintNFT = "e01b1022a8caaf47e0b8904db656b84ac958ccb37aebc04ecbb333319cb48ae2"
-  val buybackNFT = "ffb587b4d1d9b07d8e104d3db99cfa2ca4bbe95407e6146fc89aaec97a09f1ec"
   val payoutNFT = "386d57a00ce34833b24e99c1b45f5cb3eafd9dd3f70f8610eda9ccbd1a8aaa3e"
 
   val lpSwapNFT = "3467f636d0d591f30188f889557da910b78d2182e35a9a4bf4cbacaf4213a7b2"
