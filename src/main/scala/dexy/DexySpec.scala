@@ -355,6 +355,10 @@ object DexySpec extends ContractUtils {
          |        {
          |          "tokenId": "$buybackNFT",
          |          "amount": 1
+         |        },
+         |        {
+         |          "tokenId": "$gort",
+         |          "amount": 1
          |        }
          |      ]
          |    }

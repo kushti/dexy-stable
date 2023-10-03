@@ -6,7 +6,7 @@
   //
   // Tokens:
   //  - buyback NFT
-  //  - gort
+  //  - gort (always must be at least one)
   //
   //  Registers:
   //    None
@@ -93,7 +93,7 @@
     val rewardEmitted = dataPoints.size * 2
     // finishing copying from oracle pool contract
 
-    val selfGort = SELF.tokens(1)._2 - 1
+    val selfGort = SELF.tokens(1)._2 - 1 // leaving one gort token in the pool
     val properGiving =  poolIn.tokens(0)._1 == fromBase64("$oracleNFT") &&
                         OUTPUTS(0).tokens(1)._2 >= poolIn.tokens(1)._2 + selfGort - rewardEmitted
 
