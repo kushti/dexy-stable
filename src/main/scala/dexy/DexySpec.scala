@@ -9,10 +9,6 @@ import sigmastate.serialization.ValueSerializer
 
 object DexySpec extends ContractUtils {
 
-  val dexyTokenId = "f4b0a10d38ed5d40bf1f09485ea4d6d9e9e49b9cab2de74bd8697e10391d7f02"
-
-  val lpTokenId = "03ed2b6190c0541590368d12373b803600aa31f718509ade8d925c1aa924952d"
-
   // oracle related tokens
   // take token IDs below from oracle pool UI
   // Gold Oracle Reward Token
@@ -22,6 +18,10 @@ object DexySpec extends ContractUtils {
 
   // GORT / ERG LP
   val gortLpNFT = "043ea12f03769748e436c003886c455ddf1a7cd4aafbd214602822d5213f4e68"
+
+  val dexyTokenId = "f4b0a10d38ed5d40bf1f09485ea4d6d9e9e49b9cab2de74bd8697e10391d7f02"
+
+  val lpTokenId = "03ed2b6190c0541590368d12373b803600aa31f718509ade8d925c1aa924952d"
 
   // tokens for main boxes
   val bankNFT = "cd8eb6a32eeca23228bba3af82023ca3730c3b535d35a2d099a1db22498227ed"

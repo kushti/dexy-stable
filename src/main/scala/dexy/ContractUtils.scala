@@ -1,7 +1,5 @@
 package dexy
 
-import dexy.DexySpec.nftDictionary
-
 trait ContractUtils {
   def defaultSubstitutionMap: Map[String, String]
 
