@@ -11,7 +11,7 @@
   //  Registers:
   //    None
   //
-  // Swap:
+  // Buyback:
   //
   //   Input         |  Output        |   Data-Input
   // -----------------------------------------------
@@ -30,7 +30,7 @@
   //
   //   Input         |  Output        |   Data-Input
   // -----------------------------------------------
-  // 0 Pool          |  Pool          |
+  // 0 Oracle Pool   |  Oracle Pool   |
   // 1 Refresh       |  Refresh       |
   // 2 BuyBack       |  BuyBack       |
 
