@@ -10,6 +10,11 @@
 
 * GORT LP NFT = "d1c9e20657b4e37de3cd279a994266db34b18e6e786371832ad014fd46583198"
 
+### Deployment transactions
+
+* Buyback contract deployment transaction:
+https://explorer.ergoplatform.com/en/transactions/a3b06409af1488ea0837955e5f6914cddb11177620ebef8e4cdd4976401a96bb
+
 ## Testnet
 
 ### Tokens
