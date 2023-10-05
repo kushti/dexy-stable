@@ -10,6 +10,8 @@
 
 * GORT LP NFT = "d1c9e20657b4e37de3cd279a994266db34b18e6e786371832ad014fd46583198"
 
+* Buyback NFT = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
+
 ### Deployment transactions
 
 * Buyback contract deployment transaction:
