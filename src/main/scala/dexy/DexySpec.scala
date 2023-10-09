@@ -166,6 +166,14 @@ object DexySpec extends ContractUtils {
   val extractErgoTree = ScriptUtil.compile(Map(), extractScript)
   val extractAddress = getStringFromAddress(getAddressFromErgoTree(extractErgoTree))
 
+  // proxy contracts (used in tests only)
+  val lpSwapBuyV1Script = readContract("lp/proxy/SwapBuyV1.es")
+  val lpSwapBuyV1ErgoTree = ScriptUtil.compile(Map(), lpSwapBuyV1Script)
+  val lpSwapBuyV1Address = getStringFromAddress(getAddressFromErgoTree(lpSwapBuyV1ErgoTree))
+
+  val lpSwapSellV1Script = readContract("lp/proxy/SwapSellV1.es")
+  val lpSwapSellV1ErgoTree = ScriptUtil.compile(Map(), lpSwapSellV1Script)
+  val lpSwapSellV1Address = getStringFromAddress(getAddressFromErgoTree(lpSwapSellV1ErgoTree))
 
   def main(args: Array[String]): Unit = {
     println(s"Bank: $bankAddress")

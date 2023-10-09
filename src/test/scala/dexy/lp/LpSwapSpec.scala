@@ -1,6 +1,6 @@
 package dexy.lp
 
-import dexy.Common
+import dexy.{Common, DexySpec}
 import dexy.DexySpec._
 import kiosk.ergo.{DhtData, KioskBox}
 import kiosk.tx.TxUtil
@@ -22,7 +22,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
   val fakeNanoErgs = 10000000000000L
   val dummyNanoErgs = 100000L
 
-  property("Swap (sell Ergs) should work") {
+  property("Swap (sell Ergs) should work - w. simple input") {
     val lpBalance = 100000000L
     val reservesXIn = 1000000000000L
     val reservesYIn = 100000000L
@@ -718,7 +718,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     }
   }
 
-  property("Swap (sell Ergs) should not work if more Dexy taken") {
+  property("Swap (sell Ergs) should fail if more Dexy taken") {
     val lpBalance = 100000000L
     val reservesXIn = 1000000000000L
     val reservesYIn = 100000000L
@@ -802,7 +802,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     }
   }
 
-  property("Swap (sell Dexy) should work") {
+  property("Swap (sell Dexy) should work - w. simple inout") {
     val lpBalance = 100000000L
     val reservesXIn = 1000000000000L
     val reservesYIn = 100000000L
@@ -888,7 +888,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     }
   }
 
-  property("Swap (sell Dexy) should not work if more Ergs taken") {
+  property("Swap (sell Dexy) should fail if more Ergs taken") {
     val lpBalance = 100000000L
     val reservesXIn = 1000000000000L
     val reservesYIn = 100000000L
@@ -1039,6 +1039,104 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
         )
       }
     }
+  }
+
+  property("Swap (sell Ergs - buy Dexy) should work - w. proxy input v1") {
+    import DexySpec._
+
+    val lpBalance = 100000000L
+    val reservesXIn = 1000000000000L
+    val reservesYIn = 100000000L
+
+    val rate = reservesYIn.toDouble / reservesXIn
+    val sellX = 10000000L
+    val buyY = (sellX * rate * (feeDenomLp - feeNumLp) / feeDenomLp).toLong
+    assert(buyY == 997)
+
+    val reservesXOut = reservesXIn + sellX
+    val reservesYOut = reservesYIn - buyY
+
+    val deltaReservesX = reservesXOut - reservesXIn
+    val deltaReservesY = reservesYOut - reservesYIn
+
+    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp == BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+
+      val proxyBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpSwapSellV1Script))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId2, fakeIndex)
+
+      val lpBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(reservesXIn)
+          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalance), new ErgoToken(dexyUSD, reservesYIn))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
+          .build()
+          .convertToInputWith(fakeTxId3, fakeIndex)
+
+      val swapBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(lpSwapNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpSwapScript))
+          .build()
+          .convertToInputWith(fakeTxId4, fakeIndex)
+
+      val validLpOutBox = KioskBox(
+        lpAddress,
+        reservesXOut,
+        registers = Array(),
+        tokens = Array((lpNFT, 1), (lpToken, lpBalance), (dexyUSD, reservesYOut))
+      )
+
+      val validSwapOutBox = KioskBox(
+        lpSwapAddress,
+        minStorageRent,
+        registers = Array(),
+        tokens = Array((lpSwapNFT, 1))
+      )
+
+      val userOutputBox = KioskBox(
+        changeAddress,
+        proxyBox.getValue - buyY * rate.toLong,
+        registers = Array(),
+        tokens = Array((dexyUSD, buyY))
+      )
+
+      // all ok, swap should work
+      noException shouldBe thrownBy {
+        TxUtil.createTx(
+          Array(lpBox, swapBox, proxyBox, fundingBox),
+          Array(),
+          Array(validLpOutBox, validSwapOutBox, userOutputBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          false
+        )
+      }
+    }
+
   }
 
 }
