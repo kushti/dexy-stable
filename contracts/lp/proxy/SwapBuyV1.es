@@ -3,10 +3,10 @@
   // Name: SwapBuy
   // Description: Contract that validates user's Token -> ERG swap in the CFMM n2t Pool.
   val FeeDenom            = 1000
-  val FeeNum              = 996
-  val DexFeePerTokenNum   = 1L
-  val DexFeePerTokenDenom = 10L
-  val MinQuoteAmount      = 800L
+  val FeeNum              = 997
+  val DexFeePerTokenNum   = 5L
+  val DexFeePerTokenDenom = 1000L
+  val MinQuoteAmount      = 100L
 
   val poolIn = INPUTS(0)
 
@@ -33,9 +33,9 @@
     //    if (o.propositionBytes == MinerPropBytes) o.value else 0L
     //  }.fold(0L, { (a: Long, b: Long) => a + b }) <= MaxMinerFee
 
-      validPoolIn &&
+      validPoolIn  &&
 //      rewardBox.propositionBytes == Pk.propBytes &&
-      quoteAmount >= MinQuoteAmount &&
+      quoteAmount >= MinQuoteAmount  &&
       fairPrice
     // && validMinerFee
 

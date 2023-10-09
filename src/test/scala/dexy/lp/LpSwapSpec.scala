@@ -1041,7 +1041,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     }
   }
 
-  property("Swap (sell Ergs - buy Dexy) should work - w. proxy input v1") {
+  property("Swap (user sells Ergs to buy Dexy) should work - w. proxy input v1") {
     import DexySpec._
 
     val lpBalance = 100000000L
@@ -1137,6 +1137,108 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
       }
     }
 
+  }
+
+  property("Swap (user sells Dexy to buy Ergs) should work - w. proxy") {
+    val lpBalance = 100000000L
+    val reservesXIn = 1000000000000L
+    val reservesYIn = 100000000L
+
+    val rate = reservesXIn.toDouble / reservesYIn
+
+    val sellY = 1000L
+    val buyX = (sellY * rate * (feeDenomLp - feeNumLp) / feeDenomLp).toLong
+    assert(buyX == 9970000)
+
+    val DexFeePerTokenNum   = 1L
+    val DexFeePerTokenDenom = 1000L
+    println("rate: " + rate)
+    val quoteAmount   = buyX * DexFeePerTokenDenom / (DexFeePerTokenDenom - DexFeePerTokenNum)
+    println("qa: " + quoteAmount)
+
+    val reservesXOut = reservesXIn - buyX
+    val reservesYOut = reservesYIn + sellY
+
+    val deltaReservesX = reservesXOut - reservesXIn
+    val deltaReservesY = reservesYOut - reservesYIn
+
+    assert(BigInt(deltaReservesX) * reservesYIn * feeDenomLp >= BigInt(deltaReservesY) * (feeNumLp - feeDenomLp) * reservesXIn)
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val lpBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(reservesXIn)
+          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalance), new ErgoToken(dexyUSD, reservesYIn))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
+          .build()
+          .convertToInputWith(fakeTxId2, fakeIndex)
+
+      val swapBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(lpSwapNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpSwapScript))
+          .build()
+          .convertToInputWith(fakeTxId3, fakeIndex)
+
+      val proxyBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(dummyNanoErgs)
+          .tokens(new ErgoToken(dexyUSD, sellY))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpSwapBuyV1Script))
+          .build()
+          .convertToInputWith(fakeTxId4, fakeIndex)
+
+      val validLpOutBox = KioskBox(
+        lpAddress,
+        reservesXOut,
+        registers = Array(),
+        tokens = Array((lpNFT, 1), (lpToken, lpBalance), (dexyUSD, reservesYOut))
+      )
+
+      val validSwapOutBox = KioskBox(
+        lpSwapAddress,
+        minStorageRent,
+        registers = Array(),
+        tokens = Array((lpSwapNFT, 1))
+      )
+
+      val userOutputBox = KioskBox(
+        changeAddress,
+        dummyNanoErgs + buyX,
+        registers = Array(),
+        tokens = Array()
+      )
+
+      // all ok, swap should work
+      noException shouldBe thrownBy {
+        TxUtil.createTx(
+          Array(lpBox, swapBox, proxyBox, fundingBox),
+          Array(),
+          Array(validLpOutBox, validSwapOutBox, userOutputBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          false
+        )
+      }
+    }
   }
 
 }
