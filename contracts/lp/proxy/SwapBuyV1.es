@@ -27,7 +27,7 @@
       val quoteAmount   = deltaNErgs.toBigInt * DexFeePerTokenDenom / (DexFeePerTokenDenom - DexFeePerTokenNum)
       val relaxedOutput = quoteAmount + 1 // handle rounding loss
       val fairPrice =
-        poolReservesX * baseAmount * FeeNum <= relaxedOutput * (poolReservesY * FeeDenom + baseAmount * FeeNum)
+        poolReservesX * baseAmount * (FeeDenom - FeeNum) <= relaxedOutput * (poolReservesY * FeeDenom + baseAmount * (FeeDenom - FeeNum))
 
     //  val validMinerFee = OUTPUTS.map { (o: Box) =>
     //    if (o.propositionBytes == MinerPropBytes) o.value else 0L
