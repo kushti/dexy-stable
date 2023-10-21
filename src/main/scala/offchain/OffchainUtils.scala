@@ -52,7 +52,8 @@ case class DexyScanIds(tracking95ScanId: Int,
                        tracking101ScanId: Int,
                        oraclePoolScanId: Int,
                        lpScanId: Int,
-                       lpSwapScanId: Int)
+                       lpSwapScanId: Int,
+                       buyBackScanId: Int)
 
 case class OffchainUtils(serverUrl: String,
                     apiKey: String,
@@ -129,6 +130,8 @@ case class OffchainUtils(serverUrl: String,
   def oraclePoolBox(): Option[ErgoBox] = unspentScanBoxes(dexyScanIds.oraclePoolScanId).headOption
 
   def lpBox(): Option[ErgoBox] = unspentScanBoxes(dexyScanIds.lpScanId).headOption
+
+  def buyBackBox(): Option[ErgoBox] = unspentScanBoxes(dexyScanIds.buyBackScanId).headOption
 
   def changeOuts(selectionResult: BoxSelectionResult[ErgoBox], creationHeight: Int): IndexedSeq[ErgoBoxCandidate] ={
     selectionResult.changeBoxes.toIndexedSeq.map{ba =>
@@ -268,7 +271,7 @@ case class OffchainUtils(serverUrl: String,
 }
 
 object OffchainUtils {
-  val scanIds = DexyScanIds(98, 99, 100, 85, 111, 107)
+  val scanIds = DexyScanIds(98, 99, 100, 85, 111, 107, 1)
 }
 
 object Test extends App {
