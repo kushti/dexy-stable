@@ -4,14 +4,16 @@ import org.ergoplatform.modifiers.mempool.UnsignedErgoTransaction
 import org.ergoplatform.wallet.boxes.DefaultBoxSelector
 import org.ergoplatform.{ErgoBox, ErgoBoxCandidate, UnsignedInput}
 import scorex.util.ModifierId
+import sigmastate.Values.{ByteConstant, IntConstant}
+import sigmastate.interpreter.ContextExtension
 
-object BuyBackUtils {
-  val fakeScanIds = DexyScanIds(1, 1, 1, 1, 1, 1, 1)
+object BuyBackUtils extends App {
+  val fakeScanIds = DexyScanIds(1, 1, 1, 1, 1, 1, 22)
 
   val utils = new OffchainUtils(
     serverUrl = "http://127.0.0.1:9053",
     apiKey = "",
-    localSecretStoragePath = "/home/kushti/ergo/backup/176keystore",
+    localSecretStoragePath = "/home/kushti/ergo/local/.ergo/wallet/keystore",
     localSecretUnlockPass = "",
     dexyScanIds = fakeScanIds)
 
@@ -37,7 +39,7 @@ object BuyBackUtils {
       ).right.toOption.get
 
     val buybackInputBox = utils.buyBackBox().get
-    val buyBackInputBoxes = (buybackInputBox +: selectionResult.boxes).toIndexedSeq
+    val buyBackInputBoxes = (selectionResult.boxes).toIndexedSeq
 
     val buyBackOutput =  new ErgoBoxCandidate(
       buybackInputBox.value + toAdd,
@@ -54,9 +56,10 @@ object BuyBackUtils {
       changeBoxes.take(2) ++ Seq(buybackInputBox) ++ changeBoxes.drop(2) ++ Seq(feeOut)
     }).toIndexedSeq
 
-    val inputs = buyBackInputBoxes.map(b => new UnsignedInput(b.id))
+    val buyBackInput = new UnsignedInput(buybackInputBox.id, ContextExtension(Map((0: Byte) -> IntConstant(1))))
+    val inputs = buyBackInput +: buyBackInputBoxes.map(b => new UnsignedInput(b.id))
     val unsignedSwapTx = new UnsignedErgoTransaction(inputs, IndexedSeq.empty, outs)
-    utils.signTransaction("Buyback: ", unsignedSwapTx, buyBackInputBoxes, IndexedSeq.empty)
+    utils.signTransaction("Buyback: ", unsignedSwapTx, buybackInputBox +: buyBackInputBoxes, IndexedSeq.empty)
   }
 
 
@@ -89,5 +92,7 @@ object BuyBackUtils {
     val unsignedSwapTx = new UnsignedErgoTransaction(inputs, IndexedSeq.empty, outputs)
     utils.signTransaction("Buyback: ", unsignedSwapTx, inputBoxes, IndexedSeq.empty)
   }
+
+  topUp()
 
 }
