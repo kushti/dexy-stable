@@ -96,8 +96,6 @@ object DexyLpSwap extends App {
     println("right: " + (outputErg2 - inputErg.toBigInt) * (3 - 1000).toBigInt * inputDexy.toBigInt)
     assert((outputDexy2 - inputDexy.toBigInt) * inputErg.toBigInt * 1000.toBigInt >= (outputErg - inputErg).toBigInt * inputDexy.toBigInt * (3 - 1000).toBigInt)
 
-
-
     val inputBoxes = IndexedSeq(lpInput, swapInput) ++ selectionResult.boxes
     val inputs = inputBoxes.map(b => new UnsignedInput(b.id))
 

@@ -1,14 +1,93 @@
 package offchain
 
+import org.ergoplatform.modifiers.mempool.UnsignedErgoTransaction
+import org.ergoplatform.wallet.boxes.DefaultBoxSelector
+import org.ergoplatform.{ErgoBox, ErgoBoxCandidate, UnsignedInput}
+import scorex.util.ModifierId
+
 object BuyBackUtils {
   val fakeScanIds = DexyScanIds(1, 1, 1, 1, 1, 1, 1)
 
   val utils = new OffchainUtils(
-    serverUrl = "http://127.0.0.1:9052",
+    serverUrl = "http://127.0.0.1:9053",
     apiKey = "",
     localSecretStoragePath = "/home/kushti/ergo/backup/176keystore",
     localSecretUnlockPass = "",
     dexyScanIds = fakeScanIds)
 
+  def topUp() = {
+    // Top-up:
+    //
+    //   Input         |  Output        |   Data-Input
+    // -----------------------------------------------
+    // 0               |                |
+    // 1               |                |
+    // 2               |  BuyBack       |
+
+    val toAdd = 1 * 1000000000 // in nanoerg, 1 ERG
+
+    val creationHeight = utils.currentHeight()
+    val feeOut = utils.feeOut(creationHeight)
+
+    val selectionResult = DefaultBoxSelector.select[ErgoBox](
+        utils.fetchWalletInputs().toIterator,
+        (_: ErgoBox) => true,
+        toAdd + feeOut.value,
+        Map.empty[ModifierId, Long]
+      ).right.toOption.get
+
+    val buybackInputBox = utils.buyBackBox().get
+    val buyBackInputBoxes = (buybackInputBox +: selectionResult.boxes).toIndexedSeq
+
+    val buyBackOutput =  new ErgoBoxCandidate(
+      buybackInputBox.value + toAdd,
+      buybackInputBox.ergoTree,
+      creationHeight,
+      buybackInputBox.additionalTokens,
+      buybackInputBox.additionalRegisters
+    )
+
+    val changeBoxes = utils.changeOuts(selectionResult, creationHeight)
+    val outs = (if(changeBoxes.size == 1) {
+      changeBoxes ++ Seq(feeOut, buyBackOutput)
+    } else {
+      changeBoxes.take(2) ++ Seq(buybackInputBox) ++ changeBoxes.drop(2) ++ Seq(feeOut)
+    }).toIndexedSeq
+
+    val inputs = buyBackInputBoxes.map(b => new UnsignedInput(b.id))
+    val unsignedSwapTx = new UnsignedErgoTransaction(inputs, IndexedSeq.empty, outs)
+    utils.signTransaction("Buyback: ", unsignedSwapTx, buyBackInputBoxes, IndexedSeq.empty)
+  }
+
+
+  def buyback() = {
+    //   Input         |  Output        |   Data-Input
+    // -----------------------------------------------
+    // 0 LP            |  LP            |
+    // 1 BuyBack       |  BuyBack       |
+
+    val lpInput = utils.lpBox().get
+    val buyBackInput = utils.buyBackBox().get
+
+    val creationHeight = utils.currentHeight()
+    val feeOut = utils.feeOut(creationHeight)
+
+    val selectionResult = DefaultBoxSelector.select(
+      utils.fetchWalletInputs().toIterator,
+      (_: ErgoBox) => true,
+      feeOut.value,
+      Map.empty
+    ).right.toOption.get
+
+    val inputBoxes = IndexedSeq(lpInput, buyBackInput) ++ selectionResult.boxes
+    val inputs = inputBoxes.map(b => new UnsignedInput(b.id))
+
+    val lpOutput: ErgoBoxCandidate = ???
+    val buyBackOutput = ???
+    val outputs = IndexedSeq(lpOutput, buyBackOutput) ++ utils.changeOuts(selectionResult, creationHeight) ++ IndexedSeq(feeOut)
+
+    val unsignedSwapTx = new UnsignedErgoTransaction(inputs, IndexedSeq.empty, outputs)
+    utils.signTransaction("Buyback: ", unsignedSwapTx, inputBoxes, IndexedSeq.empty)
+  }
 
 }
