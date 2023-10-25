@@ -4,11 +4,14 @@ import org.ergoplatform.modifiers.mempool.UnsignedErgoTransaction
 import org.ergoplatform.wallet.boxes.DefaultBoxSelector
 import org.ergoplatform.{ErgoBox, ErgoBoxCandidate, UnsignedInput}
 import scorex.util.ModifierId
-import sigmastate.Values.{ByteConstant, IntConstant}
+import sigmastate.Values.IntConstant
 import sigmastate.interpreter.ContextExtension
 
 object BuyBackUtils extends App {
-  val fakeScanIds = DexyScanIds(1, 1, 1, 1, 1, 1, 22)
+  val fakeScanIds = DexyScanIds(1, 1, 1, 1, 1, 1)
+
+  val buyBackScanId = 22
+  val gortLpScanId = 23
 
   val utils = new OffchainUtils(
     serverUrl = "http://127.0.0.1:9053",
@@ -16,6 +19,10 @@ object BuyBackUtils extends App {
     localSecretStoragePath = "/home/kushti/ergo/local/.ergo/wallet/keystore",
     localSecretUnlockPass = "",
     dexyScanIds = fakeScanIds)
+
+  def buyBackBox(): Option[ErgoBox] = utils.unspentScanBoxes(buyBackScanId).headOption
+
+  def gortLp(): Option[ErgoBox] = utils.unspentScanBoxes(gortLpScanId).headOption
 
   def topUp() = {
     // Top-up:
@@ -38,8 +45,8 @@ object BuyBackUtils extends App {
         Map.empty[ModifierId, Long]
       ).right.toOption.get
 
-    val buybackInputBox = utils.buyBackBox().get
-    val buyBackInputBoxes = (selectionResult.boxes).toIndexedSeq
+    val buybackInputBox = buyBackBox().get
+    val buyBackInputBoxes = selectionResult.boxes.toIndexedSeq
 
     val buyBackOutput = new ErgoBoxCandidate(
       buybackInputBox.value + toAdd,
@@ -69,8 +76,8 @@ object BuyBackUtils extends App {
     // 0 LP            |  LP            |
     // 1 BuyBack       |  BuyBack       |
 
-    val lpInput = utils.lpBox().get
-    val buyBackInput = utils.buyBackBox().get
+    val lpInput = gortLp().get
+    val buyBackInput = buyBackBox().get
 
     val creationHeight = utils.currentHeight()
     val feeOut = utils.feeOut(creationHeight)
@@ -83,28 +90,32 @@ object BuyBackUtils extends App {
     ).right.toOption.get
 
     val inputBoxes = IndexedSeq(lpInput, buyBackInput) ++ selectionResult.boxes
-    val inputs = inputBoxes.map(b => new UnsignedInput(b.id))
+    val inputs = inputBoxes.map(b => new UnsignedInput(b.id)).updated(1, new UnsignedInput(buyBackInput.id, ContextExtension(Map((0: Byte) -> IntConstant(0)))))
 
     assert(buyBackInput.value >= 1000000000, "Less than 1 ERG in buyback input")
-    val ergAmt = buyBackInput.value - 100000000
+    val ergAmt =  buyBackInput.value - 100000000
     val gortObtained = lpInput.additionalTokens(2)._2 * ergAmt * 997 / (lpInput.value * 1000 + ergAmt * 997)
 
     println("gort obtained: " + gortObtained)
 
-    val lpOutput: ErgoBoxCandidate = new ErgoBoxCandidate(
-      buyBackInput.value - ergAmt,
-      buyBackInput.ergoTree,
-      creationHeight,
-      buyBackInput.additionalTokens, // todo: change
-      buyBackInput.additionalRegisters
-    )
-    val buyBackOutput = new ErgoBoxCandidate(
+    val lpInputGorts = lpInput.additionalTokens(2)
+    val lpOutput = new ErgoBoxCandidate(
       lpInput.value + ergAmt,
       lpInput.ergoTree,
       creationHeight,
-      lpInput.additionalTokens, // todo: change
+      lpInput.additionalTokens.updated(2, lpInputGorts._1 -> (lpInputGorts._2 - gortObtained)),
       lpInput.additionalRegisters
     )
+
+    val bbInputGorts = buyBackInput.additionalTokens(1)
+    val buyBackOutput: ErgoBoxCandidate = new ErgoBoxCandidate(
+      buyBackInput.value - ergAmt,
+      buyBackInput.ergoTree,
+      creationHeight,
+      buyBackInput.additionalTokens.updated(1, bbInputGorts._1 -> (bbInputGorts._2 + gortObtained)),
+      buyBackInput.additionalRegisters
+    )
+
     val outputs = IndexedSeq(lpOutput, buyBackOutput) ++ utils.changeOuts(selectionResult, creationHeight) ++ IndexedSeq(feeOut)
 
     val unsignedSwapTx = new UnsignedErgoTransaction(inputs, IndexedSeq.empty, outputs)
