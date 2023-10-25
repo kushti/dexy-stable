@@ -220,13 +220,3 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
 }
-
-
-object Calc extends App {
-  val gortLpErg = 1000 * 1000000000L
-  val gortLpGort = 1000000L
-  val gortDelta = 500
-
-  val ergDelta = gortLpErg * gortLpGort / (gortLpGort - gortDelta) - gortLpErg
-  println(ergDelta)
-}

@@ -41,7 +41,7 @@ object BuyBackUtils extends App {
     val buybackInputBox = utils.buyBackBox().get
     val buyBackInputBoxes = (selectionResult.boxes).toIndexedSeq
 
-    val buyBackOutput =  new ErgoBoxCandidate(
+    val buyBackOutput = new ErgoBoxCandidate(
       buybackInputBox.value + toAdd,
       buybackInputBox.ergoTree,
       creationHeight,
@@ -85,14 +85,32 @@ object BuyBackUtils extends App {
     val inputBoxes = IndexedSeq(lpInput, buyBackInput) ++ selectionResult.boxes
     val inputs = inputBoxes.map(b => new UnsignedInput(b.id))
 
-    val lpOutput: ErgoBoxCandidate = ???
-    val buyBackOutput = ???
+    assert(buyBackInput.value >= 1000000000, "Less than 1 ERG in buyback input")
+    val ergAmt = buyBackInput.value - 100000000
+    val gortObtained = lpInput.additionalTokens(2)._2 * ergAmt * 997 / (lpInput.value * 1000 + ergAmt * 997)
+
+    println("gort obtained: " + gortObtained)
+
+    val lpOutput: ErgoBoxCandidate = new ErgoBoxCandidate(
+      buyBackInput.value - ergAmt,
+      buyBackInput.ergoTree,
+      creationHeight,
+      buyBackInput.additionalTokens, // todo: change
+      buyBackInput.additionalRegisters
+    )
+    val buyBackOutput = new ErgoBoxCandidate(
+      lpInput.value + ergAmt,
+      lpInput.ergoTree,
+      creationHeight,
+      lpInput.additionalTokens, // todo: change
+      lpInput.additionalRegisters
+    )
     val outputs = IndexedSeq(lpOutput, buyBackOutput) ++ utils.changeOuts(selectionResult, creationHeight) ++ IndexedSeq(feeOut)
 
     val unsignedSwapTx = new UnsignedErgoTransaction(inputs, IndexedSeq.empty, outputs)
     utils.signTransaction("Buyback: ", unsignedSwapTx, inputBoxes, IndexedSeq.empty)
   }
 
-  topUp()
+  buyback()
 
 }
