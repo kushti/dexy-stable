@@ -84,7 +84,7 @@ object BuyBackUtils extends App {
 
     val selectionResult = DefaultBoxSelector.select(
       utils.fetchWalletInputs().toIterator,
-      (_: ErgoBox) => true,
+      (eb: ErgoBox) => eb.additionalTokens.isEmpty,
       feeOut.value,
       Map.empty
     ).right.toOption.get
@@ -93,9 +93,12 @@ object BuyBackUtils extends App {
     val inputs = inputBoxes.map(b => new UnsignedInput(b.id)).updated(1, new UnsignedInput(buyBackInput.id, ContextExtension(Map((0: Byte) -> IntConstant(0)))))
 
     assert(buyBackInput.value >= 1000000000, "Less than 1 ERG in buyback input")
-    val ergAmt =  buyBackInput.value - 100000000
-    val gortObtained = lpInput.additionalTokens(2)._2 * ergAmt * 997 / (lpInput.value * 1000 + ergAmt * 997)
+    val initErgAmt =  buyBackInput.value - 100000000
+    val gortObtained = lpInput.additionalTokens(2)._2 * initErgAmt * 997 / (lpInput.value * 1000 + initErgAmt * 997) - 1
+    val lpPrice = lpInput.value / lpInput.additionalTokens(2)._2
+    val ergAmt = (gortObtained * lpPrice * 1.005).toLong
 
+    println("erg spent: " + ergAmt)
     println("gort obtained: " + gortObtained)
 
     val lpInputGorts = lpInput.additionalTokens(2)

@@ -65,7 +65,7 @@ case class OffchainUtils(serverUrl: String,
   val changeAddress = eae.fromString("3WwhifgHTu7ib5ggKKVFaN1J6jFim3u9siPspDRq9JnwcKfLuuxc").get
 
   def feeOut(creationHeight: Int): ErgoBoxCandidate = {
-    new ErgoBoxCandidate(fee, ErgoScriptPredef.feeProposition(720), creationHeight) // 0.002 ERG
+    new ErgoBoxCandidate(fee, ErgoScriptPredef.feeProposition(720), creationHeight) // 0.001 ERG
   }
 
   def getJsonAsString(url: String): String = {
