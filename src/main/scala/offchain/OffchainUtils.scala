@@ -1,8 +1,8 @@
 package offchain
 
 import io.circe.parser.parse
-import offchain.DexyLpSwap.{oraclePrice, tokensMapToColl}
-import offchain.Test.{lpPrice, utils}
+import offchain.DexyLpSwap.tokensMapToColl
+import offchain.Test.lpPrice
 import org.ergoplatform.{DataInput, ErgoAddressEncoder, ErgoBox, ErgoBoxCandidate, ErgoScriptPredef, UnsignedInput}
 import org.ergoplatform.ErgoBox.{R4, R7}
 import org.ergoplatform.http.api.ApiCodecs
@@ -130,6 +130,16 @@ case class OffchainUtils(serverUrl: String,
 
   def lpBox(): Option[ErgoBox] = unspentScanBoxes(dexyScanIds.lpScanId).headOption
 
+  def dexPrice = {
+    val lpState = lpBox().get
+    lpState.value / lpState.additionalTokens.toArray.last._2
+  }
+
+  def oraclePrice = {
+    val oracleState = oraclePoolBox().get
+    oracleState.additionalRegisters(R4).value.asInstanceOf[Long] / 1000000L
+  }
+
   def changeOuts(selectionResult: BoxSelectionResult[ErgoBox], creationHeight: Int): IndexedSeq[ErgoBoxCandidate] ={
     selectionResult.changeBoxes.toIndexedSeq.map{ba =>
       val tokensMap = tokensMapToColl(ba.tokens)
@@ -227,6 +237,8 @@ case class OffchainUtils(serverUrl: String,
     val trackersToSet = ArrayBuffer[TrackerType]()
     val trackersToReset = ArrayBuffer[TrackerType]()
 
+    println("Oracle price in tracker: " + oraclePrice)
+    println("LP price in tracker: " + lpPrice)
     TrackerType.all.foreach { trackerType =>
       val coeff = trackerType match {
         case Tracker95 => 95
@@ -234,9 +246,9 @@ case class OffchainUtils(serverUrl: String,
         case Tracker101 => 101
       }
       val shouldBeSet = if (coeff < 100) {
-        coeff * oraclePrice < lpPrice * 100
-      } else {
         coeff * oraclePrice > lpPrice * 100
+      } else {
+        coeff * oraclePrice < lpPrice * 100
       }
       val isSet = fetchTrackingBox(trackerType).additionalRegisters.get(R7).get.value.asInstanceOf[Int] != Int.MaxValue
       println(s"$trackerType should be set: " + shouldBeSet + " is set: " + isSet)

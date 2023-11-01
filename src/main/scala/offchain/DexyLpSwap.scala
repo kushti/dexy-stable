@@ -16,7 +16,6 @@ import sigmastate.eval.OrderingOps.BigIntOrdering
 
 import scala.math.Ordered.orderingToOrdered
 
-
 object DexyLpSwap extends App {
   val utils = new OffchainUtils(
     serverUrl = "http://176.9.15.237:9052",
@@ -80,7 +79,7 @@ object DexyLpSwap extends App {
 
     println(s"In ERG: $inputErg, dexy: $inputDexy")
     println(s"Out ERG: $outputErg, dexy: $outputDexy")
-    println(s"check: ${(inputDexy - outputDexy) * dexPrice} : ${outputErg - inputErg}")
+    println(s"check: ${(inputDexy - outputDexy) * utils.dexPrice} : ${outputErg - inputErg}")
 
     val rate = inputDexy.toDouble / inputErg
     val sellX = nanoErgs
@@ -120,15 +119,10 @@ object DexyLpSwap extends App {
     utils.signTransaction("LP swap: ", unsignedSwapTx, inputBoxes, IndexedSeq.empty)
   }
 
-  val lpState = lpBox()
-  val dexPrice = lpState.value / lpState.additionalTokens.toArray.last._2
 
-  val oracleState = oracleBox()
-  val oraclePrice = oracleState.additionalRegisters(R4).value.asInstanceOf[Long] / 1000000L
-
-  println("DEX price: " + dexPrice)
-  println("Oracle price: " + oraclePrice)
-  println("Ratio: " + dexPrice.toDouble / oraclePrice)
+  println("DEX price: " + utils.dexPrice)
+  println("Oracle price: " + utils.oraclePrice)
+  println("Ratio: " + utils.dexPrice.toDouble / utils.oraclePrice)
   println("Pool size: " + lpBox().value / 1000000000L + " ERG")
-  inject(5000000000000L,0)
+  inject(300000000000L,0)
 }
