@@ -280,16 +280,16 @@ case class OffchainUtils(serverUrl: String,
 }
 
 object OffchainUtils {
-  val scanIds = DexyScanIds(98, 99, 100, 85, 111, 107)
+  val scanIds = DexyScanIds(112, 113, 114, 85, 125, 121)
 }
 
 object Test extends App {
 
   val utils = new OffchainUtils(
     serverUrl = "http://176.9.15.237:9052",
-    apiKey = "ergopass",
+    apiKey = "",
     localSecretStoragePath = "/home/kushti/ergo/backup/176keystore",
-    localSecretUnlockPass = "123",
+    localSecretUnlockPass = "",
     dexyScanIds = OffchainUtils.scanIds)
 
   println(utils.fetchWalletInputs().map(_.value))
@@ -306,6 +306,6 @@ object Test extends App {
   val y = lpPrice * 100
 
   println(x > y)
-  utils.updateTrackers() //todo: fix for 101%
+  utils.updateTrackers()
 
 }

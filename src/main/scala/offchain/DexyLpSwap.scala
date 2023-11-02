@@ -1,8 +1,8 @@
 package offchain
 
-import dexy.{DexySpec, TestnetTokenIds}
+import dexy.TestnetTokenIds
 import dexy.DexySpec.feeDenomLp
-import org.ergoplatform.ErgoBox.{R4, TokenId}
+import org.ergoplatform.ErgoBox.TokenId
 import org.ergoplatform.modifiers.mempool.UnsignedErgoTransaction
 import org.ergoplatform.wallet.TokensMap
 import org.ergoplatform.wallet.boxes.DefaultBoxSelector
@@ -19,9 +19,9 @@ import scala.math.Ordered.orderingToOrdered
 object DexyLpSwap extends App {
   val utils = new OffchainUtils(
     serverUrl = "http://176.9.15.237:9052",
-    apiKey = "ergopass",
+    apiKey = "",
     localSecretStoragePath = "/home/kushti/ergo/backup/176keystore",
-    localSecretUnlockPass = "123",
+    localSecretUnlockPass = "",
     dexyScanIds = OffchainUtils.scanIds)
 
   val oracleScanId = utils.dexyScanIds.oraclePoolScanId // oracle box
@@ -124,5 +124,5 @@ object DexyLpSwap extends App {
   println("Oracle price: " + utils.oraclePrice)
   println("Ratio: " + utils.dexPrice.toDouble / utils.oraclePrice)
   println("Pool size: " + lpBox().value / 1000000000L + " ERG")
-  inject(200000000000000L,0)
+  inject(40000000000000L,0)
 }
