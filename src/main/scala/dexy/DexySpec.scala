@@ -88,45 +88,43 @@ object TestnetTokenIds extends NetworkTokenIds {
   // oracle related tokens
   // take token IDs below from oracle pool UI
   // Gold Oracle Reward Token
-  val gort = "7ba2a85fdb302a181578b1f64cb4a533d89b3f8de4159efece75da41041537f9"
-  val oracleTokenId = "6183680b1c4caaf8ede8c60dc5128e38417bc5b656321388b22baa43a9d150c2"
-  val oraclePoolNFT = "3c45f29a5165b030fdb5eaf5d81f8108f9d8f507b31487dd51f4ae08fe07cf4a"
+  val gort = "01510156b109cd66c41a703c9911925ab305e4fe2bdc898680ad255c6972c404"
+  val oracleTokenId = "001e182cc3f04aec4486c7a5018d198e9591a7cfb0b372f5f95fa3e5ddbd24d3"
+  val oraclePoolNFT = "d94bfac40b516353983443209104dcdd5b7ca232a01ccb376ee8014df6330907"
 
   // GORT / ERG LP
-  val gortLpNFT = "d1c9e20657b4e37de3cd279a994266db34b18e6e786371832ad014fd46583198"
+  val gortLpNFT = "043ea12f03769748e436c003886c455ddf1a7cd4aafbd214602822d5213f4e68"
 
-  val buybackNFT = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
+  val buybackNFT = "0158bb202fdf8eacdd4b08e972776077284e5a69708af719669e6f65ceeaf809"
 
-  // todo: further tokens not modified for the mainnet
+  val dexyTokenId = "0160b869f30a5424e59cb3453e8a726b81fe83761d02ab41829cb7b2e4b624bc"
 
-  val dexyTokenId = "f4b0a10d38ed5d40bf1f09485ea4d6d9e9e49b9cab2de74bd8697e10391d7f02"
-
-  val lpTokenId = "03ed2b6190c0541590368d12373b803600aa31f718509ade8d925c1aa924952d"
+  val lpTokenId = "01be480a89df53f3c88c08478e8433f388130c8845630e87016809e1791ea57f"
 
   // tokens for main boxes
-  val bankNFT = "cd8eb6a32eeca23228bba3af82023ca3730c3b535d35a2d099a1db22498227ed"
-  val lpNFT = "110f9834127df07e142d7386b34a9debd22d3573ab1b751c9825fa8b798acd74"
+  val bankNFT = "0226551966f8ce4be3beb8c55892ca32076a7eaf3632c473a3094c337eca6344"
+  val lpNFT = "024e4ff49356d696d5da6a5c2b1408d24f9074cb38257871524dd8d5915ab636"
 
   // update tokens
   val updateNFT = "a1cf4b74becdcfa26e132ff950ed38c2d8b9f0f05048c39da995baf7a4f3766d"
-  val ballotTokenId = "ecadf0fd21828582dafceab63f649f573f35acd5a3531c452df0f46049f30f1a"
+  val ballotTokenId = "027b2daff5513c9b10b719e64948f4685df330dd493cbe8931c8853d1bc9e8f2"
 
   // all tokens below for aux boxes (1 for each type of box)
-  val interventionNFT = "aa0e81687ba21f97dbca367d4384e2d7c17cb92bf24a280372d26ca4b878bb82"
-  val freeMintNFT = "7cb30eb71aa184d53db7e784e79eaa433f5849a8867eaa7bac61bf5b9883add0"
-  val arbitrageMintNFT = "e01b1022a8caaf47e0b8904db656b84ac958ccb37aebc04ecbb333319cb48ae2"
-  val payoutNFT = "386d57a00ce34833b24e99c1b45f5cb3eafd9dd3f70f8610eda9ccbd1a8aaa3e"
+  val interventionNFT = "02892b9bbdf4575b557648972e75148fbbf4ff52751ee6c5718f3ce55fd3b61a"
+  val freeMintNFT = "02aa17b1d1c542b0f6ac32b8cd894e36e2701fc15b83765babc2f1bcce779db2"
+  val arbitrageMintNFT = "030bffaf2d9603c7d05c1887c67cfae9a8902a4c1d6bdd42bd6e394251a92650"
+  val payoutNFT = "037dbf9880f9b3588dad0955533e1e1be93432f657cd6618dd91a456d08d28d2"
 
-  val lpSwapNFT = "3467f636d0d591f30188f889557da910b78d2182e35a9a4bf4cbacaf4213a7b2"
-  val lpMintNFT = "34b09214235719610d85d566df2dcdab36943adffb1e2267704b4419c31d91d6"
-  val lpRedeemNFT = "01acc03fc527afaebe88607cc41d7cf64eac84424acf22cbf36de0ffe44e1311"
-  val extractionNFT = "c54d0675def624b8fc622bb55172f4416688c63fc3c3f917df7bdc5f553d5f08"
+  val lpSwapNFT = "04ba758620d5e0d54cd4db52bf71834f4f6aad06be47ac7e025a1f5b666ab437"
+  val lpMintNFT = "04eb5c28222ca3158f7dbfe9f7a6a80400ebd0058231b3dd7617643d01dd1172"
+  val lpRedeemNFT = "04efcc96ec0519de9228d47e9a20f5fc07ae6acf2befff5e30ec51d0c8ffca9e"
+  val extractionNFT = "04ff942b4ea09322087a77fdb7d1308e005bc9f56b0361974cc786f298106794"
 
   // should be reissued every time!
   // boxes for tracking ratio of LP rate and oracle pool rate (see details in Tracking contract)
-  val tracking95NFT = "795ea72bf000b7fc1185991c460b6a4058a83115d43445c010deb26e924bfc14"
-  val tracking98NFT = "930c64bdbca9e6aa17a98ae5d24add53fb766ffcc6af570965d30274c559f008"
-  val tracking101NFT = "295a718de0cc5f609829a5c8ae62b6e790768d6d3966acb18e6065ac545c984d"
+  val tracking95NFT = "050c7e944a0d4a918f5f8f501f888c683568b1a11c49b45f9db33ee668085661"
+  val tracking98NFT = "0583370b6d9f82a06f2c58564be4ae5f5112957056a8806a54ab883dad455467"
+  val tracking101NFT = "0587c06837859ba8f035cab9ae975491560750cb0f2eccb95c31dfb43782e7d5"
 }
 
 object DexySpec extends ContractUtils {
