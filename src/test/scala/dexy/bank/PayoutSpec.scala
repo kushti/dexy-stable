@@ -1,7 +1,7 @@
 package dexy.bank
 
-import dexy.{Common, DexySpec}
-import dexy.DexySpec.{bankAddress, bankNFT, bankScript, buybackAddress, buybackNFT, buybackScript, freeMintAddress, freeMintNFT, freeMintScript, lpNFT, lpScript, oraclePoolNFT, payoutAddress, payoutNFT, payoutScript}
+import dexy.{Common, DexySpec, TestnetTokenIds}
+import dexy.DexySpec.{bankAddress, bankScript, buybackAddress, buybackScript, freeMintAddress, freeMintScript, lpScript, payoutAddress, payoutScript}
 import kiosk.ergo.{DhtData, KioskBox, KioskInt, KioskLong}
 import kiosk.tx.TxUtil
 import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ContextVar, ErgoToken, HttpClientTesting}
@@ -10,6 +10,8 @@ import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks
   with HttpClientTesting with Common {
+
+  import TestnetTokenIds._
 
   val ergoClient = createMockedErgoClient(MockData(Nil, Nil))
 

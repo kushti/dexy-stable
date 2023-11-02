@@ -1,7 +1,7 @@
 package dexy.bank
 
-import dexy.Common
-import dexy.DexySpec.{ballotAddress, ballotTokenId, bankAddress, bankErgoTree, bankNFT, bankScript, payoutAddress, payoutNFT, updateAddress, updateNFT}
+import dexy.{Common, TestnetTokenIds}
+import dexy.DexySpec.{ballotAddress, bankAddress, bankErgoTree, bankScript, payoutAddress, updateAddress}
 import kiosk.ErgoUtil
 import kiosk.encoding.ScalaErgoConverters
 import kiosk.encoding.ScalaErgoConverters.stringToGroupElement
@@ -14,6 +14,8 @@ import scorex.crypto.hash.Blake2b256
 
 class UpdateSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks
   with HttpClientTesting with Common {
+
+  import TestnetTokenIds._
 
   val ergoClient = createMockedErgoClient(MockData(Nil, Nil))
 

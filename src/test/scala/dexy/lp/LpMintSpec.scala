@@ -1,6 +1,6 @@
 package dexy.lp
 
-import dexy.Common
+import dexy.{Common, TestnetTokenIds}
 import dexy.DexySpec._
 import kiosk.ergo.{DhtData, KioskBox}
 import kiosk.tx.TxUtil
@@ -12,10 +12,11 @@ import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 // Test Lp contract for mint Lp tokens
 class LpMintSpec  extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with HttpClientTesting with Common {
 
+  import TestnetTokenIds._
+
   val ergoClient = createMockedErgoClient(MockData(Nil, Nil))
   val fakeNanoErgs = 10000000000000L
   val dummyNanoErgs = 100000L
-
 
   property("Mint Lp (deposit Ergs and Dexy) should work") {
     val lpBalanceIn = 100000000L

@@ -287,9 +287,9 @@ object Test extends App {
 
   val utils = new OffchainUtils(
     serverUrl = "http://176.9.15.237:9052",
-    apiKey = "",
+    apiKey = "ergopass",
     localSecretStoragePath = "/home/kushti/ergo/backup/176keystore",
-    localSecretUnlockPass = "",
+    localSecretUnlockPass = "123",
     dexyScanIds = OffchainUtils.scanIds)
 
   println(utils.fetchWalletInputs().map(_.value))

@@ -1,6 +1,6 @@
 package dexy.lp
 
-import dexy.{Common, DexySpec}
+import dexy.{Common, DexySpec, TestnetTokenIds}
 import dexy.DexySpec._
 import kiosk.ergo.{DhtData, KioskBox}
 import kiosk.tx.TxUtil
@@ -11,6 +11,9 @@ import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 // Test Lp contracts for following path
 // Swap Erg and Dexy tokens using constant product formula after taking fee into account
 class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with HttpClientTesting with Common {
+
+  import TestnetTokenIds._
+
   // ToDo: Add tests (and modify contracts) such that:
   //   1. Cannot add junk registers in the end
   //   2. Cannot add junk tokens in the end

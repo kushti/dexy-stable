@@ -1,6 +1,6 @@
 package dexy.bank
 
-import dexy.Common
+import dexy.{Common, TestnetTokenIds}
 import dexy.DexySpec._
 import kiosk.ergo.{DhtData, KioskBoolean, KioskBox, KioskInt, KioskLong}
 import kiosk.tx.TxUtil
@@ -9,6 +9,8 @@ import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with HttpClientTesting with Common {
+
+  import TestnetTokenIds._
 
   val ergoClient = createMockedErgoClient(MockData(Nil, Nil))
 

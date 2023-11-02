@@ -9,6 +9,8 @@ import DexySpec._
 
 class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with HttpClientTesting with Common {
 
+  import TestnetTokenIds._
+
   val dummyTokenId = "a9e5ce5aa0d95f5d54a7bc89c46730d9662397067250aa18a0039631c0fad80a"
 
   val ergoClient = createMockedErgoClient(MockData(Nil, Nil))

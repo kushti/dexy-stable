@@ -1,7 +1,7 @@
 package dexy.lp
 
 import dexy.DexySpec._
-import dexy.{Common, DexySpec}
+import dexy.{Common, DexySpec, TestnetTokenIds}
 import kiosk.ergo.{DhtData, KioskBoolean, KioskBox, KioskInt, KioskLong}
 import kiosk.tx.TxUtil
 import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoToken, HttpClientTesting}
@@ -9,6 +9,8 @@ import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with HttpClientTesting with Common {
+
+  import TestnetTokenIds._
 
   val ergoClient = createMockedErgoClient(MockData(Nil, Nil))
 

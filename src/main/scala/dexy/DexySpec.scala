@@ -7,7 +7,83 @@ import scorex.util.encode.Base64
 import sigmastate.Values.{BooleanConstant, IntConstant, LongConstant}
 import sigmastate.serialization.ValueSerializer
 
-object DexySpec extends ContractUtils {
+trait NetworkTokenIds {
+  // oracle related tokens
+  // take token IDs below from oracle pool UI
+  // Gold Oracle Reward Token
+  val gort: String
+  val oracleTokenId: String
+  val oraclePoolNFT: String
+
+  // GORT / ERG LP
+  val gortLpNFT: String
+
+  val buybackNFT: String
+
+  val dexyTokenId: String
+
+  val lpTokenId: String
+
+  // tokens for main boxes
+  val bankNFT: String
+  val lpNFT: String
+
+  // update tokens
+  val updateNFT: String
+  val ballotTokenId: String
+
+  // all tokens below for aux boxes (1 for each type of box)
+  val interventionNFT: String
+  val freeMintNFT: String
+  val arbitrageMintNFT: String
+  val payoutNFT: String
+
+  val lpSwapNFT: String
+  val lpMintNFT: String
+  val lpRedeemNFT: String
+  val extractionNFT: String
+
+  // should be reissued every time!
+  // boxes for tracking ratio of LP rate and oracle pool rate (see details in Tracking contract)
+  val tracking95NFT: String
+  val tracking98NFT: String
+  val tracking101NFT: String
+}
+
+object MainnetTokenIds extends NetworkTokenIds {
+
+  // oracle related tokens
+  // take token IDs below from oracle pool UI
+  // Gold Oracle Reward Token
+  val gort = "7ba2a85fdb302a181578b1f64cb4a533d89b3f8de4159efece75da41041537f9"
+  val oracleTokenId = "6183680b1c4caaf8ede8c60dc5128e38417bc5b656321388b22baa43a9d150c2"
+  val oraclePoolNFT = "3c45f29a5165b030fdb5eaf5d81f8108f9d8f507b31487dd51f4ae08fe07cf4a"
+
+  // GORT / ERG LP
+  val gortLpNFT = "d1c9e20657b4e37de3cd279a994266db34b18e6e786371832ad014fd46583198"
+
+  val buybackNFT = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
+  
+  override val dexyTokenId: String = ???
+  override val lpTokenId: String = ???
+  override val bankNFT: String = ???
+  override val lpNFT: String = ???
+  override val updateNFT: String = ???
+  override val ballotTokenId: String = ???
+  override val interventionNFT: String = ???
+  override val freeMintNFT: String = ???
+  override val arbitrageMintNFT: String = ???
+  override val payoutNFT: String = ???
+  override val lpSwapNFT: String = ???
+  override val lpMintNFT: String = ???
+  override val lpRedeemNFT: String = ???
+  override val extractionNFT: String = ???
+  override val tracking95NFT: String = ???
+  override val tracking98NFT: String = ???
+  override val tracking101NFT: String = ???
+}
+
+object TestnetTokenIds extends NetworkTokenIds {
 
   // oracle related tokens
   // take token IDs below from oracle pool UI
@@ -51,6 +127,11 @@ object DexySpec extends ContractUtils {
   val tracking95NFT = "795ea72bf000b7fc1185991c460b6a4058a83115d43445c010deb26e924bfc14"
   val tracking98NFT = "930c64bdbca9e6aa17a98ae5d24add53fb766ffcc6af570965d30274c559f008"
   val tracking101NFT = "295a718de0cc5f609829a5c8ae62b6e790768d6d3966acb18e6065ac545c984d"
+}
+
+object DexySpec extends ContractUtils {
+
+  import TestnetTokenIds._
 
   // High level idea:
   // There are 3 main boxes in the protocol, and the others are auxiliary boxes to manage the main boxes

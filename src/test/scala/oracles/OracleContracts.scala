@@ -1,6 +1,6 @@
 package oracles
 
-import dexy.{Common, DexySpec}
+import dexy.{Common, DexySpec, TestnetTokenIds}
 import kiosk.encoding.ScalaErgoConverters.{getAddressFromErgoTree, getStringFromAddress}
 import kiosk.script.ScriptUtil
 import scorex.util.encode.Base64
@@ -26,9 +26,9 @@ object OracleContracts extends Common {
     minDataPoints = 4,
     buffer = 4,
     maxDeviationPercent = 5,
-    poolNFT = DexySpec.oraclePoolNFT,
+    poolNFT = TestnetTokenIds.oraclePoolNFT,
     refreshNFT = "546A576E5A7234753778214125442A472D4B614E645267556B58703273357638",
-    oracleTokenId = DexySpec.oracleTokenId,
+    oracleTokenId = TestnetTokenIds.oracleTokenId,
     updateNFT = "6251655468576D5A7134743777217A25432A462D4A404E635266556A586E3272",
     ballotTokenId = "3F4428472D4B6150645367566B5970337336763979244226452948404D625165",
     minVotes = 6,
