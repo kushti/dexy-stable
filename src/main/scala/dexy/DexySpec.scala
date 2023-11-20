@@ -182,9 +182,16 @@ object DexySpec extends ContractUtils {
 
   override val defaultSubstitutionMap = nftDictionary
 
+
+  // GORT-related scripts
+
+  // GORT dev emission script
+  val gortDevEmissionScript = readContract("gort-dev/emission.es")
+  val gortDevEmissionErgoTree = ScriptUtil.compile(Map(), gortDevEmissionScript)
+  val gortDevEmissionAddress = getStringFromAddress(getAddressFromErgoTree(gortDevEmissionErgoTree))
+
   // arbitrage mint box
   val arbitrageMintScript = readContract("bank/arbmint.es")
-
 
   // free mint box
   val freeMintScript = readContract("bank/freemint.es")
@@ -257,6 +264,10 @@ object DexySpec extends ContractUtils {
   val lpSwapSellV1Address = getStringFromAddress(getAddressFromErgoTree(lpSwapSellV1ErgoTree))
 
   def main(args: Array[String]): Unit = {
+    println(s"Gort dev emission: $gortDevEmissionAddress")
+    println(gortDevEmissionScript)
+    println()
+
     println(s"Bank: $bankAddress")
     println(bankScript)
     println()
