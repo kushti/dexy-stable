@@ -16,6 +16,9 @@ trait NetworkTokenIds {
   val oracleTokenId: String
   val oraclePoolNFT: String
 
+  // GORT dev emission contract NFT
+  val gortDevEmissionNFT: String
+
   // GORT / ERG LP
   val gortLpNFT: String
 
@@ -60,6 +63,8 @@ object MainnetTokenIds extends NetworkTokenIds {
   val oracleTokenId = "6183680b1c4caaf8ede8c60dc5128e38417bc5b656321388b22baa43a9d150c2"
   val oraclePoolNFT = "3c45f29a5165b030fdb5eaf5d81f8108f9d8f507b31487dd51f4ae08fe07cf4a"
 
+  val gortDevEmissionNFT: String = ???
+
   // GORT / ERG LP
   val gortLpNFT = "d1c9e20657b4e37de3cd279a994266db34b18e6e786371832ad014fd46583198"
 
@@ -92,6 +97,8 @@ object TestnetTokenIds extends NetworkTokenIds {
   val gort = "01510156b109cd66c41a703c9911925ab305e4fe2bdc898680ad255c6972c404"
   val oracleTokenId = "001e182cc3f04aec4486c7a5018d198e9591a7cfb0b372f5f95fa3e5ddbd24d3"
   val oraclePoolNFT = "d94bfac40b516353983443209104dcdd5b7ca232a01ccb376ee8014df6330907"
+
+  val gortDevEmissionNFT: String = "d94bfac40b516353983443209104dcdd5b7ca232a01ccb376ee8014df6330907" // todo: not real
 
   // GORT / ERG LP
   val gortLpNFT = "043ea12f03769748e436c003886c455ddf1a7cd4aafbd214602822d5213f4e68"
@@ -151,6 +158,7 @@ object DexySpec extends ContractUtils {
   val feeDenomLp = 1000
 
   val nftDictionary: Map[String, String] = Map(
+    "gortDevEmissionNFT" -> gortDevEmissionNFT,
     "oracleTokenId" -> oracleTokenId,
     "gortId" -> gort,
     "gortLpNFT" -> gortLpNFT,

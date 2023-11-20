@@ -1,3 +1,3 @@
 Amount;Receiver;Comment;Tx id;Total got by receiver
 ------------------------------
-200;scalahub;first payment;;200
+200;scalahub;first payment;https://explorer.ergoplatform.com/transactions/72e57c06ae1de3eec711e6d7a918700f36d1adf5b0381dddc81b2275c7b50e4f;200
