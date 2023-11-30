@@ -72,9 +72,9 @@
     val validSwap =
       deltaSupplyLp == 0 && (
         if (deltaReservesX > 0)
-           deltaReservesY.toBigInt * reservesXIn * feeDenom >= deltaReservesX.toBigInt * (feeNum - feeDenom) * reservesYIn
+            reservesYIn.toBigInt * deltaReservesX * feeNum >= -deltaReservesY * (reservesXIn.toBigInt * feeDenom + deltaReservesX * feeNum)
         else
-           deltaReservesX.toBigInt * reservesYIn * feeDenom >= deltaReservesY.toBigInt * (feeNum - feeDenom) * reservesXIn
+            reservesXIn.toBigInt * deltaReservesY * feeNum >= -deltaReservesX * (reservesYIn.toBigInt * feeDenom + deltaReservesY * feeNum)
       )
 
     val selfPreserved = successor.propositionBytes == SELF.propositionBytes  &&

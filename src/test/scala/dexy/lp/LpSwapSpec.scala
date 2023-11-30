@@ -32,8 +32,8 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
 
     val rate = reservesYIn.toDouble / reservesXIn
     val sellX = 10000000L
-    val buyY = (sellX * rate * (feeDenomLp - feeNumLp) / feeDenomLp).toLong
-    assert(buyY == 997)
+    val buyY = (sellX * rate * feeNumLp / feeDenomLp).toLong - 1 // 1 token less to prevent rounding issues
+    assert(buyY == 996)
 
     val reservesXOut = reservesXIn + sellX
     val reservesYOut = reservesYIn - buyY
@@ -41,7 +41,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val deltaReservesX = reservesXOut - reservesXIn
     val deltaReservesY = reservesYOut - reservesYIn
 
-    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp == BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
+    assert(BigInt(reservesYIn) * deltaReservesX * feeNumLp >= -deltaReservesY * (BigInt(reservesXIn) * feeDenomLp + deltaReservesX * feeNumLp))
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val fundingBox =
@@ -117,7 +117,8 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
 
     val rate = reservesYIn.toDouble / reservesXIn
     val sellX = 10000000L
-    val buyY = (sellX * rate * (feeDenomLp - feeNumLp) / feeDenomLp).toLong * 101 / 100 // <-- taking +1%
+    val buyY = (sellX * rate * feeNumLp / feeDenomLp).toLong * 101 / 100 // <-- taking +1%
+    println("by: " + buyY)
 
     val reservesXOut = reservesXIn + sellX
     val reservesYOut = reservesYIn - buyY
@@ -126,7 +127,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val deltaReservesY = reservesYOut - reservesYIn
 
     // condition reverse to normal one used in LP contract
-    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp < BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
+    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp < BigInt(deltaReservesX) * feeNumLp * reservesYIn)
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val fundingBox =
@@ -202,7 +203,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
 
     val rate = reservesYIn.toDouble / reservesXIn
     val sellX = 10000000L
-    val buyY = (sellX * rate * (feeDenomLp - feeNumLp) / feeDenomLp).toLong
+    val buyY = (sellX * rate * (feeNumLp) / feeDenomLp).toLong
     assert(buyY == 997)
 
     val reservesXOut = reservesXIn + sellX
@@ -211,7 +212,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val deltaReservesX = reservesXOut - reservesXIn
     val deltaReservesY = reservesYOut - reservesYIn
 
-    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp == BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
+    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp == BigInt(deltaReservesX) * (-feeNumLp) * reservesYIn)
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val fundingBox =
@@ -286,7 +287,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
 
     val rate = reservesYIn.toDouble / reservesXIn
     val sellX = 10000000L
-    val buyY = (sellX * rate * (feeDenomLp - feeNumLp) / feeDenomLp).toLong
+    val buyY = (sellX * rate * (feeNumLp) / feeDenomLp).toLong
     assert(buyY == 997)
 
     val reservesXOut = reservesXIn + sellX
@@ -295,7 +296,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val deltaReservesX = reservesXOut - reservesXIn
     val deltaReservesY = reservesYOut - reservesYIn
 
-    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp == BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
+    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp == BigInt(deltaReservesX) * (-feeNumLp) * reservesYIn)
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val fundingBox =
@@ -370,7 +371,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
 
     val rate = reservesYIn.toDouble / reservesXIn
     val sellX = 10000000L
-    val buyY = (sellX * rate * (feeDenomLp - feeNumLp) / feeDenomLp).toLong
+    val buyY = (sellX * rate * (feeNumLp) / feeDenomLp).toLong
     assert(buyY == 997)
 
     val reservesXOut = reservesXIn + sellX
@@ -379,7 +380,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val deltaReservesX = reservesXOut - reservesXIn
     val deltaReservesY = reservesYOut - reservesYIn
 
-    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp == BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
+    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp == BigInt(deltaReservesX) * (-feeNumLp) * reservesYIn)
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val fundingBox =
@@ -459,7 +460,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
 
     val rate = reservesYIn.toDouble / reservesXIn
     val sellX = 10000000L
-    val buyY = (sellX * rate * (feeDenomLp - feeNumLp) / feeDenomLp).toLong
+    val buyY = (sellX * rate * (feeNumLp) / feeDenomLp).toLong
     assert(buyY == 997)
 
     val reservesXOut = reservesXIn + sellX
@@ -468,7 +469,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val deltaReservesX = reservesXOut - reservesXIn
     val deltaReservesY = reservesYOut - reservesYIn
 
-    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp == BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
+    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp == BigInt(deltaReservesX) * (-feeNumLp) * reservesYIn)
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val fundingBox =
@@ -550,7 +551,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
 
     val rate = reservesYIn.toDouble / reservesXIn
     val sellX = 10000000L
-    val buyY = (sellX * rate * (feeDenomLp - feeNumLp) / feeDenomLp).toLong
+    val buyY = (sellX * rate * (feeNumLp) / feeDenomLp).toLong
     assert(buyY == 997)
 
     val reservesXOut = reservesXIn + sellX
@@ -559,7 +560,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val deltaReservesX = reservesXOut - reservesXIn
     val deltaReservesY = reservesYOut - reservesYIn
 
-    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp == BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
+    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp == BigInt(deltaReservesX) * (-feeNumLp) * reservesYIn)
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val fundingBox =
@@ -639,7 +640,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
 
     val rate = reservesYIn.toDouble / reservesXIn
     val sellX = 10000000L
-    val buyY = (sellX * rate * (feeDenomLp - feeNumLp) / feeDenomLp).toLong
+    val buyY = (sellX * rate * (feeNumLp) / feeDenomLp).toLong
     assert(buyY == 997)
 
     val reservesXOut = reservesXIn + sellX
@@ -648,7 +649,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val deltaReservesX = reservesXOut - reservesXIn
     val deltaReservesY = reservesYOut - reservesYIn
 
-    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp == BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
+    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp == BigInt(deltaReservesX) * (-feeNumLp) * reservesYIn)
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val fundingBox =
@@ -728,7 +729,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
 
     val rate = reservesYIn.toDouble / reservesXIn
     val sellX = 10000000L
-    val buyY = (sellX * rate * (feeDenomLp - feeNumLp) / feeDenomLp).toLong + 1 // taken 1 more dexy token than allowed
+    val buyY = (sellX * rate * (feeNumLp) / feeDenomLp).toLong + 1 // taken 1 more dexy token than allowed
     assert(buyY == 998)
 
     val reservesXOut = reservesXIn + sellX
@@ -737,7 +738,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val deltaReservesX = reservesXOut - reservesXIn
     val deltaReservesY = reservesYOut - reservesYIn
 
-    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp < BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
+    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp < BigInt(deltaReservesX) * (-feeNumLp) * reservesYIn)
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val fundingBox =
@@ -805,15 +806,14 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     }
   }
 
-  property("Swap (sell Dexy) should work - w. simple inout") {
+  property("Swap (sell Dexy) should work - w. simple input") {
     val lpBalance = 100000000L
     val reservesXIn = 1000000000000L
     val reservesYIn = 100000000L
 
     val rate = reservesXIn.toDouble / reservesYIn
     val sellY = 1000L
-    val buyX = (sellY * rate * (feeDenomLp - feeNumLp) / feeDenomLp).toLong
-    assert(buyX == 9970000)
+    val buyX = (sellY * rate * (feeNumLp) / feeDenomLp).toLong - 100 // -100 to avoid rounding errors
 
     val reservesXOut = reservesXIn - buyX
     val reservesYOut = reservesYIn + sellY
@@ -821,7 +821,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val deltaReservesX = reservesXOut - reservesXIn
     val deltaReservesY = reservesYOut - reservesYIn
 
-    assert(BigInt(deltaReservesX) * reservesYIn * feeDenomLp >= BigInt(deltaReservesY) * (feeNumLp - feeDenomLp) * reservesXIn)
+    assert(BigInt(reservesXIn) * deltaReservesY * feeNumLp >= -deltaReservesX * (BigInt(reservesYIn) * feeDenomLp + deltaReservesY * feeNumLp))
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val fundingBox =
@@ -898,7 +898,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
 
     val rate = reservesXIn.toDouble / reservesYIn
     val sellY = 1000L
-    val buyX = (sellY * rate * (feeDenomLp - feeNumLp) / feeDenomLp).toLong + 1 // take one NanoErg extra
+    val buyX = (sellY * rate * (feeNumLp) / feeDenomLp).toLong + 1 // take one NanoErg extra
     assert(buyX == 9970001)
 
     val reservesXOut = reservesXIn - buyX
@@ -907,7 +907,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val deltaReservesX = reservesXOut - reservesXIn
     val deltaReservesY = reservesYOut - reservesYIn
 
-    assert(BigInt(deltaReservesX) * reservesYIn * feeDenomLp < BigInt(deltaReservesY) * (feeNumLp - feeDenomLp) * reservesXIn)
+    assert(BigInt(deltaReservesX) * reservesYIn * feeDenomLp < BigInt(deltaReservesY) * (-feeNumLp) * reservesXIn)
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val fundingBox =
@@ -1053,8 +1053,8 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
 
     val rate = reservesYIn.toDouble / reservesXIn
     val sellX = 10000000L
-    val buyY = (sellX * rate * (feeDenomLp - feeNumLp) / feeDenomLp).toLong
-    assert(buyY == 997)
+    val buyY = (sellX * rate * (feeNumLp) / feeDenomLp).toLong - 1
+    assert(buyY == 996)
 
     val reservesXOut = reservesXIn + sellX
     val reservesYOut = reservesYIn - buyY
@@ -1062,7 +1062,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val deltaReservesX = reservesXOut - reservesXIn
     val deltaReservesY = reservesYOut - reservesYIn
 
-    assert(BigInt(deltaReservesY) * reservesXIn * feeDenomLp == BigInt(deltaReservesX) * (feeNumLp - feeDenomLp) * reservesYIn)
+    assert(BigInt(reservesYIn) * deltaReservesX * feeNumLp >= -deltaReservesY * (BigInt(reservesXIn) * feeDenomLp + deltaReservesX * feeNumLp))
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
@@ -1150,8 +1150,8 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val rate = reservesXIn.toDouble / reservesYIn
 
     val sellY = 1000L
-    val buyX = (sellY * rate * (feeDenomLp - feeNumLp) / feeDenomLp).toLong
-    assert(buyX == 9970000)
+    val buyX = (sellY * rate * (feeNumLp) / feeDenomLp).toLong - 100 // - 100 to avoid rounding errors
+    assert(buyX == 9969900)
 
     val DexFeePerTokenNum   = 1L
     val DexFeePerTokenDenom = 1000L
@@ -1165,7 +1165,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val deltaReservesX = reservesXOut - reservesXIn
     val deltaReservesY = reservesYOut - reservesYIn
 
-    assert(BigInt(deltaReservesX) * reservesYIn * feeDenomLp >= BigInt(deltaReservesY) * (feeNumLp - feeDenomLp) * reservesXIn)
+    assert(BigInt(reservesXIn) * deltaReservesY * feeNumLp >= -deltaReservesX * (BigInt(reservesYIn) * feeDenomLp + deltaReservesY * feeNumLp))
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val fundingBox =

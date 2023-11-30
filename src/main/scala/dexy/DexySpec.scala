@@ -138,7 +138,7 @@ object TestnetTokenIds extends NetworkTokenIds {
 object DexySpec extends ContractUtils {
 
   import TestnetTokenIds._
-  val networkPrefix = TestnetNetworkPrefix
+  val networkPrefix = MainnetNetworkPrefix
 
   // High level idea:
   // There are 3 main boxes in the protocol, and the others are auxiliary boxes to manage the main boxes
@@ -154,7 +154,7 @@ object DexySpec extends ContractUtils {
   val initialLp =
     100000000000L // initially how many Lp minted (and we need to add that many to tokens(1), after removing some for token burning as in UniSwap v2)
 
-  val feeNumLp = 3
+  val feeNumLp = 997
   val feeDenomLp = 1000
 
   val nftDictionary: Map[String, String] = Map(
