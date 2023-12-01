@@ -101,44 +101,44 @@ object TestnetTokenIds extends NetworkTokenIds {
   val gortDevEmissionNFT: String = "d94bfac40b516353983443209104dcdd5b7ca232a01ccb376ee8014df6330907" // todo: not real
 
   // GORT / ERG LP
-  val gortLpNFT = "043ea12f03769748e436c003886c455ddf1a7cd4aafbd214602822d5213f4e68"
+  val gortLpNFT = "043ea12f03769748e436c003886c455ddf1a7cd4aafbd214602822d5213f4e68" // todo: not real
 
-  val buybackNFT = "0158bb202fdf8eacdd4b08e972776077284e5a69708af719669e6f65ceeaf809"
+  val buybackNFT = "0158bb202fdf8eacdd4b08e972776077284e5a69708af719669e6f65ceeaf809" // todo: not real
 
-  val dexyTokenId = "0160b869f30a5424e59cb3453e8a726b81fe83761d02ab41829cb7b2e4b624bc"
+  val dexyTokenId = "0d69a552b30df9be519099ec07682039b0610267aaee48d2a1d3dad398287ef5"
 
-  val lpTokenId = "01be480a89df53f3c88c08478e8433f388130c8845630e87016809e1791ea57f"
+  val lpTokenId = "0e1f9fb56d3e2ab827cdf4a39ad59c679188ce7fc71df1572f58ae5b7b08ec2f"
 
   // tokens for main boxes
-  val bankNFT = "0226551966f8ce4be3beb8c55892ca32076a7eaf3632c473a3094c337eca6344"
-  val lpNFT = "024e4ff49356d696d5da6a5c2b1408d24f9074cb38257871524dd8d5915ab636"
+  val bankNFT = "0f6209f38beb3189e897df42189b858a2f9d96e0d00d6036333ca4bccc11af22"
+  val lpNFT = "0fa04f3851b18085f160d90bc3dba1c63f2fdc73f884c9fd94395dbfc9c293b6"
 
   // update tokens
-  val updateNFT = "a1cf4b74becdcfa26e132ff950ed38c2d8b9f0f05048c39da995baf7a4f3766d"
-  val ballotTokenId = "027b2daff5513c9b10b719e64948f4685df330dd493cbe8931c8853d1bc9e8f2"
+  val updateNFT = "0faa129eecdfc04ba4b454bbf33785f89f9f56eda2df0577d610da3adce65ddb"
+  val ballotTokenId = "0fbc880ca7be40e36b4fb112aaba83dd44bd613ee171c4775a5c6ae4d358e644"
 
   // all tokens below for aux boxes (1 for each type of box)
-  val interventionNFT = "02892b9bbdf4575b557648972e75148fbbf4ff52751ee6c5718f3ce55fd3b61a"
-  val freeMintNFT = "02aa17b1d1c542b0f6ac32b8cd894e36e2701fc15b83765babc2f1bcce779db2"
-  val arbitrageMintNFT = "030bffaf2d9603c7d05c1887c67cfae9a8902a4c1d6bdd42bd6e394251a92650"
-  val payoutNFT = "037dbf9880f9b3588dad0955533e1e1be93432f657cd6618dd91a456d08d28d2"
+  val interventionNFT = "102a5f871dd4f3b051dc3295068a5f69af148b5fe9d182353798b67c013f9d9e"
+  val freeMintNFT = "113b18ca82b272dca4499a847ab4ea792cd9f92bd98f5f9975dc1fd2160615ff"
+  val arbitrageMintNFT = "1201d3bb72a9c212d37fdea2a76d0e1857a4f69189901c3fad02b8723174b98c"
+  val payoutNFT = "126a63cd06bdb020a48bb76a5927c67e50ac20a2c3d05fb1e2489b4e41be4339"
 
-  val lpSwapNFT = "04ba758620d5e0d54cd4db52bf71834f4f6aad06be47ac7e025a1f5b666ab437"
-  val lpMintNFT = "04eb5c28222ca3158f7dbfe9f7a6a80400ebd0058231b3dd7617643d01dd1172"
-  val lpRedeemNFT = "04efcc96ec0519de9228d47e9a20f5fc07ae6acf2befff5e30ec51d0c8ffca9e"
-  val extractionNFT = "04ff942b4ea09322087a77fdb7d1308e005bc9f56b0361974cc786f298106794"
+  val lpSwapNFT = "1290ef3c02310d7dd110a9cc6b0a0aa3b4d669ed4c75b3ed9b25652b9189e50d"
+  val lpMintNFT = "12a1cfce7a3ad46b3d7d8a78bf1ec29c210f1ab8216a5670ed6ea0af8abd19b4"
+  val lpRedeemNFT = "12e5820470d332344c73ad21f5b1249c40f2ecbdd8d51db3f912944c279db909"
+  val extractionNFT = "12f11de6defb4478423b08c01a50affa63d4c4ba7a070c87fb66f58ea7c0e4db"
 
   // should be reissued every time!
   // boxes for tracking ratio of LP rate and oracle pool rate (see details in Tracking contract)
-  val tracking95NFT = "050c7e944a0d4a918f5f8f501f888c683568b1a11c49b45f9db33ee668085661"
-  val tracking98NFT = "0583370b6d9f82a06f2c58564be4ae5f5112957056a8806a54ab883dad455467"
-  val tracking101NFT = "0587c06837859ba8f035cab9ae975491560750cb0f2eccb95c31dfb43782e7d5"
+  val tracking95NFT = "13a2cc2c2f2954d8b336a0fe95d0ac21e29eb8f60de82661d54b1b8c48e52a86"
+  val tracking98NFT = "13aa951ba2b7f82da62e1b970eca3b8f30ddbf331f8010d60094488ba938f31b"
+  val tracking101NFT = "1432466dbf0c15294546086e6a76701c89a1a6ed6f9179242151d72c92f79f3b"
 }
 
 object DexySpec extends ContractUtils {
 
   import TestnetTokenIds._
-  val networkPrefix = MainnetNetworkPrefix
+  val networkPrefix = TestnetNetworkPrefix
 
   // High level idea:
   // There are 3 main boxes in the protocol, and the others are auxiliary boxes to manage the main boxes

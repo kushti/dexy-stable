@@ -67,14 +67,15 @@ object DexyLpSwap extends App {
       ???
     }
 
+    val feeNum = 997
+    val feeDenom = 1000
+
     val outputDexy  = if (dexyAmount > 0) {
       inputDexy + dexyAmount
     } else {
-      val feeNum = 3
-      val feeDenom = 1000
-      val deltaDexy = (outputErg - inputErg).toBigInt * (feeNum - feeDenom).toBigInt * inputDexy.toBigInt / (inputErg * feeDenom).toBigInt
+      val deltaDexy = (outputErg - inputErg).toBigInt * feeNum.toBigInt * inputDexy.toBigInt / (inputErg * feeDenom).toBigInt
       // deltaDexy is negative
-      inputDexy + deltaDexy.toLong
+      inputDexy + (-deltaDexy.toLong)
     }
 
     println(s"In ERG: $inputErg, dexy: $inputDexy")
@@ -83,7 +84,7 @@ object DexyLpSwap extends App {
 
     val rate = inputDexy.toDouble / inputErg
     val sellX = nanoErgs
-    val buyY = (sellX * rate * (feeDenomLp - 3) / feeDenomLp).toLong
+    val buyY = (sellX * rate * feeNum/ feeDenomLp).toLong
     println(s"Double-check: $buyY vs ${inputDexy - outputDexy}")
 
     val outputDexy2 = ((outputErg - inputErg).toBigInt * (3 - 1000).toBigInt * inputDexy.toBigInt * 1000.toBigInt / (inputErg.toBigInt)) + inputDexy.toBigInt * 1000000L.toBigInt
@@ -124,5 +125,5 @@ object DexyLpSwap extends App {
   println("Oracle price: " + utils.oraclePrice)
   println("Ratio: " + utils.dexPrice.toDouble / utils.oraclePrice)
   println("Pool size: " + lpBox().value / 1000000000L + " ERG")
-  inject(40000000000000L,0)
+  inject(4000000000000L,0)
 }

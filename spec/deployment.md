@@ -25,77 +25,38 @@ gort = "01510156b109cd66c41a703c9911925ab305e4fe2bdc898680ad255c6972c404"
 oracleTokenId = "001e182cc3f04aec4486c7a5018d198e9591a7cfb0b372f5f95fa3e5ddbd24d3"
 oraclePoolNFT = "d94bfac40b516353983443209104dcdd5b7ca232a01ccb376ee8014df6330907"
 
-gortLpNFT = "043ea12f03769748e436c003886c455ddf1a7cd4aafbd214602822d5213f4e68"
+gortDevEmissionNFT: String = "d94bfac40b516353983443209104dcdd5b7ca232a01ccb376ee8014df6330907" // todo: not real
 
-buybackNFT = "0158bb202fdf8eacdd4b08e972776077284e5a69708af719669e6f65ceeaf809"
+// GORT / ERG LP
+gortLpNFT = "043ea12f03769748e436c003886c455ddf1a7cd4aafbd214602822d5213f4e68" // todo: not real
 
-dexyTokenId = "0160b869f30a5424e59cb3453e8a726b81fe83761d02ab41829cb7b2e4b624bc"
+buybackNFT = "0158bb202fdf8eacdd4b08e972776077284e5a69708af719669e6f65ceeaf809" // todo: not real
 
-lpTokenId = "01be480a89df53f3c88c08478e8433f388130c8845630e87016809e1791ea57f"
+dexyTokenId = "0d69a552b30df9be519099ec07682039b0610267aaee48d2a1d3dad398287ef5"
 
-bankNFT = "0226551966f8ce4be3beb8c55892ca32076a7eaf3632c473a3094c337eca6344"
-lpNFT = "024e4ff49356d696d5da6a5c2b1408d24f9074cb38257871524dd8d5915ab636"
+lpTokenId = "0e1f9fb56d3e2ab827cdf4a39ad59c679188ce7fc71df1572f58ae5b7b08ec2f"
 
-updateNFT = "a1cf4b74becdcfa26e132ff950ed38c2d8b9f0f05048c39da995baf7a4f3766d"
-ballotTokenId = "027b2daff5513c9b10b719e64948f4685df330dd493cbe8931c8853d1bc9e8f2"
+// tokens for main boxes
+bankNFT = "0f6209f38beb3189e897df42189b858a2f9d96e0d00d6036333ca4bccc11af22"
+lpNFT = "0fa04f3851b18085f160d90bc3dba1c63f2fdc73f884c9fd94395dbfc9c293b6"
 
-interventionNFT = "02892b9bbdf4575b557648972e75148fbbf4ff52751ee6c5718f3ce55fd3b61a"
-freeMintNFT = "02aa17b1d1c542b0f6ac32b8cd894e36e2701fc15b83765babc2f1bcce779db2"
-arbitrageMintNFT = "030bffaf2d9603c7d05c1887c67cfae9a8902a4c1d6bdd42bd6e394251a92650"
-payoutNFT = "037dbf9880f9b3588dad0955533e1e1be93432f657cd6618dd91a456d08d28d2"
+// update tokens
+updateNFT = "0faa129eecdfc04ba4b454bbf33785f89f9f56eda2df0577d610da3adce65ddb"
+ballotTokenId = "0fbc880ca7be40e36b4fb112aaba83dd44bd613ee171c4775a5c6ae4d358e644"
 
-lpSwapNFT = "04ba758620d5e0d54cd4db52bf71834f4f6aad06be47ac7e025a1f5b666ab437"
-lpMintNFT = "04eb5c28222ca3158f7dbfe9f7a6a80400ebd0058231b3dd7617643d01dd1172"
-lpRedeemNFT = "04efcc96ec0519de9228d47e9a20f5fc07ae6acf2befff5e30ec51d0c8ffca9e"
-extractionNFT = "04ff942b4ea09322087a77fdb7d1308e005bc9f56b0361974cc786f298106794"
+// all tokens below for aux boxes (1 for each type of box)
+interventionNFT = "102a5f871dd4f3b051dc3295068a5f69af148b5fe9d182353798b67c013f9d9e"
+freeMintNFT = "113b18ca82b272dca4499a847ab4ea792cd9f92bd98f5f9975dc1fd2160615ff"
+arbitrageMintNFT = "1201d3bb72a9c212d37fdea2a76d0e1857a4f69189901c3fad02b8723174b98c"
+payoutNFT = "126a63cd06bdb020a48bb76a5927c67e50ac20a2c3d05fb1e2489b4e41be4339"
 
-tracking95NFT = "050c7e944a0d4a918f5f8f501f888c683568b1a11c49b45f9db33ee668085661"
-tracking98NFT = "0583370b6d9f82a06f2c58564be4ae5f5112957056a8806a54ab883dad455467"
-tracking101NFT = "0587c06837859ba8f035cab9ae975491560750cb0f2eccb95c31dfb43782e7d5"
+lpSwapNFT = "1290ef3c02310d7dd110a9cc6b0a0aa3b4d669ed4c75b3ed9b25652b9189e50d"
+lpMintNFT = "12a1cfce7a3ad46b3d7d8a78bf1ec29c210f1ab8216a5670ed6ea0af8abd19b4"
+lpRedeemNFT = "12e5820470d332344c73ad21f5b1249c40f2ecbdd8d51db3f912944c279db909"
+extractionNFT = "12f11de6defb4478423b08c01a50affa63d4c4ba7a070c87fb66f58ea7c0e4db"
 
-### Deployment transactions
-
-* Tracking 95% contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/b87f18fe948138cbb241993d6c40a3bdd9c74c11ce6c4f5c39d1cb511ebaa917
-
-* Tracking 98% contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/88be093f605f3dc8ce8d717ff3a6e004e01538fd703f9e694992fe5ba35bea5c
-
-* Tracking 101% contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/b57e66dd873d579bd89d6c7777cbfd34befd204136b680ed7c02c26a16064ace
-
-* Arbitrage mint contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/14a2a96551fb4d58dbeff6f247953d5c5c15db29baa05dc747dd14aeff50f4fc
-
-* Bank contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/ec21dba4c81c8bd7145e510befe5109c1920eab4dad1e6b2d7d435454bf5a5b6
-
-* Buyback contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/af4ffd95bfecf4b1bf8bfa9314d706ff2201fad76e7657d9096dd7daa34edee1
-
-* Freemint contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/e79fa7d1be02cf21582e195fbbc615b3cbe7cd53d877cba2d709a4258ad960a1
-
-* Payout contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/7d763b556d92258b4ab98b3de0c1e7db15559f2860e6f84caa7607a7560b0586
-
-* Intervention contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/e77e5ef051fcbd4ea84dfdd1c58f8ce611ce35a83beaae722868f78a9b6a58c3
-
-* LP swap contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/42c7e91c6da38c69a2380cc050b46e32233a0de051e8907d41c6e41e64f966a0
-
-* LP mint contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/f2114e5037ef6511544d1fd176113ef1883871eaf6c0b4cf7e3924b79f6a95bc
-
-* LP redeem contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/91a5e1b41d16161c71e73c539c0dc4c7486537961138c34d95072866518cc11a
-
-* LP extract contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/9c19ff2303aefe150d2703eec586f9fbc55461fb9264f1a0f9a3ba89ab150558
-
-* LP contract deployment transaction:
-https://testnet.ergoplatform.com/en/transactions/b66762a5ae02681bbe04b5da18a70c3ad9b9b2a7267a8b8c68d00394f1a121d8
-
-
-// TODO: gort LP
+// should be reissued every time!
+// boxes for tracking ratio of LP rate and oracle pool rate (see details in Tracking contract)
+tracking95NFT = "13a2cc2c2f2954d8b336a0fe95d0ac21e29eb8f60de82661d54b1b8c48e52a86"
+tracking98NFT = "13aa951ba2b7f82da62e1b970eca3b8f30ddbf331f8010d60094488ba938f31b"
+tracking101NFT = "1432466dbf0c15294546086e6a76701c89a1a6ed6f9179242151d72c92f79f3b"
