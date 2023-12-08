@@ -2,7 +2,7 @@
   // taken from https://github.com/spectrum-finance/ergo-dex/blob/master/contracts/amm/cfmm/v1/n2t/SwapSell.sc
 
   val FeeDenom            = 1000
-  val FeeNum              = 3
+  val FeeNum              = 997
   val DexFeePerTokenNum   = 10L
   val DexFeePerTokenDenom = 100000L
   val MinQuoteAmount      = 800L
@@ -27,7 +27,7 @@
       val quoteAmount = quoteAsset._2.toBigInt
 
       val fairDexFee =
-        rewardBox.value >= SELF.value - quoteAmount * DexFeePerTokenNum / DexFeePerTokenDenom - BaseAmount
+        poolReservesY * BaseAmount * FeeNum <= relaxedOutput * (poolReservesX * FeeDenom + BaseAmount * FeeNum)
 
       val relaxedOutput = quoteAmount + 1 // handle rounding loss
       val fairPrice =
