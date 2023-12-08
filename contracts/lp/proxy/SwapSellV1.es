@@ -27,11 +27,11 @@
       val quoteAmount = quoteAsset._2.toBigInt
 
       val fairDexFee =
-        poolReservesY * BaseAmount * FeeNum <= relaxedOutput * (poolReservesX * FeeDenom + BaseAmount * FeeNum)
+              rewardBox.value >= SELF.value - quoteAmount * DexFeePerTokenNum / DexFeePerTokenDenom - BaseAmount
 
       val relaxedOutput = quoteAmount + 1 // handle rounding loss
       val fairPrice =
-        poolReservesY * BaseAmount * (FeeDenom - FeeNum) <= relaxedOutput * (poolReservesX * FeeDenom + BaseAmount * (FeeDenom - FeeNum))
+              poolReservesY * BaseAmount * FeeNum <= relaxedOutput * (poolReservesX * FeeDenom + BaseAmount * FeeNum)
 
   //    val validMinerFee = OUTPUTS.map { (o: Box) =>
   //      if (o.propositionBytes == MinerPropBytes) o.value else 0L
