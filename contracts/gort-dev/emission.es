@@ -22,7 +22,7 @@
         selfOut.propositionBytes == SELF.propositionBytes && // todo: skip first byte
         selfOut.value >= SELF.value
     )
-  } else {
+  } else {  // withdrawal
     val newHeight = SELF.R4[Int].get
     sigmaProp(
         selfOut.tokens(0) == SELF.tokens(0) &&
