@@ -1,7 +1,7 @@
 package hodl
 
 import dexy.Common
-import dexy.DexySpec.readContract
+import dexy.chainutils.DexySpec.readContract
 import kiosk.encoding.ScalaErgoConverters.{getAddressFromErgoTree, getStringFromAddress}
 import kiosk.ergo.{DhtData, KioskBox, KioskLong}
 import kiosk.script.ScriptUtil

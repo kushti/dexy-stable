@@ -1,6 +1,7 @@
 package oracles
 
-import dexy.{Common, DexySpec, TestnetTokenIds}
+import dexy.Common
+import dexy.chainutils.TestnetTokenIds
 import kiosk.encoding.ScalaErgoConverters.{getAddressFromErgoTree, getStringFromAddress}
 import kiosk.script.ScriptUtil
 import scorex.util.encode.Base64

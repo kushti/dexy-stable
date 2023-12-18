@@ -7,6 +7,9 @@ import scorex.util.ModifierId
 import sigmastate.Values.IntConstant
 import sigmastate.interpreter.ContextExtension
 
+/**
+ * Offchain functions to work with GORT buyback contract
+ */
 object BuyBackUtils extends App {
   val fakeScanIds = DexyScanIds(1, 1, 1, 1, 1, 1)
 

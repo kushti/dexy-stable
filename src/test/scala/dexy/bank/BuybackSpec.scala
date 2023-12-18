@@ -1,6 +1,6 @@
 package dexy.bank
 
-import dexy.{Common, TestnetTokenIds}
+import dexy.Common
 import kiosk.ergo.{DhtData, KioskBox, KioskInt, KioskLong}
 import kiosk.tx.TxUtil
 import oracles.OracleHelpers
@@ -13,9 +13,9 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
 
   import gort.OrdinaryLp._
   import oracles.OracleContracts._
-  import dexy.DexySpec._
+  import dexy.chainutils.DexySpec._
 
-  import TestnetTokenIds._
+  import dexy.chainutils.TestnetTokenIds._
 
   val ergoClient = createMockedErgoClient(MockData(Nil, Nil))
 

@@ -1,7 +1,7 @@
 package dexy.lp
 
-import dexy.{Common, TestnetTokenIds}
-import dexy.DexySpec._
+import dexy.Common
+import dexy.chainutils.DexySpec._
 import kiosk.ergo.{DhtData, KioskBox, KioskLong}
 import kiosk.tx.TxUtil
 import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoToken, HttpClientTesting}
@@ -11,7 +11,7 @@ import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 // Test Lp contract for redeem Lp tokens
 class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with HttpClientTesting with Common {
 
-  import TestnetTokenIds._
+  import dexy.chainutils.TestnetTokenIds._
 
   val ergoClient = createMockedErgoClient(MockData(Nil, Nil))
   val fakeNanoErgs = 10000000000000L

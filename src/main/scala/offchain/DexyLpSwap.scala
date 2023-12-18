@@ -1,7 +1,7 @@
 package offchain
 
-import dexy.TestnetTokenIds
-import dexy.DexySpec.feeDenomLp
+import dexy.chainutils.DexySpec.feeDenomLp
+import dexy.chainutils.TestnetTokenIds
 import org.ergoplatform.ErgoBox.TokenId
 import org.ergoplatform.modifiers.mempool.UnsignedErgoTransaction
 import org.ergoplatform.wallet.TokensMap

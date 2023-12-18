@@ -1,8 +1,8 @@
-package dexy
+package dexy.chainutils
 
-import dexy.ScriptUtil.{getAddressFromErgoTree, getStringFromAddress}
+import dexy.chainutils.ScriptUtil.{getAddressFromErgoTree, getStringFromAddress}
 import kiosk.ergo._
-import org.ergoplatform.ErgoAddressEncoder.{MainnetNetworkPrefix, TestnetNetworkPrefix}
+import org.ergoplatform.ErgoAddressEncoder.MainnetNetworkPrefix
 import scorex.crypto.encode.Base16
 import scorex.util.encode.Base64
 import sigmastate.Values.{BooleanConstant, IntConstant, LongConstant}

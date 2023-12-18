@@ -1,4 +1,4 @@
-package dexy
+package dexy.chainutils
 
 import kiosk.ergo._
 import org.ergoplatform.{ErgoAddress, ErgoAddressEncoder}

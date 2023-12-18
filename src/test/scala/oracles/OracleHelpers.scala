@@ -1,6 +1,6 @@
 package oracles
 
-import dexy.{Common, DexySpec, TestnetTokenIds}
+import dexy.Common
 import kiosk.ergo.{DhtData, KioskBox, KioskGroupElement, KioskInt, KioskLong}
 import kiosk.tx.TxUtil
 import oracles.OracleContracts.config
@@ -10,7 +10,7 @@ import kiosk.encoding.ScalaErgoConverters.{stringToGroupElement => str2Grp}
 import special.sigma.GroupElement
 
 trait OracleHelpers extends Common {
-  import TestnetTokenIds._
+  import dexy.chainutils.TestnetTokenIds._
 
   private lazy val keyPairs: Array[(KioskGroupElement, BigInt)] = Array(
     "9eiuh5bJtw9oWDVcfJnwTm1EHfK5949MEm5DStc2sD1TLwDSrpx" -> "37cc5cb5b54f98f92faef749a53b5ce4e9921890d9fb902b4456957d50791bd0",

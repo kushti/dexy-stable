@@ -1,7 +1,7 @@
 package dexy.lp
 
-import dexy.{Common, DexySpec, TestnetTokenIds}
-import dexy.DexySpec._
+import dexy.Common
+import dexy.chainutils.DexySpec._
 import kiosk.ergo.{DhtData, KioskBox}
 import kiosk.tx.TxUtil
 import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoToken, HttpClientTesting}
@@ -12,7 +12,7 @@ import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 // Swap Erg and Dexy tokens using constant product formula after taking fee into account
 class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with HttpClientTesting with Common {
 
-  import TestnetTokenIds._
+  import dexy.chainutils.TestnetTokenIds._
 
   // ToDo: Add tests (and modify contracts) such that:
   //   1. Cannot add junk registers in the end
@@ -1045,7 +1045,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
   }
 
   property("Swap (user sells Ergs to buy Dexy) should work - w. proxy input v1") {
-    import DexySpec._
+    import dexy.chainutils.DexySpec._
 
     val lpBalance = 100000000L
     val reservesXIn = 1000000000000L

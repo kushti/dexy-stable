@@ -1,15 +1,16 @@
 package dexy
 
+import dexy.chainutils.DexySpec
 import kiosk.ergo.{DhtData, KioskBoolean, KioskBox, KioskInt, KioskLong}
 import kiosk.tx.TxUtil
 import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoToken, HttpClientTesting}
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
-import DexySpec._
+import dexy.chainutils.DexySpec._
 
 class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with HttpClientTesting with Common {
 
-  import TestnetTokenIds._
+  import dexy.chainutils.TestnetTokenIds._
 
   val dummyTokenId = "a9e5ce5aa0d95f5d54a7bc89c46730d9662397067250aa18a0039631c0fad80a"
 

@@ -1,7 +1,8 @@
 package dexy.bank
 
-import dexy.{Common, DexySpec, TestnetTokenIds}
-import dexy.DexySpec._
+import dexy.Common
+import dexy.chainutils.DexySpec
+import dexy.chainutils.DexySpec._
 import kiosk.ergo.{DhtData, KioskBoolean, KioskBox, KioskInt, KioskLong}
 import kiosk.tx.TxUtil
 import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoToken, HttpClientTesting}
@@ -11,7 +12,7 @@ import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks
     with HttpClientTesting with Common {
 
-  import TestnetTokenIds._
+  import dexy.chainutils.TestnetTokenIds._
 
   val dummyTokenId = "a1e5ce5aa0d95f5d54a7bc89c46730d9662397067250aa18a0039631c0f5b801"
 
