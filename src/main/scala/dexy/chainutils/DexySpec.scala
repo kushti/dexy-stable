@@ -198,6 +198,11 @@ object DexySpec extends ContractUtils {
   val gortDevEmissionErgoTree = ScriptUtil.compile(Map(), gortDevEmissionScript)
   val gortDevEmissionAddress = getStringFromAddress(getAddressFromErgoTree(gortDevEmissionErgoTree))
 
+  // GORT dev emission script
+  val payToGortDevEmissionScript = readContract("gort-dev/pay-to-emission.es")
+  val payToGortDevEmissionErgoTree = ScriptUtil.compile(Map(), payToGortDevEmissionScript)
+  val payToGortDevEmissionAddress = getStringFromAddress(getAddressFromErgoTree(payToGortDevEmissionErgoTree))
+
   // arbitrage mint box
   val arbitrageMintScript = readContract("bank/arbmint.es")
 
@@ -609,6 +614,27 @@ object DexySpec extends ContractUtils {
          |""".stripMargin
     }
 
+    def gortDevDeploymentRequest() = {
+      s"""
+         |  [
+         |    {
+         |      "address": "$gortDevEmissionAddress",
+         |      "value": 1000000,
+         |      "assets": [
+         |        {
+         |          "tokenId": "$gortDevEmissionNFT",
+         |          "amount": 1
+         |        },
+         |        {
+         |          "tokenId": "$gort",
+         |          "amount": ${10L}
+         |        }
+         |      ]
+         |    }
+         |  ]
+         |""".stripMargin
+    }
+
     println("============================Deployment requests===============================")
     println("Oracle pool scan request: ")
     println(scanRequest("Oracle pool", oraclePoolNFT))
@@ -682,5 +708,12 @@ object DexySpec extends ContractUtils {
     println(scanRequest("LP", lpNFT))
     println("LP contract deployment request: ")
     println(lpDeploymentRequest())
+
+    println("===================== GORT dev emission related requests ====================")
+
+    println("GORT dev emission scan request: ")
+    println(scanRequest("GORT dev emission ", gortDevEmissionNFT))
+    println("GORT dev emission deployment request: ")
+    println(gortDevDeploymentRequest())
   }
 }
