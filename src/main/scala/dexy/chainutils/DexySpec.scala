@@ -332,7 +332,7 @@ object DexySpec extends ContractUtils {
     val intZero = Base16.encode(ValueSerializer.serialize(IntConstant(0)))
     val longZero = Base16.encode(ValueSerializer.serialize(LongConstant(0)))
 
-    def scanRequest(name: String, nftId: String) = {
+    def scanRequest(name: String, nftId: String): String = {
       s"""
         |{
         |  "scanName": "$name",
@@ -346,7 +346,7 @@ object DexySpec extends ContractUtils {
         |""".stripMargin
     }
 
-    def trackingContractDeploymentRequest(num: Int) = {
+    def trackingContractDeploymentRequest(num: Int): String = {
 
       val num95 = Base16.encode(ValueSerializer.serialize(IntConstant(95)))
 
@@ -395,7 +395,7 @@ object DexySpec extends ContractUtils {
         |""".stripMargin
     }
 
-    def arbMintDeploymentRequest() = {
+    def arbMintDeploymentRequest(): String = {
       s"""
          |  [
          |    {
@@ -416,7 +416,7 @@ object DexySpec extends ContractUtils {
          |""".stripMargin
     }
 
-    def freeMintDeploymentRequest() = {
+    def freeMintDeploymentRequest(): String = {
       s"""
          |  [
          |    {
@@ -437,7 +437,7 @@ object DexySpec extends ContractUtils {
          |""".stripMargin
     }
 
-    def bankContractDeploymentRequest() = {
+    def bankContractDeploymentRequest(): String = {
       s"""
          |  [
          |    {
@@ -458,7 +458,7 @@ object DexySpec extends ContractUtils {
          |""".stripMargin
     }
 
-    def buybackContractDeploymentRequest() = {
+    def buybackContractDeploymentRequest(): String = {
       s"""
          |  [
          |    {
@@ -479,7 +479,7 @@ object DexySpec extends ContractUtils {
          |""".stripMargin
     }
 
-    def interventionDeploymentRequest() = {
+    def interventionDeploymentRequest(): String = {
       s"""
          |  [
          |    {
@@ -496,7 +496,7 @@ object DexySpec extends ContractUtils {
          |""".stripMargin
     }
 
-    def payoutDeploymentRequest() = {
+    def payoutDeploymentRequest(): String = {
       s"""
          |  [
          |    {
@@ -517,7 +517,7 @@ object DexySpec extends ContractUtils {
     }
 
 
-    def lpSwapDeploymentRequest() = {
+    def lpSwapDeploymentRequest(): String = {
       s"""
          |  [
          |    {
@@ -534,7 +534,7 @@ object DexySpec extends ContractUtils {
          |""".stripMargin
     }
 
-    def lpMintDeploymentRequest() = {
+    def lpMintDeploymentRequest(): String = {
       s"""
          |  [
          |    {
@@ -551,7 +551,7 @@ object DexySpec extends ContractUtils {
          |""".stripMargin
     }
 
-    def lpRedeemDeploymentRequest() = {
+    def lpRedeemDeploymentRequest(): String = {
       s"""
          |  [
          |    {
@@ -568,7 +568,7 @@ object DexySpec extends ContractUtils {
          |""".stripMargin
     }
 
-    def lpExtractDeploymentRequest() = {
+    def lpExtractDeploymentRequest(): String = {
       s"""
          |  [
          |    {
@@ -589,7 +589,7 @@ object DexySpec extends ContractUtils {
          |""".stripMargin
     }
 
-    def lpDeploymentRequest() = {
+    def lpDeploymentRequest(): String = {
       s"""
          |  [
          |    {
@@ -614,7 +614,7 @@ object DexySpec extends ContractUtils {
          |""".stripMargin
     }
 
-    def gortDevDeploymentRequest() = {
+    def gortDevDeploymentRequest(): String = {
       s"""
          |  [
          |    {
