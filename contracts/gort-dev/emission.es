@@ -1,4 +1,8 @@
 {
+  // Contract which is releasing GORT to developers (Gold cooperative), 1 ERG per block.
+  // It supports two actions: top-up and withdrawal
+
+
   // Registers:
   // R4 (int) - last payment height
   // R5 (SigmaProp) - auth
@@ -23,12 +27,11 @@
         selfOut.value >= SELF.value
     )
   } else {  // withdrawal
-    val newHeight = SELF.R4[Int].get
+    val newHeight = selfOut.R4[Int].get
     sigmaProp(
         selfOut.tokens(0) == SELF.tokens(0) &&
         selfOut.tokens(1)._1 == SELF.tokens(1)._1 &&
         SELF.tokens(1)._2 - selfOut.tokens(1)._2 == newHeight - lastHeight && // 1 GORT per block can be released
-        selfOut.R4[Int].get == lastHeight &&
         selfOut.propositionBytes == SELF.propositionBytes &&
         selfOut.value >= SELF.value &&
         newHeight > lastHeight &&

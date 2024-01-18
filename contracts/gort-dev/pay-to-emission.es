@@ -1,5 +1,5 @@
 {
-
+  // Contract which is paying to GORT dev emission output
   // todo: is the contract needed, or emission contract can be paid directly ?
 
   val emissionOutput = OUTPUTS(0)
