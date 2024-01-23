@@ -3,6 +3,8 @@ package offchain
 import org.ergoplatform.modifiers.mempool.UnsignedErgoTransaction
 import org.ergoplatform.{ErgoBox, ErgoBoxCandidate, UnsignedInput}
 import scorex.util.encode.Base16
+import sigmastate.Values.ByteConstant
+import sigmastate.interpreter.ContextExtension
 
 import scala.util.Try
 
@@ -36,7 +38,7 @@ object GortDevUtils extends App {
       val inputBoxes = IndexedSeq(emissionInputBox, pay2EmissionInputBox)
       val inputValue = inputBoxes.map(_.value).sum
 
-      val inputs = inputBoxes.map(b => new UnsignedInput(b.id))
+      val inputs = IndexedSeq(new UnsignedInput(emissionInputBox.id, ContextExtension(Map(0 -> ByteConstant(0)))), new UnsignedInput(pay2EmissionInputBox.id))
 
       val feeOut = utils.feeOut(creationHeight)
 
@@ -59,5 +61,7 @@ object GortDevUtils extends App {
 
   def payout() = {
     val creationHeight = utils.currentHeight()
+    val emissionInputBox = gortDevEmission().get
+
   }
 }

@@ -15,7 +15,7 @@
 
   val selfOut = OUTPUTS(0)
 
-  val action = getVar[Int](0).get
+  val action = getVar[Byte](0).get
 
   if (action == 0) {  // top-up:
     sigmaProp(
