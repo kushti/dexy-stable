@@ -38,9 +38,11 @@ object GortDevUtils extends App {
       val inputBoxes = IndexedSeq(emissionInputBox, pay2EmissionInputBox)
       val inputValue = inputBoxes.map(_.value).sum
 
-      val inputs = IndexedSeq(new UnsignedInput(emissionInputBox.id, ContextExtension(Map(0 -> ByteConstant(0)))), new UnsignedInput(pay2EmissionInputBox.id))
+      val inputs = IndexedSeq(new UnsignedInput(emissionInputBox.id, ContextExtension(Map(0.toByte -> ByteConstant(0)))), new UnsignedInput(pay2EmissionInputBox.id))
 
       val feeOut = utils.feeOut(creationHeight)
+
+      require(inputValue - feeOut.value >= emissionInputBox.value)
 
       val inGort = emissionInputBox.additionalTokens.apply(1)
       val emissionOutTokens = emissionInputBox.additionalTokens.updated(1, inGort._1 -> (inGort._2 + pay2EmissionInputBox.additionalTokens.apply(0)._2))
@@ -60,8 +62,14 @@ object GortDevUtils extends App {
   }
 
   def payout() = {
-    val creationHeight = utils.currentHeight()
-    val emissionInputBox = gortDevEmission().get
+    val res = Try {
+      val creationHeight = utils.currentHeight()
+      val emissionInputBox = gortDevEmission().get
+      
+      val feeOut = utils.feeOut(creationHeight)
 
+    }
+    println("Payout result: " + res)
   }
+
 }
