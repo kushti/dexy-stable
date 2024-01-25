@@ -1,5 +1,6 @@
 package offchain
 
+import org.ergoplatform.ErgoBox.R4
 import org.ergoplatform.modifiers.mempool.UnsignedErgoTransaction
 import org.ergoplatform.{ErgoBox, ErgoBoxCandidate, UnsignedInput}
 import scorex.util.encode.Base16
@@ -65,7 +66,16 @@ object GortDevUtils extends App {
     val res = Try {
       val creationHeight = utils.currentHeight()
       val emissionInputBox = gortDevEmission().get
-      
+
+      val inGort = emissionInputBox.additionalTokens.apply(1)._2
+
+      // R4 (int) - last payment height
+      // R5 (SigmaProp) - auth
+      val inRegs = emissionInputBox.additionalRegisters
+      val prevPaymentHeight = inRegs(R4).value.asInstanceOf[Int]
+
+      val toWithtdraw = Math.min(inGort, creationHeight - prevPaymentHeight)
+
       val feeOut = utils.feeOut(creationHeight)
 
     }
