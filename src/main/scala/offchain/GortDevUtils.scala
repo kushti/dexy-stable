@@ -4,7 +4,7 @@ import org.ergoplatform.ErgoBox.R4
 import org.ergoplatform.modifiers.mempool.UnsignedErgoTransaction
 import org.ergoplatform.{ErgoBox, ErgoBoxCandidate, UnsignedInput}
 import scorex.util.encode.Base16
-import sigmastate.Values.ByteConstant
+import sigmastate.Values.{ByteConstant, IntConstant}
 import sigmastate.interpreter.ContextExtension
 
 import scala.util.Try
@@ -31,7 +31,7 @@ object GortDevUtils extends App {
   // merge pay-to-emission and emission boxes
   def merge() = {
     val res = Try {
-      val creationHeight = utils.currentHeight()
+      val currentHeight = utils.currentHeight()
 
       val emissionInputBox = gortDevEmission().get
       val pay2EmissionInputBox = pay2GortDevEmission().get
@@ -41,14 +41,14 @@ object GortDevUtils extends App {
 
       val inputs = IndexedSeq(new UnsignedInput(emissionInputBox.id, ContextExtension(Map(0.toByte -> ByteConstant(0)))), new UnsignedInput(pay2EmissionInputBox.id))
 
-      val feeOut = utils.feeOut(creationHeight)
+      val feeOut = utils.feeOut(currentHeight)
 
       require(inputValue - feeOut.value >= emissionInputBox.value)
 
       val inGort = emissionInputBox.additionalTokens.apply(1)
       val emissionOutTokens = emissionInputBox.additionalTokens.updated(1, inGort._1 -> (inGort._2 + pay2EmissionInputBox.additionalTokens.apply(0)._2))
       val emissionOutRegs = emissionInputBox.additionalRegisters
-      val emissionOut = new ErgoBoxCandidate(inputValue - feeOut.value, emissionInputBox.ergoTree, creationHeight, emissionOutTokens, emissionOutRegs)
+      val emissionOut = new ErgoBoxCandidate(inputValue - feeOut.value, emissionInputBox.ergoTree, currentHeight, emissionOutTokens, emissionOutRegs)
 
       val outs = IndexedSeq(
         emissionOut,
@@ -64,20 +64,39 @@ object GortDevUtils extends App {
 
   def payout() = {
     val res = Try {
-      val creationHeight = utils.currentHeight()
+      val currentHeight = utils.currentHeight()
       val emissionInputBox = gortDevEmission().get
 
-      val inGort = emissionInputBox.additionalTokens.apply(1)._2
+      //todo: add inputs to pay fee, change outs
+
+      val inGort = emissionInputBox.additionalTokens.apply(1)
+
+      val inputBoxes = IndexedSeq(emissionInputBox)
+
+      val inputs = IndexedSeq(new UnsignedInput(emissionInputBox.id, ContextExtension(Map(0.toByte -> ByteConstant(1)))))
 
       // R4 (int) - last payment height
       // R5 (SigmaProp) - auth
       val inRegs = emissionInputBox.additionalRegisters
       val prevPaymentHeight = inRegs(R4).value.asInstanceOf[Int]
 
-      val toWithtdraw = Math.min(inGort, creationHeight - prevPaymentHeight)
+      val toWithdraw = Math.min(inGort._2 - 1, currentHeight - prevPaymentHeight)
 
-      val feeOut = utils.feeOut(creationHeight)
+      val feeOut = utils.feeOut(currentHeight)
 
+      val outRegs = inRegs.updated(R4, IntConstant(currentHeight))
+      val outTokens = emissionInputBox.additionalTokens.updated(1, inGort._1 -> (inGort._2 - toWithdraw))
+
+      val emissionOut = new ErgoBoxCandidate(emissionInputBox.value, emissionInputBox.ergoTree, currentHeight, outTokens, outRegs)
+
+      val outs = IndexedSeq(
+        emissionOut,
+        feeOut
+      )
+
+      val unsignedSwapTx = new UnsignedErgoTransaction(inputs, IndexedSeq.empty, outs)
+      val txId = utils.signTransaction("Payout: ", unsignedSwapTx, inputBoxes, IndexedSeq.empty)
+      Base16.encode(txId)
     }
     println("Payout result: " + res)
   }
