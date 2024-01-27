@@ -1,8 +1,11 @@
 package offchain
 
+import offchain.BuyBackUtils.utils
 import org.ergoplatform.ErgoBox.R4
 import org.ergoplatform.modifiers.mempool.UnsignedErgoTransaction
+import org.ergoplatform.wallet.boxes.DefaultBoxSelector
 import org.ergoplatform.{ErgoBox, ErgoBoxCandidate, UnsignedInput}
+import scorex.util.ModifierId
 import scorex.util.encode.Base16
 import sigmastate.Values.{ByteConstant, IntConstant}
 import sigmastate.interpreter.ContextExtension
@@ -65,15 +68,25 @@ object GortDevUtils extends App {
   def payout() = {
     val res = Try {
       val currentHeight = utils.currentHeight()
+      val feeOut = utils.feeOut(currentHeight)
+
       val emissionInputBox = gortDevEmission().get
 
       //todo: add inputs to pay fee, change outs
 
       val inGort = emissionInputBox.additionalTokens.apply(1)
 
-      val inputBoxes = IndexedSeq(emissionInputBox)
+      val selectionResult = DefaultBoxSelector.select[ErgoBox](
+        utils.fetchWalletInputs().toIterator,
+        (_: ErgoBox) => true,
+        feeOut.value,
+        Map.empty[ModifierId, Long]
+      ).right.toOption.get
 
-      val inputs = IndexedSeq(new UnsignedInput(emissionInputBox.id, ContextExtension(Map(0.toByte -> ByteConstant(1)))))
+      val inputBoxes = IndexedSeq(emissionInputBox) ++ selectionResult.boxes
+
+      val inputs = IndexedSeq(new UnsignedInput(emissionInputBox.id, ContextExtension(Map(0.toByte -> ByteConstant(1))))) ++
+        selectionResult.boxes.map(b => new UnsignedInput(b.id))
 
       // R4 (int) - last payment height
       // R5 (SigmaProp) - auth
@@ -82,17 +95,12 @@ object GortDevUtils extends App {
 
       val toWithdraw = Math.min(inGort._2 - 1, currentHeight - prevPaymentHeight)
 
-      val feeOut = utils.feeOut(currentHeight)
-
       val outRegs = inRegs.updated(R4, IntConstant(currentHeight))
       val outTokens = emissionInputBox.additionalTokens.updated(1, inGort._1 -> (inGort._2 - toWithdraw))
 
       val emissionOut = new ErgoBoxCandidate(emissionInputBox.value, emissionInputBox.ergoTree, currentHeight, outTokens, outRegs)
 
-      val outs = IndexedSeq(
-        emissionOut,
-        feeOut
-      )
+      val outs = IndexedSeq(emissionOut) ++ utils.changeOuts(selectionResult, currentHeight) ++ IndexedSeq(feeOut)
 
       val unsignedSwapTx = new UnsignedErgoTransaction(inputs, IndexedSeq.empty, outs)
       val txId = utils.signTransaction("Payout: ", unsignedSwapTx, inputBoxes, IndexedSeq.empty)
