@@ -194,14 +194,14 @@ object DexySpec extends ContractUtils {
   // GORT-related scripts
 
   // GORT dev emission script
-  val gortDevEmissionScript = readContract("gort-dev/emission.es")
-  val gortDevEmissionErgoTree = ScriptUtil.compile(Map(), gortDevEmissionScript)
-  val gortDevEmissionAddress = getStringFromAddress(getAddressFromErgoTree(gortDevEmissionErgoTree))
-
-  // GORT dev emission script
   val payToGortDevEmissionScript = readContract("gort-dev/pay-to-emission.es")
   val payToGortDevEmissionErgoTree = ScriptUtil.compile(Map(), payToGortDevEmissionScript)
   val payToGortDevEmissionAddress = getStringFromAddress(getAddressFromErgoTree(payToGortDevEmissionErgoTree))
+
+  // GORT dev emission script
+  val gortDevEmissionScript = readContract("gort-dev/emission.es")
+  val gortDevEmissionErgoTree = ScriptUtil.compile(Map(), gortDevEmissionScript)
+  val gortDevEmissionAddress = getStringFromAddress(getAddressFromErgoTree(gortDevEmissionErgoTree))
 
   // arbitrage mint box
   val arbitrageMintScript = readContract("bank/arbmint.es")
@@ -277,6 +277,10 @@ object DexySpec extends ContractUtils {
   val lpSwapSellV1Address = getStringFromAddress(getAddressFromErgoTree(lpSwapSellV1ErgoTree))
 
   def main(args: Array[String]): Unit = {
+    println(s"Pay to Gort dev emission: $payToGortDevEmissionAddress")
+    println(payToGortDevEmissionScript)
+    println()
+
     println(s"Gort dev emission: $gortDevEmissionAddress")
     println(gortDevEmissionScript)
     println()
@@ -344,6 +348,31 @@ object DexySpec extends ContractUtils {
         |  }
         |}
         |""".stripMargin
+    }
+
+    def gortDevEmissionDeploymentRequest(): String = {
+      s"""
+         |  [
+         |    {
+         |      "address": "$gortDevEmissionAddress",
+         |      "value": 1000000000,
+         |      "assets": [
+         |        {
+         |          "tokenId": "$gortDevEmissionNFT",
+         |          "amount": 1
+         |        },
+         |        {
+         |          "tokenId": "$gort",
+         |          "amount": 1
+         |        }
+         |      ],
+         |      "registers": {
+         |        "R4": "$???",
+         |        "R5": "$???"
+         |      }
+         |    }
+         |  ]
+         |""".stripMargin
     }
 
     def trackingContractDeploymentRequest(num: Int): String = {
@@ -638,6 +667,9 @@ object DexySpec extends ContractUtils {
     println("============================Deployment requests===============================")
     println("Oracle pool scan request: ")
     println(scanRequest("Oracle pool", oraclePoolNFT))
+
+    println("Gort dev emission deployment request: ")
+    println(gortDevEmissionDeploymentRequest())
 
     println("Tracking 95% scan request: ")
     println(scanRequest("Tracking 95%", tracking95NFT))
