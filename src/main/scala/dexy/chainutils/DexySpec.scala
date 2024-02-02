@@ -367,8 +367,8 @@ object DexySpec extends ContractUtils {
          |        }
          |      ],
          |      "registers": {
-         |        "R4": "$???",
-         |        "R5": "$???"
+         |        "R4": "${???}",
+         |        "R5": "${???}"
          |      }
          |    }
          |  ]

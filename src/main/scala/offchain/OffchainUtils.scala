@@ -2,7 +2,6 @@ package offchain
 
 import io.circe.parser.parse
 import offchain.DexyLpSwap.tokensMapToColl
-import offchain.Test.lpPrice
 import org.ergoplatform.{DataInput, ErgoAddressEncoder, ErgoBox, ErgoBoxCandidate, ErgoScriptPredef, UnsignedInput}
 import org.ergoplatform.ErgoBox.{R4, R7}
 import org.ergoplatform.http.api.ApiCodecs
@@ -24,6 +23,7 @@ import scorex.util.ModifierId
 import sigmastate.Values.IntConstant
 
 import scala.collection.mutable.ArrayBuffer
+import scala.util.Try
 
 sealed trait TrackerType {
   val name: String
@@ -237,6 +237,8 @@ case class OffchainUtils(serverUrl: String,
     val trackersToSet = ArrayBuffer[TrackerType]()
     val trackersToReset = ArrayBuffer[TrackerType]()
 
+    val lpPrice = Test.lpPrice
+
     println("Oracle price in tracker: " + oraclePrice)
     println("LP price in tracker: " + lpPrice)
     TrackerType.all.foreach { trackerType =>
@@ -292,20 +294,22 @@ object Test extends App {
     localSecretUnlockPass = "",
     dexyScanIds = OffchainUtils.scanIds)
 
-  println(utils.fetchWalletInputs().map(_.value))
+  def lpBox = utils.lpBox().get
+  def lpPrice = lpBox.value / lpBox.additionalTokens.apply(2)._2
 
-  val oraclePrice = utils.oraclePoolBox().get.additionalRegisters.apply(R4).value.asInstanceOf[Long]
-  val lpBox = utils.lpBox().get
-  println(lpBox.additionalTokens)
-  val lpPrice = lpBox.value / lpBox.additionalTokens.apply(2)._2
+  while (true) {
+    Try {
+      val oraclePrice = utils.oraclePoolBox().get.additionalRegisters.apply(R4).value.asInstanceOf[Long]
 
-  println("oracle price: " + oraclePrice / 1000000)
-  println("lp price: " + lpPrice)
+      println("oracle price: " + oraclePrice / 1000000)
+      println("lp price: " + lpPrice)
 
-  val x = oraclePrice * 101
-  val y = lpPrice * 100
+      val x = oraclePrice * 101
+      val y = lpPrice * 100
 
-  println(x > y)
-  utils.updateTrackers()
-
+      println(x > y)
+      utils.updateTrackers()
+    }
+    Thread.sleep(60000) // 1 min
+  }
 }
