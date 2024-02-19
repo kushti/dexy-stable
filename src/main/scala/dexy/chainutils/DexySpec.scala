@@ -359,6 +359,7 @@ object DexySpec extends ContractUtils {
       }
       val initLastPaymentHeightEncoded = Base16.encode(ValueSerializer.serialize(IntConstant(initLastPaymentHeight)))
 
+      // todo: revisit before mainnnet deployment
       val eae = new ErgoAddressEncoder(ErgoAddressEncoder.MainnetNetworkPrefix)
       val devp2pk = "9hUzb5RvSgDqJdtyCN9Ke496Yy63mpcUJKbRq4swzQ5EQKgygKT"
       val lock = ProveDlog(eae.fromString(devp2pk).get.asInstanceOf[P2PKAddress].pubkey.value)
