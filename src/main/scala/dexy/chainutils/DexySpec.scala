@@ -2,10 +2,12 @@ package dexy.chainutils
 
 import dexy.chainutils.ScriptUtil.{getAddressFromErgoTree, getStringFromAddress}
 import kiosk.ergo._
+import org.ergoplatform.{ErgoAddressEncoder, P2PKAddress}
 import org.ergoplatform.ErgoAddressEncoder.MainnetNetworkPrefix
 import scorex.crypto.encode.Base16
 import scorex.util.encode.Base64
-import sigmastate.Values.{BooleanConstant, IntConstant, LongConstant}
+import sigmastate.Values.{BooleanConstant, IntConstant, LongConstant, SigmaPropConstant}
+import sigmastate.basics.DLogProtocol.ProveDlog
 import sigmastate.serialization.ValueSerializer
 
 trait NetworkTokenIds {
@@ -190,7 +192,6 @@ object DexySpec extends ContractUtils {
 
   override val defaultSubstitutionMap = nftDictionary
 
-
   // GORT-related scripts
 
   // GORT dev emission script
@@ -351,6 +352,18 @@ object DexySpec extends ContractUtils {
     }
 
     def gortDevEmissionDeploymentRequest(): String = {
+      val initLastPaymentHeight = if (networkPrefix == MainnetNetworkPrefix) {
+        1200000  // mainnet value
+      } else {
+        1000000  // testnet value
+      }
+      val initLastPaymentHeightEncoded = Base16.encode(ValueSerializer.serialize(IntConstant(initLastPaymentHeight)))
+
+      val eae = new ErgoAddressEncoder(ErgoAddressEncoder.MainnetNetworkPrefix)
+      val devp2pk = "9hUzb5RvSgDqJdtyCN9Ke496Yy63mpcUJKbRq4swzQ5EQKgygKT"
+      val lock = ProveDlog(eae.fromString(devp2pk).get.asInstanceOf[P2PKAddress].pubkey.value)
+      val lockEncoded = Base16.encode(ValueSerializer.serialize(SigmaPropConstant(lock)))
+
       s"""
          |  [
          |    {
@@ -367,8 +380,8 @@ object DexySpec extends ContractUtils {
          |        }
          |      ],
          |      "registers": {
-         |        "R4": "${???}",
-         |        "R5": "${???}"
+         |        "R4": "$initLastPaymentHeightEncoded",
+         |        "R5": "$lockEncoded"
          |      }
          |    }
          |  ]
