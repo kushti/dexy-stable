@@ -1,11 +1,12 @@
 # dexy-stable
 
-This repository contains everything related to Dexy stablecoin protocol.
+This repository contains everything related to Dexy stablecoin protocol and its testnet and mainnet instantiations.
 
 ## Contents
 
 * [Whitepaper](paper/dexy.pdf)
 * [Contracts](contracts/)
+* [deployment details](spec/deployment.md)
 
 ## TODO
 
