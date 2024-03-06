@@ -657,33 +657,9 @@ object DexySpec extends ContractUtils {
          |""".stripMargin
     }
 
-    def gortDevDeploymentRequest(): String = {
-      s"""
-         |  [
-         |    {
-         |      "address": "$gortDevEmissionAddress",
-         |      "value": 1000000,
-         |      "assets": [
-         |        {
-         |          "tokenId": "$gortDevEmissionNFT",
-         |          "amount": 1
-         |        },
-         |        {
-         |          "tokenId": "$gort",
-         |          "amount": ${10L}
-         |        }
-         |      ]
-         |    }
-         |  ]
-         |""".stripMargin
-    }
-
     println("============================Deployment requests===============================")
     println("Oracle pool scan request: ")
     println(scanRequest("Oracle pool", oraclePoolNFT))
-
-    println("Gort dev emission deployment request: ")
-    println(gortDevEmissionDeploymentRequest())
 
     println("Tracking 95% scan request: ")
     println(scanRequest("Tracking 95%", tracking95NFT))
@@ -760,6 +736,6 @@ object DexySpec extends ContractUtils {
     println("GORT dev emission scan request: ")
     println(scanRequest("GORT dev emission ", gortDevEmissionNFT))
     println("GORT dev emission deployment request: ")
-    println(gortDevDeploymentRequest())
+    println(gortDevEmissionDeploymentRequest())
   }
 }
