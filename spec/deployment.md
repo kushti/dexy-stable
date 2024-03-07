@@ -10,11 +10,17 @@
 
 * GORT LP NFT = "d1c9e20657b4e37de3cd279a994266db34b18e6e786371832ad014fd46583198"
 
+* GORT Dev emission NFT = "b97ea3128119485033b1d147c29a32178ac650c05a1ea82c1a8d511580724377"
+
 // todo: reissue, at least 10 tokens should be issued to allow parallel execution
 * Buyback NFT = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
 
 ### Deployment transactions
 
+* GORT dev emission contract deployment transaction:
+https://explorer.ergoplatform.com/en/transactions/a221696d22f79cb421cf9a9769dbcd759e9b1528333d8f3626e6305d76bc162f
+
+//todo: reissue
 * Buyback contract deployment transaction:
 https://explorer.ergoplatform.com/en/transactions/a3b06409af1488ea0837955e5f6914cddb11177620ebef8e4cdd4976401a96bb
 
