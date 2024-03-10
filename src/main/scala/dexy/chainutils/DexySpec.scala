@@ -140,8 +140,10 @@ object TestnetTokenIds extends NetworkTokenIds {
 
 object DexySpec extends ContractUtils {
 
-  // todo: all two lines should be updated at the same time
-  import MainnetTokenIds._
+  // todo: for tests, use
+  // import TestnetTokenIds._
+  // val networkPrefix = MainnetNetworkPrefix
+  import TestnetTokenIds._
   val networkPrefix = MainnetNetworkPrefix
 
   // High level idea:
