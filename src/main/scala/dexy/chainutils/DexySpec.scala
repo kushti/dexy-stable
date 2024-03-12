@@ -8,7 +8,7 @@ import scorex.crypto.encode.Base16
 import scorex.util.encode.Base64
 import sigmastate.Values.{BooleanConstant, IntConstant, LongConstant, SigmaPropConstant}
 import sigmastate.basics.DLogProtocol.ProveDlog
-import sigmastate.serialization.ValueSerializer
+import sigmastate.serialization.{ErgoTreeSerializer, ValueSerializer}
 
 trait NetworkTokenIds {
   // oracle related tokens
@@ -65,7 +65,7 @@ object MainnetTokenIds extends NetworkTokenIds {
   val oracleTokenId = "6183680b1c4caaf8ede8c60dc5128e38417bc5b656321388b22baa43a9d150c2"
   val oraclePoolNFT = "3c45f29a5165b030fdb5eaf5d81f8108f9d8f507b31487dd51f4ae08fe07cf4a"
 
-  val gortDevEmissionNFT: String = "b97ea3128119485033b1d147c29a32178ac650c05a1ea82c1a8d511580724377"
+  val gortDevEmissionNFT: String = "1248ff9e0c8bddac972860fac7f9651758d4b6c1189ee41b5aba3277872bced2"
 
   // GORT / ERG LP
   val gortLpNFT = "d1c9e20657b4e37de3cd279a994266db34b18e6e786371832ad014fd46583198"
@@ -741,5 +741,9 @@ object DexySpec extends ContractUtils {
     println(scanRequest("GORT dev emission ", gortDevEmissionNFT))
     println("GORT dev emission deployment request: ")
     println(gortDevEmissionDeploymentRequest())
+    val gortDevEmissionErgoTreeBytes = {
+      Base16.encode(ErgoTreeSerializer.DefaultSerializer.serializeErgoTree(gortDevEmissionErgoTree))
+    }
+    println("GORT dev emission tree bytes: " + gortDevEmissionErgoTreeBytes)
   }
 }
