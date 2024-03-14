@@ -10,7 +10,7 @@
 
 * GORT LP NFT = "d1c9e20657b4e37de3cd279a994266db34b18e6e786371832ad014fd46583198"
 
-* GORT Dev emission NFT = "b97ea3128119485033b1d147c29a32178ac650c05a1ea82c1a8d511580724377"
+* GORT Dev emission NFT = "3d4185a1b17872b7f2754ce4835883984e0346834d6218623da1f43cee3e10fa"
 
 // todo: reissue, at least 10 tokens should be issued to allow parallel execution
 * Buyback NFT = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"

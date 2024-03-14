@@ -65,7 +65,7 @@ object MainnetTokenIds extends NetworkTokenIds {
   val oracleTokenId = "6183680b1c4caaf8ede8c60dc5128e38417bc5b656321388b22baa43a9d150c2"
   val oraclePoolNFT = "3c45f29a5165b030fdb5eaf5d81f8108f9d8f507b31487dd51f4ae08fe07cf4a"
 
-  val gortDevEmissionNFT: String = "1248ff9e0c8bddac972860fac7f9651758d4b6c1189ee41b5aba3277872bced2"
+  val gortDevEmissionNFT: String = "3d4185a1b17872b7f2754ce4835883984e0346834d6218623da1f43cee3e10fa"
 
   // GORT / ERG LP
   val gortLpNFT = "d1c9e20657b4e37de3cd279a994266db34b18e6e786371832ad014fd46583198"
@@ -143,7 +143,7 @@ object DexySpec extends ContractUtils {
   // todo: for tests, use
   // import TestnetTokenIds._
   // val networkPrefix = MainnetNetworkPrefix
-  import TestnetTokenIds._
+  import MainnetTokenIds._
   val networkPrefix = MainnetNetworkPrefix
 
   // High level idea:

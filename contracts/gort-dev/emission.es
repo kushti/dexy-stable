@@ -10,11 +10,17 @@
   // #0 - box id NFT
   // #1 - GORT
 
+  // context vars:
+  // #0 - output index of SELF
+  // #1 - action (top-up / withdrawal)
+
   val lastHeight = SELF.R4[Int].get
 
-  val selfOut = OUTPUTS(0)
+  val selfOutIndex = getVar[Short](0).get
 
-  val action = getVar[Byte](0).get
+  val selfOut = OUTPUTS(selfOutIndex)
+
+  val action = getVar[Byte](1).get
 
   if (action == 0) {  // top-up:
 
