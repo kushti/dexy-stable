@@ -41,7 +41,7 @@
     sigmaProp(
         selfOut.tokens(0) == SELF.tokens(0) &&
         selfOut.tokens(1)._1 == SELF.tokens(1)._1 &&
-        SELF.tokens(1)._2 < selfOut.tokens(1)._2 &&
+        SELF.tokens(1)._2 > selfOut.tokens(1)._2 &&
         SELF.tokens(1)._2 - selfOut.tokens(1)._2 <= newHeight - lastHeight && // 1 GORT per block can be released
         selfOut.propositionBytes == SELF.propositionBytes &&
         selfOut.value >= SELF.value &&

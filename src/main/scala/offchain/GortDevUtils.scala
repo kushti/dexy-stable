@@ -1,13 +1,12 @@
 package offchain
 
-import offchain.BuyBackUtils.utils
 import org.ergoplatform.ErgoBox.R4
 import org.ergoplatform.modifiers.mempool.UnsignedErgoTransaction
 import org.ergoplatform.wallet.boxes.DefaultBoxSelector
-import org.ergoplatform.{ErgoBox, ErgoBoxCandidate, UnsignedInput}
+import org.ergoplatform.{ErgoAddressEncoder, ErgoBox, ErgoBoxCandidate, UnsignedInput}
 import scorex.util.ModifierId
 import scorex.util.encode.Base16
-import sigmastate.Values.{ByteConstant, IntConstant}
+import sigmastate.Values.{ByteConstant, IntConstant, ShortConstant}
 import sigmastate.interpreter.ContextExtension
 
 import scala.util.Try
@@ -18,19 +17,20 @@ import scala.util.Try
 object GortDevUtils extends App {
 
   val utils = new OffchainUtils(
-    serverUrl = "http://176.9.15.237:9052",
-    apiKey = "",
-    localSecretStoragePath = "/home/kushti/ergo/backup/176keystore",
-    localSecretUnlockPass = "",
+    serverUrl = "http://127.0.0.1:9053",
+    apiKey = "hello",
+    localSecretStoragePath = "/home/kushti/ergo/backup/gortkeystore",
+    localSecretUnlockPass = "wpass",
     dexyScanIds = OffchainUtils.scanIds)
 
-  val pay2DevEmissionScanId: Int = ???
-  val devEmissionScanId: Int = ???
+//  val pay2DevEmissionScanId: Int = ???
+  val devEmissionScanId: Int = 44
 
-  def pay2GortDevEmission(): Option[ErgoBox] = utils.unspentScanBoxes(pay2DevEmissionScanId).headOption
+ // def pay2GortDevEmission(): Option[ErgoBox] = utils.unspentScanBoxes(pay2DevEmissionScanId).headOption
 
   def gortDevEmission(): Option[ErgoBox] = utils.unspentScanBoxes(devEmissionScanId).headOption
 
+  /*
   // merge pay-to-emission and emission boxes
   def merge() = {
     val res = Try {
@@ -65,27 +65,28 @@ object GortDevUtils extends App {
     println("Merge result: " + res)
   }
 
-  def payout() = {
+   */
+
+  def payout(): Unit = {
     val res = Try {
       val currentHeight = utils.currentHeight()
       val feeOut = utils.feeOut(currentHeight)
 
       val emissionInputBox = gortDevEmission().get
 
-      //todo: add inputs to pay fee, change outs
-
       val inGort = emissionInputBox.additionalTokens.apply(1)
 
       val selectionResult = DefaultBoxSelector.select[ErgoBox](
         utils.fetchWalletInputs().toIterator,
         (_: ErgoBox) => true,
-        feeOut.value,
+        2 * feeOut.value,
         Map.empty[ModifierId, Long]
       ).right.toOption.get
 
       val inputBoxes = IndexedSeq(emissionInputBox) ++ selectionResult.boxes
 
-      val inputs = IndexedSeq(new UnsignedInput(emissionInputBox.id, ContextExtension(Map(0.toByte -> ByteConstant(1))))) ++
+      val ce = ContextExtension(Map(0.toByte -> ShortConstant(0), 1.toByte -> ByteConstant(1)))
+      val inputs = IndexedSeq(new UnsignedInput(emissionInputBox.id, ce)) ++
         selectionResult.boxes.map(b => new UnsignedInput(b.id))
 
       // R4 (int) - last payment height
@@ -100,7 +101,14 @@ object GortDevUtils extends App {
 
       val emissionOut = new ErgoBoxCandidate(emissionInputBox.value, emissionInputBox.ergoTree, currentHeight, outTokens, outRegs)
 
-      val outs = IndexedSeq(emissionOut) ++ utils.changeOuts(selectionResult, currentHeight) ++ IndexedSeq(feeOut)
+      val eae = new ErgoAddressEncoder(ErgoAddressEncoder.MainnetNetworkPrefix)
+      val receiver = eae.fromString("9iMthnqRkMD3ECUuxs29XmAktbPSvt1LpAJmonmxg2JvMQ8XAdP").get.script
+      val rewardOut = new ErgoBoxCandidate(feeOut.value, receiver, currentHeight)
+
+      val outs = IndexedSeq(emissionOut) ++ utils.changeOuts(selectionResult, currentHeight) ++ IndexedSeq(rewardOut, feeOut)
+
+      println("ib: " + emissionInputBox.additionalRegisters)
+      println("ob: " + emissionOut.additionalRegisters)
 
       val unsignedSwapTx = new UnsignedErgoTransaction(inputs, IndexedSeq.empty, outs)
       val txId = utils.signTransaction("Payout: ", unsignedSwapTx, inputBoxes, IndexedSeq.empty)
@@ -109,4 +117,5 @@ object GortDevUtils extends App {
     println("Payout result: " + res)
   }
 
+  payout()
 }
