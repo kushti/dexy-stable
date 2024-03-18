@@ -65,7 +65,7 @@ object MainnetTokenIds extends NetworkTokenIds {
   val oracleTokenId = "6183680b1c4caaf8ede8c60dc5128e38417bc5b656321388b22baa43a9d150c2"
   val oraclePoolNFT = "3c45f29a5165b030fdb5eaf5d81f8108f9d8f507b31487dd51f4ae08fe07cf4a"
 
-  val gortDevEmissionNFT: String = "3d4185a1b17872b7f2754ce4835883984e0346834d6218623da1f43cee3e10fa"
+  val gortDevEmissionNFT: String = "0d145e1fc73dceac1ebf9dba7886f1675998ff6a1d9cc19735150254ee31390b"
 
   // GORT / ERG LP
   val gortLpNFT = "d1c9e20657b4e37de3cd279a994266db34b18e6e786371832ad014fd46583198"
@@ -199,11 +199,6 @@ object DexySpec extends ContractUtils {
   // GORT-related scripts
 
   // GORT dev emission script
-  val payToGortDevEmissionScript = readContract("gort-dev/pay-to-emission.es")
-  val payToGortDevEmissionErgoTree = ScriptUtil.compile(Map(), payToGortDevEmissionScript)
-  val payToGortDevEmissionAddress = getStringFromAddress(getAddressFromErgoTree(payToGortDevEmissionErgoTree))
-
-  // GORT dev emission script
   val gortDevEmissionScript = readContract("gort-dev/emission.es")
   val gortDevEmissionErgoTree = ScriptUtil.compile(Map(), gortDevEmissionScript)
   val gortDevEmissionAddress = getStringFromAddress(getAddressFromErgoTree(gortDevEmissionErgoTree))
@@ -282,9 +277,6 @@ object DexySpec extends ContractUtils {
   val lpSwapSellV1Address = getStringFromAddress(getAddressFromErgoTree(lpSwapSellV1ErgoTree))
 
   def main(args: Array[String]): Unit = {
-    println(s"Pay to Gort dev emission: $payToGortDevEmissionAddress")
-    println(payToGortDevEmissionScript)
-    println()
 
     println(s"Gort dev emission: $gortDevEmissionAddress")
     println(gortDevEmissionScript)
@@ -367,7 +359,7 @@ object DexySpec extends ContractUtils {
       val eae = new ErgoAddressEncoder(ErgoAddressEncoder.MainnetNetworkPrefix)
       val devp2pk = "9hUzb5RvSgDqJdtyCN9Ke496Yy63mpcUJKbRq4swzQ5EQKgygKT"
       val lock = ProveDlog(eae.fromString(devp2pk).get.asInstanceOf[P2PKAddress].pubkey.value)
-      val lockEncoded = Base16.encode(ValueSerializer.serialize(SigmaPropConstant(lock)))
+      val lockEncoded = Base16.encode(ValueSerializer.serialize(lock))
 
       s"""
          |  [
@@ -741,9 +733,5 @@ object DexySpec extends ContractUtils {
     println(scanRequest("GORT dev emission ", gortDevEmissionNFT))
     println("GORT dev emission deployment request: ")
     println(gortDevEmissionDeploymentRequest())
-    val gortDevEmissionErgoTreeBytes = {
-      Base16.encode(ErgoTreeSerializer.DefaultSerializer.serializeErgoTree(gortDevEmissionErgoTree))
-    }
-    println("GORT dev emission tree bytes: " + gortDevEmissionErgoTreeBytes)
   }
 }

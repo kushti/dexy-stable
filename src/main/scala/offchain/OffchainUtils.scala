@@ -2,7 +2,7 @@ package offchain
 
 import io.circe.parser.parse
 import offchain.DexyLpSwap.tokensMapToColl
-import org.ergoplatform.{DataInput, ErgoAddressEncoder, ErgoBox, ErgoBoxCandidate, ErgoScriptPredef, UnsignedInput}
+import org.ergoplatform.{DataInput, ErgoAddressEncoder, ErgoBox, ErgoBoxCandidate, ErgoScriptPredef, P2PKAddress, UnsignedInput}
 import org.ergoplatform.ErgoBox.{R4, R7}
 import org.ergoplatform.http.api.ApiCodecs
 import org.ergoplatform.modifiers.history.Header
@@ -60,9 +60,9 @@ case class OffchainUtils(serverUrl: String,
                     localSecretUnlockPass: String,
                     dexyScanIds: DexyScanIds) extends ApiCodecs {
   val defaultFee = 1000000L
-  val eae = new ErgoAddressEncoder(ErgoAddressEncoder.TestnetNetworkPrefix)
+  val eae = new ErgoAddressEncoder(ErgoAddressEncoder.MainnetNetworkPrefix)
   //todo: get change address via api from server
-  val changeAddress = eae.fromString("3WwhifgHTu7ib5ggKKVFaN1J6jFim3u9siPspDRq9JnwcKfLuuxc").get
+  val changeAddress = eae.fromString("9gZLYYtsC6EUhj4SK2XySR9duVorTcQxHK8oE4ZTdUEpReTXcAK").get
 
   def feeOut(creationHeight: Int, providedFeeOpt: Option[Long] = None): ErgoBoxCandidate = {
     new ErgoBoxCandidate(providedFeeOpt.getOrElse(defaultFee), ErgoScriptPredef.feeProposition(720), creationHeight) // 0.001 ERG
@@ -160,7 +160,8 @@ case class OffchainUtils(serverUrl: String,
   def signTransaction(txName: String,
                       unsignedTransaction: UnsignedErgoTransaction,
                       boxesToSpend: IndexedSeq[ErgoBox],
-                      dataBoxes: IndexedSeq[ErgoBox]): Array[Byte] = {
+                      dataBoxes: IndexedSeq[ErgoBox],
+                      additionalLocalSecretStoragePath: Option[String] = None): Array[Byte] = {
     val settings = ErgoSettings.read()
     val sss = SecretStorageSettings(localSecretStoragePath, settings.walletSettings.secretStorage.encryption)
     val jss = JsonSecretStorage.readFile(sss).get
@@ -168,7 +169,23 @@ case class OffchainUtils(serverUrl: String,
     val masterKey = jss.secret.get
     val changeKey = masterKey.derive(eip3DerivationPath)
 
-    val prover = ErgoProvingInterpreter(IndexedSeq(masterKey, changeKey), LaunchParameters)
+    val additionalKeys = additionalLocalSecretStoragePath match {
+      case Some(localSecretStoragePath) =>
+        val sss = SecretStorageSettings(localSecretStoragePath, settings.walletSettings.secretStorage.encryption)
+        val jss = JsonSecretStorage.readFile(sss).get
+        jss.unlock(SecretString.create(localSecretUnlockPass))
+        val masterKey = jss.secret.get
+        val changeKey = masterKey.derive(eip3DerivationPath)
+        IndexedSeq(masterKey, changeKey)
+      case None => IndexedSeq.empty
+    }
+
+
+    val secretKeys = IndexedSeq(masterKey, changeKey) ++ additionalKeys
+
+    val prover = ErgoProvingInterpreter(secretKeys, LaunchParameters)
+
+    implicit val eae = new ErgoAddressEncoder(ErgoAddressEncoder.MainnetNetworkPrefix)
 
     val bestHeader = lastHeader()
 
