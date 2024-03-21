@@ -82,6 +82,7 @@
     // starting copying from oracle pool contract
     val minStartHeight = HEIGHT - $epochLength
     val poolIn = INPUTS(0)
+    val selfOut = OUTPUTS(2)
 
     def isValidDataPoint(b: Box) = if (b.R6[Long].isDefined) {
         b.creationInfo._1    >= minStartHeight &&
@@ -97,10 +98,10 @@
     val properGiving =  poolIn.tokens(0)._1 == fromBase64("$oracleNFT") &&
                         OUTPUTS(0).tokens(1)._2 >= poolIn.tokens(1)._2 + selfGort - rewardEmitted
 
-    val giveback = OUTPUTS(2).tokens(0) == SELF.tokens(0) &&
-                   OUTPUTS(2).tokens(1)._1 == SELF.tokens(1)._1 &&
-                   OUTPUTS(2).propositionBytes == SELF.propositionBytes &&
-                   SELF.value == OUTPUTS(2).value &&
+    val giveback = selfOut.tokens(0) == SELF.tokens(0) &&
+                   selfOut.tokens(1)._1 == SELF.tokens(1)._1 &&
+                   selfOut.propositionBytes == SELF.propositionBytes &&
+                   SELF.value == selfOut.value &&
                    properGiving
 
     sigmaProp(giveback)
