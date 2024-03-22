@@ -65,7 +65,7 @@ object MainnetTokenIds extends NetworkTokenIds {
   val oracleTokenId = "6183680b1c4caaf8ede8c60dc5128e38417bc5b656321388b22baa43a9d150c2"
   val oraclePoolNFT = "3c45f29a5165b030fdb5eaf5d81f8108f9d8f507b31487dd51f4ae08fe07cf4a"
 
-  val gortDevEmissionNFT: String = "0d145e1fc73dceac1ebf9dba7886f1675998ff6a1d9cc19735150254ee31390b"
+  val gortDevEmissionNFT: String = "bb484bb7fea08b15861e27cb203a13069082befb05f5437cae71237d9c5c6ac3"
 
   // GORT / ERG LP
   val gortLpNFT = "d1c9e20657b4e37de3cd279a994266db34b18e6e786371832ad014fd46583198"
