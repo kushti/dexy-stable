@@ -70,7 +70,8 @@ object MainnetTokenIds extends NetworkTokenIds {
   // GORT / ERG LP
   val gortLpNFT = "d1c9e20657b4e37de3cd279a994266db34b18e6e786371832ad014fd46583198"
 
-  val buybackNFT = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
+  // 3 tokens be issued to make parallel execution easier
+  val buybackNFT = "bf24ed4af7eb5a7839c43aa6b240697d81b196120c837e1a941832c266d3755c"
 
   // todo: not real data below
   override val dexyTokenId: String = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"

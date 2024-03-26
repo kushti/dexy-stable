@@ -12,8 +12,8 @@
 
 * GORT Dev emission NFT = "bb484bb7fea08b15861e27cb203a13069082befb05f5437cae71237d9c5c6ac3"
 
-// todo: reissue, at least 10 tokens should be issued to allow parallel execution
-* Buyback NFT = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
+// 3 tokens be issued to make parallel execution easier
+* Buyback NFT = "bf24ed4af7eb5a7839c43aa6b240697d81b196120c837e1a941832c266d3755c"
 
 ### Deployment transactions
 
