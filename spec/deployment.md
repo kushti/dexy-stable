@@ -20,9 +20,10 @@
 * GORT dev emission contract deployment transaction:
 https://explorer.ergoplatform.com/en/transactions/a221696d22f79cb421cf9a9769dbcd759e9b1528333d8f3626e6305d76bc162f
 
-//todo: reissue
-* Buyback contract deployment transaction:
-https://explorer.ergoplatform.com/en/transactions/a3b06409af1488ea0837955e5f6914cddb11177620ebef8e4cdd4976401a96bb
+* Buyback contract deployment transactions:
+https://explorer.ergoplatform.com/en/transactions/bd9ec38f1f60f748ef4cf6bd30a7414bcf985f42c37df08eb8002ce589c6202e
+https://explorer.ergoplatform.com/en/transactions/bbb7c447e4e1472b3625f705c5b4e029af873ec241bf683b3b4ae385f36f52a1
+https://explorer.ergoplatform.com/en/transactions/9343582531817d00b79c811f00ebe6184be5bc0d2d4b46bbc4a8cd88a8938b75
 
 ## Testnet
 
