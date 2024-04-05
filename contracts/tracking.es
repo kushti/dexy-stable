@@ -33,7 +33,7 @@
     // This box can only be be spent if the tracker state changes.
     // Someone must spend this box keeping LP as data input.
 
-    val threshold = 3 // error threshold in trigger height
+    val threshold = 3 // error threshold in trigger height, in number of blocks
 
     val oracleBoxIndex = 0
     val lpBoxIndex = 1
@@ -57,10 +57,10 @@
 
     // oracle delivers nanoErgs per 1 kg of gold
     // we divide it by 1000000 to get nanoErg per dexy, i.e. 1 mg of gold
-    // can assume always > 0 (ref oracle pool contracts) NanoErgs per USD
+    // we assume always > 0 (ref oracle pool contracts) NanoErgs per USD
     val oracleRateXY = oracleBox.R4[Long].get / 1000000L
     val reservesX = lpBox.value
-    val reservesY = tokenY._2   // Dexy tokens quantity
+    val reservesY = tokenY._2   // number of Dexy tokens
     val lpRateXY = reservesX / reservesY  // we can assume that reservesY > 0 (since at least one token must exist)
 
     // Let t = num/denom

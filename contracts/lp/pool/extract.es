@@ -23,7 +23,7 @@
     // 0 LP            |  LP            |   Oracle
     // 1 Extract       |  Extract       |   Tracking (101%)
 
-    // ToDo: verify following
+    // ToDo: verify following in tests
     //   cannot change prop bytes for LP, Extract and Tracking box
     //   cannot change tokens/nanoErgs in LP, extract and tracking box except what is permitted
 
@@ -44,6 +44,7 @@
 
     // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
     // 1000 Erg
+    // TODO: consider proper value before mainnet launch
     val minBankNanoErgs = 1000000000000L
 
     val tracking95NFT = fromBase64("$tracking95NFT")
