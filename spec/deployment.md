@@ -25,6 +25,15 @@ https://explorer.ergoplatform.com/en/transactions/bd9ec38f1f60f748ef4cf6bd30a741
 https://explorer.ergoplatform.com/en/transactions/bbb7c447e4e1472b3625f705c5b4e029af873ec241bf683b3b4ae385f36f52a1
 https://explorer.ergoplatform.com/en/transactions/9343582531817d00b79c811f00ebe6184be5bc0d2d4b46bbc4a8cd88a8938b75
 
+* Tracking 95% deployment transaction:
+https://explorer.ergoplatform.com/en/transactions/4c14e7a493ef49f6b9924ef2c9071a2f018098fd4e55079cad74a64a920f6077
+
+* Tracking 98% deployment transaction:
+https://explorer.ergoplatform.com/en/transactions/4e87315a08162bb63d8b7cd7cc8e0f01928c21bd1c21e12af4d98ac0dd89cba5
+
+* Tracking 101% deployment transaction:
+https://explorer.ergoplatform.com/en/transactions/f15bbae3f3def0e2f825bc656a232fdbe678048969f3a059c1d35713fbde3240
+
 ## Testnet
 
 ### Tokens
