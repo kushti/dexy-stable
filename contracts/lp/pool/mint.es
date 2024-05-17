@@ -1,4 +1,7 @@
-{   // This box: (LP Mint box)
+{
+    // LP subcontract for deposit (aka LP tokens mint) action.
+    //
+    // This box: (LP Mint box)
     //
     // TOKENS
     //   Tokens(0): NFT to uniquely identify this box

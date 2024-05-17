@@ -1,6 +1,12 @@
 {
     // Liquidity pool script
-    // Unlike ErgoDex (Spectrum) scripts, we split the script into many action scripts, like done in bank
+    // Unlike ErgoDex (Spectrum) scripts, we split the script into many action scripts, like done with the bank script
+    //
+    // Other differences from original Spectrum's script are:
+    //  * 2% redemption fee
+    //  * redemption is locked when LP price is < 0.98 * oracle price 
+    //  * additional intervention action (where bank interacts with LP), defined in bank/intervention.es
+    //  * additional extract-to-the-future and release-extracted-tokens actions (extract.es)
     //
     // This box: (LP box)
     //

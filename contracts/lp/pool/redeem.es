@@ -1,4 +1,7 @@
-{   // This box: (LP Redeem box)
+{
+    // LP subcontract for redeeming LP tokens action.
+    //
+    // This box: (LP Redeem box)
     //
     // TOKENS
     //   Tokens(0): NFT to uniquely identify this box
