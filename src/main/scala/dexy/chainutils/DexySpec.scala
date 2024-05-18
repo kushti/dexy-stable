@@ -150,7 +150,7 @@ object DexySpec extends ContractUtils {
   // todo: for tests, use
   // import TestnetTokenIds._
   // val networkPrefix = MainnetNetworkPrefix
-  import MainnetTokenIds._
+  import TestnetTokenIds._
   val networkPrefix = MainnetNetworkPrefix
 
   // High level idea:

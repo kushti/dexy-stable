@@ -2,6 +2,12 @@
 
 ## Mainnet
 
+### Parameters
+
+LP: 
+
+* minimum value below each extract-to-the-future action activates (minBankNanoErgs in extract.es)
+
 ### Tokens
 
 * GORT: 7ba2a85fdb302a181578b1f64cb4a533d89b3f8de4159efece75da41041537f9

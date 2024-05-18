@@ -4,7 +4,7 @@
     //
     // Other differences from original Spectrum's script are:
     //  * 2% redemption fee
-    //  * redemption is locked when LP price is < 0.98 * oracle price 
+    //  * redemption is inactive when LP price is < 0.98 * oracle price
     //  * additional intervention action (where bank interacts with LP), defined in bank/intervention.es
     //  * additional extract-to-the-future and release-extracted-tokens actions (extract.es)
     //

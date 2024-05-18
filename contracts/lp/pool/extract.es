@@ -45,7 +45,7 @@
     // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
     // 1000 Erg
     // TODO: consider proper value before mainnet launch
-    val minBankNanoErgs = 1000000000000L
+    val minBankNanoErgs = 10000 * 1000000000L // 10000 ERG
 
     val tracking95NFT = fromBase64("$tracking95NFT")
     val tracking101NFT = fromBase64("$tracking101NFT")
