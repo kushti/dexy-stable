@@ -1,5 +1,8 @@
 {
-  //  Intervention script
+  // Intervention script. It encodes intervention action, where the bank is buying back Dexy tokens from the LP to
+  // restore the peg in the LP.
+  //
+  // Parameters: intervention happens every T = 360 blocks if Dexy token price in the LP is <= 98% of oracle price.
   //
   // This box: Intervention box
   //

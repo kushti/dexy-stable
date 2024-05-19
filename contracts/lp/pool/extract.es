@@ -42,8 +42,8 @@
 
     val tracking101BoxIndex = 1
 
-    // if Bank nanoErgs less than this number in bank box, then bank is considered "empty"
-    // 1000 Erg
+    // if less nanoErgs than this number in bank box, then the bank is considered "empty"
+    // 10000 Erg
     // TODO: consider proper value before mainnet launch
     val minBankNanoErgs = 10000 * 1000000000L // 10000 ERG
 
