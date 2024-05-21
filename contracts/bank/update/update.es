@@ -1,4 +1,7 @@
-{ // This box (update box):
+{
+  // Bank update script. Taken from SigmaUSD contracts.
+  //
+  // This box (update box):
   // Registers empty
   //
   // ballot boxes (in other inputs)

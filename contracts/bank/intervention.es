@@ -104,7 +104,7 @@
 
   val validTracking = trackingHeight < HEIGHT - T_int // at least T_int blocks have passed since the tracking started
 
-  val validMaxSpending = lpReservesXOutBigInt * 1000 <= oracleRateXy * lpReservesYOut * 995  &&   // new rate must be <= 99.5 times oracle rate
+  val validMaxSpending = lpReservesXOutBigInt * 1000 <= oracleRateXy * lpReservesYOut * 995  &&   // new rate must be <= 99.5 * oracle rate
                          deltaBankErgs <= bankBoxIn.value / 100 // no more than 1% of reserves spent per intervention
 
   // dexy price

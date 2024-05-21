@@ -6,7 +6,15 @@
 
 LP: 
 
-* minimum value below each extract-to-the-future action activates (minBankNanoErgs in extract.es)
+* minimum value below each extract-to-the-future action activates (minBankNanoErgs in extract.es): 10,000 ERG
+
+Bank:
+
+* votes needed to update the bank script (minVotes in /bank/update/update.es): 3 (out of 5)
+
+### Updating the protocol
+
+Only bank script may be updated. 
 
 ### Tokens
 

@@ -1,5 +1,6 @@
 {
-    // Extract to the future script
+    // Extract-to-the-future script. It allows for Dexy extraction from the LP when the bank reserves are lean and Dexy
+    // is depegged in the pool, to return Dexy tokens back to the LP when the peg is restored
     //
     // TOKENS
     //   tokens(0): extractionNFT
@@ -44,7 +45,6 @@
 
     // if less nanoErgs than this number in bank box, then the bank is considered "empty"
     // 10000 Erg
-    // TODO: consider proper value before mainnet launch
     val minBankNanoErgs = 10000 * 1000000000L // 10000 ERG
 
     val tracking95NFT = fromBase64("$tracking95NFT")
