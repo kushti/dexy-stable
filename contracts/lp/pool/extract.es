@@ -129,6 +129,10 @@
                         validTracking101Box                    &&
                         HEIGHT - tracker101Height > T_release  &&
                         validReleaseAmount
+                                            
+    val updateNFT = fromBase64("$updateNFT")
+    val validUpdate = INPUTS(0).tokens(0)._1 == updateNFT
 
-    sigmaProp(validSuccessor && validDelay && validLpBox && validOracleBox && (validRelease || validExtract))
+    val validAction = validSuccessor && validDelay && validLpBox && validOracleBox && (validRelease || validExtract)
+    sigmaProp(validAction || validUpdate)
 }

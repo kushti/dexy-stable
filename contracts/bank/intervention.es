@@ -127,5 +127,8 @@
                   validTracking    &&
                   validGap
 
-  sigmaProp(validSwap)
+  val updateNFT = fromBase64("$updateNFT")
+  val validUpdate = INPUTS(0).tokens(0)._1 == updateNFT
+
+  sigmaProp(validSwap || validUpdate)
 }

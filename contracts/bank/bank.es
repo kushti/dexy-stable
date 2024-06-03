@@ -65,7 +65,6 @@
   val arbitrageMintNFT = fromBase64("$arbitrageMintNFT")
   val interventionNFT = fromBase64("$interventionNFT")
   val payoutNFT = fromBase64("$payoutNFT")
-  val updateNFT = fromBase64("$updateNFT")
 
   val successor = OUTPUTS(selfOutIndex)
 
@@ -80,6 +79,7 @@
 
   val validPayout = INPUTS(payoutInIndex).tokens(0)._1 == payoutNFT
 
+  val updateNFT = fromBase64("$updateNFT")
   val validUpdate = INPUTS(0).tokens(0)._1 == updateNFT
 
   sigmaProp((validSuccessor && (validMint || validIntervention || validPayout)) || validUpdate)
