@@ -17,7 +17,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
 
   val dummyTokenId = "0000005aa0d95f5d54a7bc89c46730d9662397067250aa18a0039631c0f5b801"
 
-  val minBankNanoErgs = 1000000000000L
+  val minBankNanoErgs = 10000 * 1000000000L // 10K ERG
 
   val fakeNanoErgs = 10000000000000L
   val dummyNanoErgs = 100000L
