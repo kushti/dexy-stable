@@ -3533,17 +3533,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         false
       ).getOutputsToSpend.get(0)
 
-      val ballot2 = TxUtil.createTx(
-        inputBoxes = Array(Voters.ballot2Box.toInBox(fakeTxId7, 0), fundingBox),
-        dataInputs = Array(),
-        boxesToCreate = Array(ballot2InputToCreate),
-        fee,
-        changeAddress,
-        proveDlogSecrets = Array[String](Voters.privateKey2),
-        Array[DhtData](),
-        false
-      ).getOutputsToSpend.get(0)
-
       val extractBox =
         ctx
           .newTxBuilder()
@@ -3577,12 +3566,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
       val validBallot1Output = Voters.ballot1Box.copy(
         registers = Array(
           Voters.ballot1Box.registers(0)
-        )
-      )
-
-      val validBallot2Output = Voters.ballot2Box.copy(
-        registers = Array(
-          Voters.ballot2Box.registers(0)
         )
       )
 

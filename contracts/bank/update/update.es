@@ -46,5 +46,7 @@
 
   val votesCount = ballotBoxes.fold(0L, {(accum: Long, b: Box) => accum + b.tokens(0)._2})
 
-  sigmaProp(validBankIn && validBankOut && validUpdateIn && validUpdateOut && votesCount >= minVotes)
+  val validVotes = votesCount >= minVotes
+
+  sigmaProp(validBankIn && validBankOut && validUpdateIn && validUpdateOut && validVotes)
 }
