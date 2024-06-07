@@ -3319,7 +3319,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         .outBoxBuilder
         .value(minStorageRent)
         .tokens(new ErgoToken(updateNFT, 1))
-        .contract(ctx.newContract(ScalaErgoConverters.getAddressFromString(updateAddress).script))
+        .contract(ctx.newContract(ScalaErgoConverters.getAddressFromString(extractUpdateAddress).script))
         .build()
         .convertToInputWith(fakeTxId3, fakeIndex)
 
@@ -3392,7 +3392,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .convertToInputWith(fakeTxId4, fakeIndex)
 
       val validUpdateOutBox = KioskBox(
-        updateAddress,
+        extractUpdateAddress,
         minStorageRent,
         registers = Array(),
         tokens = Array((updateNFT, 1))
@@ -3482,7 +3482,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         .outBoxBuilder
         .value(minStorageRent)
         .tokens(new ErgoToken(updateNFT, 1))
-        .contract(ctx.newContract(ScalaErgoConverters.getAddressFromString(updateAddress).script))
+        .contract(ctx.newContract(ScalaErgoConverters.getAddressFromString(extractUpdateAddress).script))
         .build()
         .convertToInputWith(fakeTxId3, fakeIndex)
 
@@ -3497,14 +3497,6 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
       val ballot1InputToCreate = Voters.ballot1Box.copy(
         registers = Array(
           Voters.ballot1Box.registers(0),
-          KioskCollByte(updateBox.getId.getBytes),
-          valueVotedFor
-        )
-      )
-
-      val ballot2InputToCreate = Voters.ballot2Box.copy(
-        registers = Array(
-          Voters.ballot2Box.registers(0),
           KioskCollByte(updateBox.getId.getBytes),
           valueVotedFor
         )
@@ -3544,7 +3536,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .convertToInputWith(fakeTxId4, fakeIndex)
 
       val validUpdateOutBox = KioskBox(
-        updateAddress,
+        extractUpdateAddress,
         minStorageRent,
         registers = Array(),
         tokens = Array((updateNFT, 1))
@@ -3569,7 +3561,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         )
       )
 
-      noException shouldBe thrownBy {
+      an[Exception] shouldBe thrownBy {
         TxUtil.createTx(
           Array(updateBox, extractBox, ballot0, ballot1, fundingBox),
           Array(),

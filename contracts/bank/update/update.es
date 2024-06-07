@@ -1,5 +1,5 @@
 {
-  // Bank update script. Taken from SigmaUSD contracts.
+  // Contract update script. Taken from SigmaUSD contracts.
   //
   // This box (update box):
   // Registers empty
@@ -9,7 +9,8 @@
   // R5 the box id of this box [Coll[Byte]]
   // R6 the value voted for [Coll[Byte]]
 
-  val bankNFT = fromBase64("$bankNFT")
+  // contractToUpdateNFT is whether bankNFT, extractNFT, interventionNFT
+  val contractToUpdateNFT = fromBase64("$contractToUpdateNFT")
 
   val ballotTokenId = fromBase64("$ballotTokenId")
 
@@ -20,16 +21,16 @@
   val updateBoxOut = OUTPUTS(0) // copy of this box is the 1st output
   val validUpdateIn = SELF.id == INPUTS(0).id // this is 1st input
 
-  val bankBoxIn = INPUTS(1) // bank box is 2nd input
-  val bankBoxOut = OUTPUTS(1) // copy of bank box is the 2nd output
+  val contractToUpdateBoxIn = INPUTS(1) // contract to update box is 2nd input
+  val contractToUpdateBoxOut = OUTPUTS(1) // copy of contract to update box is the 2nd output
 
-  // compute the hash of the bank output box. This should be the value voted for
-  val bankBoxOutHash = blake2b256(bankBoxOut.propositionBytes)
+  // compute the hash of the contract to update output box. This should be the value voted for
+  val contractToUpdateBoxOutHash = blake2b256(contractToUpdateBoxOut.propositionBytes)
 
-  val validBankIn = bankBoxIn.tokens.size == 2 && bankBoxIn.tokens(0)._1 == bankNFT
-  val validBankOut = bankBoxIn.tokens == bankBoxOut.tokens &&
-                     bankBoxIn.value == bankBoxOut.value
-
+  val validContractToUpdateIn = contractToUpdateBoxIn.tokens.size >= 1 &&
+                                    contractToUpdateBoxIn.tokens(0)._1 == contractToUpdateNFT
+  val validContractToUpdateOut = contractToUpdateBoxIn.tokens == contractToUpdateBoxOut.tokens &&
+                                    contractToUpdateBoxIn.value == contractToUpdateBoxOut.value
 
   val validUpdateOut = SELF.tokens == updateBoxOut.tokens &&
                        SELF.propositionBytes == updateBoxOut.propositionBytes &&
@@ -39,7 +40,7 @@
     b.tokens.size > 0 &&
     b.tokens(0)._1 == ballotTokenId &&
     b.R5[Coll[Byte]].get == SELF.id && // ensure vote corresponds to this box ****
-    b.R6[Coll[Byte]].get == bankBoxOutHash // check value voted for
+    b.R6[Coll[Byte]].get == contractToUpdateBoxOutHash // check value voted for
   }
 
   val ballotBoxes = INPUTS.filter(isValidBallot)
@@ -48,5 +49,5 @@
 
   val validVotes = votesCount >= minVotes
 
-  sigmaProp(validBankIn && validBankOut && validUpdateIn && validUpdateOut && validVotes)
+  sigmaProp(validContractToUpdateIn && validContractToUpdateOut && validUpdateIn && validUpdateOut && validVotes)
 }

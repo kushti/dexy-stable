@@ -3017,7 +3017,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
         .outBoxBuilder
         .value(minStorageRent)
         .tokens(new ErgoToken(updateNFT, 1))
-        .contract(ctx.newContract(ScalaErgoConverters.getAddressFromString(updateAddress).script))
+        .contract(ctx.newContract(ScalaErgoConverters.getAddressFromString(interventionUpdateAddress).script))
         .build()
         .convertToInputWith(fakeTxId3, fakeIndex)
 
@@ -3090,7 +3090,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
           .convertToInputWith(fakeTxId4, fakeIndex)
 
       val validUpdateOutBox = KioskBox(
-        updateAddress,
+        interventionUpdateAddress,
         minStorageRent,
         registers = Array(),
         tokens = Array((updateNFT, 1))
@@ -3136,5 +3136,143 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     }
   }
 
+  property("Failed update when not enough votes collected") {
+    val fee = 1500000
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      object Voters {
+        // define voters
+        val addresses = Seq(
+          "9eiuh5bJtw9oWDVcfJnwTm1EHfK5949MEm5DStc2sD1TLwDSrpx", // private key is 37cc5cb5b54f98f92faef749a53b5ce4e9921890d9fb902b4456957d50791bd0
+          "9f9q6Hs7vXZSQwhbrptQZLkTx15ApjbEkQwWXJqD2NpaouiigJQ", // private key is 5878ae48fe2d26aa999ed44437cffd2d4ba1543788cff48d490419aef7fc149d
+          "9fGp73EsRQMpFC7xaYD5JFy2abZeKCUffhDBNbQVtBtQyw61Vym", // private key is 3ffaffa96b2fd6542914d3953d05256cd505d4beb6174a2601a4e014c3b5a78e
+        ).toArray
+
+        val privateKey0 = "37cc5cb5b54f98f92faef749a53b5ce4e9921890d9fb902b4456957d50791bd0"
+        val privateKey1 = "5878ae48fe2d26aa999ed44437cffd2d4ba1543788cff48d490419aef7fc149d"
+        val privateKey2 = "3ffaffa96b2fd6542914d3953d05256cd505d4beb6174a2601a4e014c3b5a78e"
+
+        val r4voter0 = KioskGroupElement(stringToGroupElement(ErgoUtil.addressToGroupElement(addresses(0))))
+        val r4voter1 = KioskGroupElement(stringToGroupElement(ErgoUtil.addressToGroupElement(addresses(1))))
+        val r4voter2 = KioskGroupElement(stringToGroupElement(ErgoUtil.addressToGroupElement(addresses(2))))
+
+        val ballot0Box = KioskBox(ballotAddress, value = 200000000, registers = Array(r4voter0), tokens = Array((ballotTokenId, 1L)))
+        val ballot1Box = KioskBox(ballotAddress, value = 200000000, registers = Array(r4voter1), tokens = Array((ballotTokenId, 1L)))
+        val ballot2Box = KioskBox(ballotAddress, value = 200000000, registers = Array(r4voter2), tokens = Array((ballotTokenId, 1L)))
+      }
+
+      // value to vote for; hash of new bank box script
+      val valueVotedFor = KioskCollByte(Blake2b256.hash(bankErgoTree.bytes)) //todo: real update
+
+      // dummy custom input box for funding various transactions
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      // current update box
+      val updateBox = ctx
+        .newTxBuilder()
+        .outBoxBuilder
+        .value(minStorageRent)
+        .tokens(new ErgoToken(updateNFT, 1))
+        .contract(ctx.newContract(ScalaErgoConverters.getAddressFromString(interventionUpdateAddress).script))
+        .build()
+        .convertToInputWith(fakeTxId3, fakeIndex)
+
+      val ballot0InputToCreate = Voters.ballot0Box.copy(
+        registers = Array(
+          Voters.ballot0Box.registers(0),
+          KioskCollByte(updateBox.getId.getBytes),
+          valueVotedFor
+        )
+      )
+
+      val ballot1InputToCreate = Voters.ballot1Box.copy(
+        registers = Array(
+          Voters.ballot1Box.registers(0),
+          KioskCollByte(updateBox.getId.getBytes),
+          valueVotedFor
+        )
+      )
+
+      // create ballots
+      val ballot0 = TxUtil.createTx(
+        inputBoxes = Array(Voters.ballot0Box.toInBox(fakeTxId5, 0), fundingBox),
+        dataInputs = Array(),
+        boxesToCreate = Array(ballot0InputToCreate),
+        fee,
+        changeAddress,
+        proveDlogSecrets = Array[String](Voters.privateKey0),
+        Array[DhtData](),
+        false
+      ).getOutputsToSpend.get(0)
+
+      val ballot1 = TxUtil.createTx(
+        inputBoxes = Array(Voters.ballot1Box.toInBox(fakeTxId6, 0), fundingBox),
+        dataInputs = Array(),
+        boxesToCreate = Array(ballot1InputToCreate),
+        fee,
+        changeAddress,
+        proveDlogSecrets = Array[String](Voters.privateKey1),
+        Array[DhtData](),
+        false
+      ).getOutputsToSpend.get(0)
+
+      val interventionBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(interventionNFT, 1), new ErgoToken(dexyUSD, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), interventionScript))
+          .build()
+          .convertToInputWith(fakeTxId4, fakeIndex)
+
+      val validUpdateOutBox = KioskBox(
+        interventionUpdateAddress,
+        minStorageRent,
+        registers = Array(),
+        tokens = Array((updateNFT, 1))
+      )
+
+      val validInterventionOutBox = KioskBox(
+        bankAddress, // different address!
+        fakeNanoErgs,
+        registers = Array(),
+        tokens = Array((interventionNFT, 1), (dexyUSD, 1))
+      )
+
+      val validBallot0Output = Voters.ballot0Box.copy(
+        registers = Array(
+          Voters.ballot0Box.registers(0)
+        )
+      )
+
+      val validBallot1Output = Voters.ballot1Box.copy(
+        registers = Array(
+          Voters.ballot1Box.registers(0)
+        )
+      )
+
+
+      an[Exception] shouldBe thrownBy {
+        TxUtil.createTx(
+          Array(updateBox, interventionBox, ballot0, ballot1, fundingBox),
+          Array(),
+          Array(validUpdateOutBox, validInterventionOutBox, validBallot0Output, validBallot1Output),
+          fee,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          false
+        )
+      }
+    }
+  }
 
 }

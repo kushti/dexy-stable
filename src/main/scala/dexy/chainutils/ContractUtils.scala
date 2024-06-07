@@ -10,8 +10,20 @@ trait ContractUtils {
     }
   }
 
-  def readContract(path: String, substitutionMap: Map[String, String] = defaultSubstitutionMap) = {
-    substitute(scala.io.Source.fromFile("contracts/" + path, "utf-8").getLines.mkString("\n"), substitutionMap)
+  def readContract(path: String,
+                   substitutionMap: Map[String, String] = defaultSubstitutionMap,
+                   additionalFields: Map[String, String] = Map.empty): String = {
+    val substitutionMapComplete = if (additionalFields.isEmpty) {
+      substitutionMap
+    } else {
+      substitutionMap ++ additionalFields
+    }
+    substitute(scala.io.Source.fromFile("contracts/" + path, "utf-8").getLines.mkString("\n"), substitutionMapComplete)
+  }
+
+  def readContract(path: String,
+                   additionalField: (String, String)): String = {
+    readContract(path, defaultSubstitutionMap, Map(additionalField))
   }
 
 }

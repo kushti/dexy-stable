@@ -243,9 +243,17 @@ object DexySpec extends ContractUtils {
   val ballotErgoTree = ScriptUtil.compile(Map(), ballotScript)
   val ballotAddress = getStringFromAddress(getAddressFromErgoTree(ballotErgoTree))
 
-  val updateScript = readContract("bank/update/update.es")
-  val updateErgoTree = ScriptUtil.compile(Map(), updateScript)
-  val updateAddress = getStringFromAddress(getAddressFromErgoTree(updateErgoTree))
+  val bankUpdateScript = readContract("bank/update/update.es", "contractToUpdateNFT" -> defaultSubstitutionMap("bankNFT"))
+  val bankUpdateErgoTree = ScriptUtil.compile(Map(), bankUpdateScript)
+  val bankUpdateAddress = getStringFromAddress(getAddressFromErgoTree(bankUpdateErgoTree))
+
+  val extractUpdateScript = readContract("bank/update/update.es", "contractToUpdateNFT" -> defaultSubstitutionMap("extractionNFT"))
+  val extractUpdateErgoTree = ScriptUtil.compile(Map(), extractUpdateScript)
+  val extractUpdateAddress = getStringFromAddress(getAddressFromErgoTree(extractUpdateErgoTree))
+
+  val interventionUpdateScript = readContract("bank/update/update.es", "contractToUpdateNFT" -> defaultSubstitutionMap("interventionNFT"))
+  val interventionUpdateErgoTree = ScriptUtil.compile(Map(), interventionUpdateScript)
+  val interventionUpdateAddress = getStringFromAddress(getAddressFromErgoTree(interventionUpdateErgoTree))
 
   val arbitrageMintErgoTree = ScriptUtil.compile(Map(), arbitrageMintScript)
   val arbitrageMintAddress = getStringFromAddress(getAddressFromErgoTree(arbitrageMintErgoTree))

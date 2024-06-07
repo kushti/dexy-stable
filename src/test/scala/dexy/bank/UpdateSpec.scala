@@ -1,7 +1,7 @@
 package dexy.bank
 
 import dexy.Common
-import dexy.chainutils.DexySpec.{ballotAddress, bankAddress, bankErgoTree, bankScript, payoutAddress, updateAddress}
+import dexy.chainutils.DexySpec.{ballotAddress, bankAddress, bankErgoTree, bankScript, bankUpdateAddress, payoutAddress}
 import kiosk.ErgoUtil
 import kiosk.encoding.ScalaErgoConverters
 import kiosk.encoding.ScalaErgoConverters.stringToGroupElement
@@ -67,7 +67,7 @@ class UpdateSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
         .outBoxBuilder
         .value(minStorageRent)
         .tokens(new ErgoToken(updateNFT, 1))
-        .contract(ctx.newContract(ScalaErgoConverters.getAddressFromString(updateAddress).script))
+        .contract(ctx.newContract(ScalaErgoConverters.getAddressFromString(bankUpdateAddress).script))
         .build()
         .convertToInputWith(fakeTxId3, fakeIndex)
 
@@ -140,7 +140,7 @@ class UpdateSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
           .convertToInputWith(fakeTxId4, fakeIndex)
       
       val validUpdateOutBox = KioskBox(
-        updateAddress,
+        bankUpdateAddress,
         minStorageRent,
         registers = Array(),
         tokens = Array((updateNFT, 1))
@@ -229,7 +229,7 @@ class UpdateSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
         .outBoxBuilder
         .value(minStorageRent)
         .tokens(new ErgoToken(updateNFT, 1))
-        .contract(ctx.newContract(ScalaErgoConverters.getAddressFromString(updateAddress).script))
+        .contract(ctx.newContract(ScalaErgoConverters.getAddressFromString(bankUpdateAddress).script))
         .build()
         .convertToInputWith(fakeTxId3, fakeIndex)
 
@@ -291,7 +291,7 @@ class UpdateSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
           .convertToInputWith(fakeTxId4, fakeIndex)
 
       val validUpdateOutBox = KioskBox(
-        updateAddress,
+        bankUpdateAddress,
         minStorageRent,
         registers = Array(),
         tokens = Array((updateNFT, 1))

@@ -11,10 +11,15 @@ LP:
 Bank:
 
 * votes needed to update the bank script (minVotes in /bank/update/update.es): 3 (out of 5)
+* 3 update NFTs should be issued (see "Updating the protocol" for details)
+
 
 ### Updating the protocol
 
-Only bank script may be updated. 
+Bank, extract, and intervention scripts may be updated. Bank update may include changing the NFTs of bank actions.
+
+Update script boxes for all the three scripts share the same identification NFTs (used in ballot contract), thus three
+update NFTs should be issued.
 
 ### Tokens
 
