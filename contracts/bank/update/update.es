@@ -15,10 +15,11 @@
   val ballotTokenId = fromBase64("$ballotTokenId")
 
   // todo: consider proper value before deployment
-  val minVotes = 3
+  val minVotes = 3 // out of 5
 
   // collect and update in one step
   val updateBoxOut = OUTPUTS(0) // copy of this box is the 1st output
+
   val validUpdateIn = SELF.id == INPUTS(0).id // this is 1st input
 
   val contractToUpdateBoxIn = INPUTS(1) // contract to update box is 2nd input
@@ -29,9 +30,12 @@
 
   val validContractToUpdateIn = contractToUpdateBoxIn.tokens.size >= 1 &&
                                     contractToUpdateBoxIn.tokens(0)._1 == contractToUpdateNFT
+
   val validContractToUpdateOut = contractToUpdateBoxIn.tokens == contractToUpdateBoxOut.tokens &&
                                     contractToUpdateBoxIn.value == contractToUpdateBoxOut.value
 
+  // burning of update NFT token is not possible, but it is possible to update a contract to
+  // not to rely to update NFT anymore
   val validUpdateOut = SELF.tokens == updateBoxOut.tokens &&
                        SELF.propositionBytes == updateBoxOut.propositionBytes &&
                        updateBoxOut.value >= SELF.value
