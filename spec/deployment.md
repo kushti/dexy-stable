@@ -34,6 +34,21 @@ update NFTs should be issued.
 // 3 tokens be issued to make parallel execution easier
 * Buyback NFT = "bf24ed4af7eb5a7839c43aa6b240697d81b196120c837e1a941832c266d3755c"
 
+Dexy LP tokens:
+
+* Dexy LP NFT = "905ecdef97381b92c2f0ea9b516f312bfb18082c61b24b40affa6a55555c77c7"
+
+* LP Swap NFT = "c9f1304c58a1b789c0c5b4c601fa12acde1188fdff245d72bdc549c9296d2aa4"
+
+Bank tokens: 
+
+* Dexy Update Ballot Token = "3277be793f89bd88706938dd09ad49afe29a62b67b596d54a5fd7e06bf8e71ce"
+
+// 3 tokens issued for bank, intervestion, extract-to-the-future contracts
+* Dexy Update NFT = "7a776cf75b8b3a5aac50a36c41531a4d6f1e469d2cbcaa5795a4f5b4c255bf09"
+
+
+
 ### Deployment transactions
 
 * GORT dev emission contract deployment transaction:
