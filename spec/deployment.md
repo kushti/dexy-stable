@@ -40,8 +40,13 @@ Dexy LP tokens:
 
 * LP Swap NFT = "c9f1304c58a1b789c0c5b4c601fa12acde1188fdff245d72bdc549c9296d2aa4"
 
+* LP Mint NFT = "19b8281b141d19c5b3843a4a77e616d6df05f601e5908159b1eaf3d9da20e664"
+
+* LP Redeem NFT = "08c47eef5e782f146cae5e8cfb5e9d26b18442f82f3c5808b1563b6e3b23f729"
+
 Bank tokens: 
 
+// 5 tokens issued, 3 out of 5 votes are needed for an update
 * Dexy Update Ballot Token = "3277be793f89bd88706938dd09ad49afe29a62b67b596d54a5fd7e06bf8e71ce"
 
 // 3 tokens issued for bank, intervestion, extract-to-the-future contracts
