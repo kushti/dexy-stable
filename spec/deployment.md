@@ -38,6 +38,8 @@ GORT and oracle pool:
 
 Dexy LP tokens:
 
+* Dexy LP token = "376603b9ecbb953202fbac977f418ab5edc9d9effafbbe1418f5aece661dfa1f"
+
 * Dexy LP NFT = "905ecdef97381b92c2f0ea9b516f312bfb18082c61b24b40affa6a55555c77c7"
 
 * LP Swap NFT = "c9f1304c58a1b789c0c5b4c601fa12acde1188fdff245d72bdc549c9296d2aa4"
