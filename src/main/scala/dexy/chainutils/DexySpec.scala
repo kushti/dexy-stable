@@ -6,9 +6,9 @@ import org.ergoplatform.{ErgoAddressEncoder, P2PKAddress}
 import org.ergoplatform.ErgoAddressEncoder.MainnetNetworkPrefix
 import scorex.crypto.encode.Base16
 import scorex.util.encode.Base64
-import sigmastate.Values.{BooleanConstant, IntConstant, LongConstant, SigmaPropConstant}
+import sigmastate.Values.{BooleanConstant, IntConstant, LongConstant}
 import sigmastate.basics.DLogProtocol.ProveDlog
-import sigmastate.serialization.{ErgoTreeSerializer, ValueSerializer}
+import sigmastate.serialization.ValueSerializer
 
 trait NetworkTokenIds {
   // oracle related tokens
@@ -643,9 +643,10 @@ object DexySpec extends ContractUtils {
          |""".stripMargin
     }
 
+
     def lpDeploymentRequest(): String = {
       s"""
-         |  [
+         |  [ // todo: recheck values on deployment
          |    {
          |      "address": "$lpAddress",
          |      "value": 43224547253880,
