@@ -79,13 +79,16 @@ object MainnetTokenIds extends NetworkTokenIds {
   override val tracking98NFT: String = "17d3e6ccd55b16547143d51b91331c01ea9f89b0841ff2948dd2a164276621a8"
   override val tracking101NFT: String = "31bf6b4ee0bb108e155040dc93927dacef8f7af858be1ec53f232131be20e66f"
 
+  override val bankNFT: String = "75d7bfbfa6d165bfda1bad3e3fda891e67ccdcfc7b4410c1790923de2ccc9f7f"
+
+  override val updateNFT: String = "7a776cf75b8b3a5aac50a36c41531a4d6f1e469d2cbcaa5795a4f5b4c255bf09"
+
+  override val ballotTokenId: String = "3277be793f89bd88706938dd09ad49afe29a62b67b596d54a5fd7e06bf8e71ce"
+
   // todo: not real data below
   override val dexyTokenId: String = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
   override val lpTokenId: String = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
-  override val bankNFT: String = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
 
-  override val updateNFT: String = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
-  override val ballotTokenId: String = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
   override val interventionNFT: String = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
   override val freeMintNFT: String = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
   override val arbitrageMintNFT: String = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"

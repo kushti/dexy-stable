@@ -50,6 +50,8 @@ Dexy LP tokens:
 
 Bank tokens: 
 
+* Dexy Bank NFT = "75d7bfbfa6d165bfda1bad3e3fda891e67ccdcfc7b4410c1790923de2ccc9f7f"
+
 // 5 tokens issued, 3 out of 5 votes are needed for an update
 * Dexy Update Ballot Token = "3277be793f89bd88706938dd09ad49afe29a62b67b596d54a5fd7e06bf8e71ce"
 
