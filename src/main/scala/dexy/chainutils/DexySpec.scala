@@ -74,6 +74,10 @@ object MainnetTokenIds extends NetworkTokenIds {
   val buybackNFT = "bf24ed4af7eb5a7839c43aa6b240697d81b196120c837e1a941832c266d3755c"
 
   override val lpNFT: String = "905ecdef97381b92c2f0ea9b516f312bfb18082c61b24b40affa6a55555c77c7"
+  override val lpSwapNFT: String = "c9f1304c58a1b789c0c5b4c601fa12acde1188fdff245d72bdc549c9296d2aa4"
+  override val lpMintNFT: String = "19b8281b141d19c5b3843a4a77e616d6df05f601e5908159b1eaf3d9da20e664"
+  override val lpRedeemNFT: String = "08c47eef5e782f146cae5e8cfb5e9d26b18442f82f3c5808b1563b6e3b23f729"
+  override val lpTokenId: String = "376603b9ecbb953202fbac977f418ab5edc9d9effafbbe1418f5aece661dfa1f"
 
   override val tracking95NFT: String = "4819812cd232de35f9e711f0006953df3770649bd33a5a67d9d8634ec3184bba"
   override val tracking98NFT: String = "17d3e6ccd55b16547143d51b91331c01ea9f89b0841ff2948dd2a164276621a8"
@@ -87,18 +91,12 @@ object MainnetTokenIds extends NetworkTokenIds {
 
   // todo: not real data below
   override val dexyTokenId: String = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
-  override val lpTokenId: String = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
 
   override val interventionNFT: String = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
   override val freeMintNFT: String = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
   override val arbitrageMintNFT: String = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
   override val payoutNFT: String = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
-  override val lpSwapNFT: String = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
-  override val lpMintNFT: String = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
-  override val lpRedeemNFT: String = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
   override val extractionNFT: String = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
-
-
 
 }
 
