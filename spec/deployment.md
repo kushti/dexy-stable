@@ -79,6 +79,9 @@ https://explorer.ergoplatform.com/en/transactions/4e87315a08162bb63d8b7cd7cc8e0f
 * Tracking 101% deployment transaction:
 https://explorer.ergoplatform.com/en/transactions/f15bbae3f3def0e2f825bc656a232fdbe678048969f3a059c1d35713fbde3240
 
+* LP Swap deployment transaction:
+https://explorer.ergoplatform.com/en/transactions/0af8231dbc0f1b230be9611ec06db18949a9004653faa1715d3bd2e7489a8019
+
 ## Testnet
 
 ### Tokens
