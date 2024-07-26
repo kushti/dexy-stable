@@ -82,6 +82,9 @@ https://explorer.ergoplatform.com/en/transactions/f15bbae3f3def0e2f825bc656a232f
 * LP Swap deployment transaction:
 https://explorer.ergoplatform.com/en/transactions/0af8231dbc0f1b230be9611ec06db18949a9004653faa1715d3bd2e7489a8019
 
+* LP Mint deployment transaction:
+https://explorer.ergoplatform.com/en/transactions/50846c2cb97cbba0ea3c8581327f08ab7849491a788340324fab9036da98f24e
+
 ## Testnet
 
 ### Tokens
