@@ -3,7 +3,9 @@ package offchain
 import org.ergoplatform.modifiers.mempool.UnsignedErgoTransaction
 import org.ergoplatform.wallet.boxes.DefaultBoxSelector
 import org.ergoplatform.{ErgoBox, ErgoBoxCandidate, UnsignedInput}
+import scorex.crypto.hash.Blake2b256
 import scorex.util.ModifierId
+import scorex.util.encode.Base16
 import sigmastate.Values.IntConstant
 import sigmastate.interpreter.ContextExtension
 
@@ -13,14 +15,14 @@ import sigmastate.interpreter.ContextExtension
 object BuyBackUtils extends App {
   val fakeScanIds = DexyScanIds(1, 1, 1, 1, 1, 1)
 
-  val buyBackScanId = 22
+  val buyBackScanId = 50
   val gortLpScanId = 23
 
   val utils = new OffchainUtils(
     serverUrl = "http://127.0.0.1:9053",
-    apiKey = "",
+    apiKey = "hello",
     localSecretStoragePath = "/home/kushti/ergo/local/.ergo/wallet/keystore",
-    localSecretUnlockPass = "",
+    localSecretUnlockPass = "wpass",
     dexyScanIds = fakeScanIds)
 
   def buyBackBox(): Option[ErgoBox] = utils.unspentScanBoxes(buyBackScanId).headOption
@@ -93,10 +95,11 @@ object BuyBackUtils extends App {
     ).right.toOption.get
 
     val inputBoxes = IndexedSeq(lpInput, buyBackInput) ++ selectionResult.boxes
+    println("input boxes: " + inputBoxes.drop(2))
     val inputs = inputBoxes.map(b => new UnsignedInput(b.id)).updated(1, new UnsignedInput(buyBackInput.id, ContextExtension(Map((0: Byte) -> IntConstant(0)))))
 
     assert(buyBackInput.value >= 1000000000, "Less than 1 ERG in buyback input")
-    val initErgAmt =  buyBackInput.value - 100000000
+    val initErgAmt =  buyBackInput.value - 10000000
     val gortObtained = lpInput.additionalTokens(2)._2 * initErgAmt * 997 / (lpInput.value * 1000 + initErgAmt * 997) - 1
     val lpPrice = lpInput.value / lpInput.additionalTokens(2)._2
     val ergAmt = (gortObtained * lpPrice * 1.005).toLong
