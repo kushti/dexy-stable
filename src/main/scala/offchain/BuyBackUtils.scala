@@ -3,9 +3,7 @@ package offchain
 import org.ergoplatform.modifiers.mempool.UnsignedErgoTransaction
 import org.ergoplatform.wallet.boxes.DefaultBoxSelector
 import org.ergoplatform.{ErgoBox, ErgoBoxCandidate, UnsignedInput}
-import scorex.crypto.hash.Blake2b256
 import scorex.util.ModifierId
-import scorex.util.encode.Base16
 import sigmastate.Values.IntConstant
 import sigmastate.interpreter.ContextExtension
 
@@ -20,9 +18,9 @@ object BuyBackUtils extends App {
 
   val utils = new OffchainUtils(
     serverUrl = "http://127.0.0.1:9053",
-    apiKey = "hello",
+    apiKey = "",
     localSecretStoragePath = "/home/kushti/ergo/local/.ergo/wallet/keystore",
-    localSecretUnlockPass = "wpass",
+    localSecretUnlockPass = "",
     dexyScanIds = fakeScanIds)
 
   def buyBackBox(): Option[ErgoBox] = utils.unspentScanBoxes(buyBackScanId).headOption
