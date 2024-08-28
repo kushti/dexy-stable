@@ -47,12 +47,12 @@
   val T_buffer = 5 // max delay permitted after broadcasting and confirmation of the tx spending this box
   val thresholdPercent = 101 // 101% or more value (of LP in terms of OraclePool) will trigger action
 
+  // feeNum = bankFeeNum + buybackFeeNum
+  // actual fee ratio is feeNum / feeDenom
+  // we have feeNum = 5 and feeDenom = 1000 then minting fee = 0.005 = 0.5 %
   val bankFeeNum = 3
   val buybackFeeNum = 2
   val feeDenom = 1000
-  // feeNum = bankFeeNum + buybackFeeNum
-  // actual fee ratio is feeNum / feeDenom
-  // example if feeNum = 5 and feeDenom = 1000 then fee = 0.005 = 0.5 %
 
   val oracleBox = CONTEXT.dataInputs(oracleBoxIndex) // oracle-pool (v1 and v2) box containing rate in R4
   val lpBox = CONTEXT.dataInputs(lpBoxIndex)
