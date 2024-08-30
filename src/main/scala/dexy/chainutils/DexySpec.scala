@@ -93,10 +93,11 @@ object MainnetTokenIds extends NetworkTokenIds {
 
   override val extractionNFT: String = "615be55206b1fea6d7d6828c1874621d5a6eb0e318f98a4e08c94a786f947cec"
 
+  override val arbitrageMintNFT: String = "c28c5104a4ceb13f9e6ca18f312d3e5d543e64a94eb2e4333e4d6c2f0590042a"
+
   // todo: not real data below
   override val dexyTokenId: String = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
   override val freeMintNFT: String = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
-  override val arbitrageMintNFT: String = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
   override val payoutNFT: String = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
 
 }
@@ -152,7 +153,7 @@ object DexySpec extends ContractUtils {
   // todo: for tests, use
   // import TestnetTokenIds._
   // val networkPrefix = MainnetNetworkPrefix
-  import TestnetTokenIds._
+  import MainnetTokenIds._
   val networkPrefix = MainnetNetworkPrefix
 
   // High level idea:

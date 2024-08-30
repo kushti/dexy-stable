@@ -52,6 +52,8 @@ Bank tokens:
 
 * Dexy Bank NFT = "75d7bfbfa6d165bfda1bad3e3fda891e67ccdcfc7b4410c1790923de2ccc9f7f"
 
+* Arbitrage Mint NFT = "c28c5104a4ceb13f9e6ca18f312d3e5d543e64a94eb2e4333e4d6c2f0590042a"
+
 // 5 tokens issued, 3 out of 5 votes are needed for an update
 * Dexy Update Ballot Token = "3277be793f89bd88706938dd09ad49afe29a62b67b596d54a5fd7e06bf8e71ce"
 
@@ -91,6 +93,11 @@ https://explorer.ergoplatform.com/en/transactions/50846c2cb97cbba0ea3c8581327f08
 
 * LP redeem deployment transaction:
 https://explorer.ergoplatform.com/en/transactions/4b7131a95bcbd07a8e97e8449316181fc48b7ea9256ac7c562445b7e836b350e
+
+#### Bank
+
+* Arbitrage Mint deployment transaction:
+https://explorer.ergoplatform.com/en/transactions/8fa18c55c710f267d15d8f107fcf4d526d5e51583b0feaed8a9cd858900705d7
 
 ## Testnet
 
