@@ -95,10 +95,11 @@ object MainnetTokenIds extends NetworkTokenIds {
 
   override val arbitrageMintNFT: String = "c28c5104a4ceb13f9e6ca18f312d3e5d543e64a94eb2e4333e4d6c2f0590042a"
 
-  // todo: not real data below
-  override val dexyTokenId: String = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
-  override val freeMintNFT: String = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
-  override val payoutNFT: String = "119a068a0119670de8a5d2467da33df572903c64aaa7b6ea4c9668ef0cfe0325"
+  override val freeMintNFT: String = "2010eedd38b6ebe3bcd703ec9649b114ef3f2b2142aec873eded3e67f25a19c5"
+
+  override val payoutNFT: String = "1d88e849dc537081470b273f37c2118d73a418f8c4d0c9117dcf044dde82f5b2"
+
+  override val dexyTokenId: String = "6122f7289e7bb2df2de273e09d4b2756cda6aeb0f40438dc9d257688f45183ad"
 
 }
 
