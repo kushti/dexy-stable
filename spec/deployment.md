@@ -99,6 +99,9 @@ https://explorer.ergoplatform.com/en/transactions/4b7131a95bcbd07a8e97e844931618
 * Arbitrage Mint deployment transaction:
 https://explorer.ergoplatform.com/en/transactions/8fa18c55c710f267d15d8f107fcf4d526d5e51583b0feaed8a9cd858900705d7
 
+* Free Mint deployment transaction:
+https://explorer.ergoplatform.com/en/transactions/df7a809754766880c12885b970c51df952b6c6f2dccf1234a150815db91f751e
+
 ## Testnet
 
 ### Tokens
