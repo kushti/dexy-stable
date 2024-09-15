@@ -61,7 +61,7 @@
   val oracleRate = oracleBox.R4[Long].get / 1000000L
 
   val dexyInCirculation = $initialDexyTokens - bankDexy
-  val collateralized = oracleRate * bankBoxIn.value > dexyInCirculation * 5 // > 500% collateralization
+  val collateralized = oracleRate * bankBoxIn.value > dexyInCirculation * 8 // > 800% collateralization
 
   val paymentAmount = bankBoxIn.value / 200 // 0.5 % max can be taken
   val properPayment = (bankBoxIn.value - bankBoxOut.value == paymentAmount) &&
