@@ -63,9 +63,11 @@
   val dexyInCirculation = $initialDexyTokens - bankDexy
   val collateralized = oracleRate * bankBoxIn.value > dexyInCirculation * 8 // > 800% collateralization
 
-  val paymentAmount = bankBoxIn.value / 200 // 0.5 % max can be taken
-  val properPayment = (bankBoxIn.value - bankBoxOut.value == paymentAmount) &&
+  val maxPaymentAmount = bankBoxIn.value / 200 // 0.5 % max can be taken
+  val paymentAmount = bankBoxIn.value - bankBoxOut.value
+  val properPayment = (paymentAmount > 0) && (paymentAmount <= maxPaymentAmount) &&
                         (buybackBoxOut. value - buybackBoxIn.value == paymentAmount)
+
   val lastPayment = SELF.R4[Int].get
   val buffer = 5 // error margin in height
   val delayInPayments = 5040 // ~ 1 week
@@ -76,6 +78,7 @@
   // value is checked in validPayout
   val validBank = bankBoxOut.tokens == bankBoxIn.tokens                     // tokens preserved
 
+  // payout script box preservation
   val validSuccessor = successor.propositionBytes == SELF.propositionBytes && // script preserved
                        successor.tokens == SELF.tokens                     && // NFT preserved
                        successor.value >= SELF.value                       && // Ergs preserved or increased
