@@ -102,6 +102,9 @@ https://explorer.ergoplatform.com/en/transactions/8fa18c55c710f267d15d8f107fcf4d
 * Free Mint deployment transaction:
 https://explorer.ergoplatform.com/en/transactions/df7a809754766880c12885b970c51df952b6c6f2dccf1234a150815db91f751e
 
+* Payout deployment transaction:
+https://explorer.ergoplatform.com/en/transactions/6944b9995c17f843b68ce5ea3ceed3382e061d92fea104f54a59c0ff86b5edc2
+
 ## Testnet
 
 ### Tokens

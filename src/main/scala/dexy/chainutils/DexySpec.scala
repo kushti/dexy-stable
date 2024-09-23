@@ -554,12 +554,13 @@ object DexySpec extends ContractUtils {
          |""".stripMargin
     }
 
+    // 10 ERG to protect box from storage rent
     def payoutDeploymentRequest(): String = {
       s"""
          |  [
          |    {
          |      "address": "$payoutAddress",
-         |      "value": 1000000000,
+         |      "value": 10000000000,
          |      "assets": [
          |        {
          |          "tokenId": "$payoutNFT",
