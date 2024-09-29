@@ -4,3 +4,4 @@
 
 * unused `successorR4` removed
 * unused `maxPayout` and `minPayout` removed
+* `collateralized` condition fixed
