@@ -49,8 +49,6 @@
 
   val validOracle = oracleBox.tokens(0)._1 == oracleNFT
 
-  val successorR4 = successor.R4[Coll[Byte]].get // should be same as selfR4
-
   val bankDexy = bankBoxIn.tokens(1)._2
 
   // oracle delivers nanoErgs per 1 kg of gold
@@ -64,7 +62,7 @@
   val maxPaymentAmount = bankBoxIn.value / 200 // 0.5 % max can be taken
   val paymentAmount = bankBoxIn.value - bankBoxOut.value
   val properPayment = (paymentAmount > 0) && (paymentAmount <= maxPaymentAmount) &&
-                        (buybackBoxOut. value - buybackBoxIn.value == paymentAmount)
+                        (buybackBoxOut.value - buybackBoxIn.value == paymentAmount)
 
   val lastPayment = SELF.R4[Int].get
   val buffer = 5 // error margin in height
