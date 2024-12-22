@@ -146,7 +146,7 @@ object TestnetTokenIds extends NetworkTokenIds {
   // boxes for tracking ratio of LP rate and oracle pool rate (see details in Tracking contract)
   val tracking95NFT = "3e90605cd3db3d72fb34bf5ae1ebb15537cfe36b40ec81014d0e57cf8836c962"
   val tracking98NFT = "b94d36be8fe53bc07c3c53a2ee892e8398e8565346e1ea4bf42575f00fe7149f"
-  val tracking101NFT = "b94d36be8fe53bc07c3c53a2ee892e8398e8565346e1ea4bf42575f00fe7149f"
+  val tracking101NFT = "f14b42ab7a8ff1ba2e2b7056e27cd9c7e018c355499c385850db7f34da881431"
 }
 
 object DexySpec extends ContractUtils {
