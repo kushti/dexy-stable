@@ -3,7 +3,7 @@ package dexy.chainutils
 import dexy.chainutils.ScriptUtil.{getAddressFromErgoTree, getStringFromAddress}
 import kiosk.ergo._
 import org.ergoplatform.{ErgoAddressEncoder, P2PKAddress}
-import org.ergoplatform.ErgoAddressEncoder.MainnetNetworkPrefix
+import org.ergoplatform.ErgoAddressEncoder.{MainnetNetworkPrefix, TestnetNetworkPrefix}
 import scorex.crypto.encode.Base16
 import scorex.util.encode.Base64
 import sigmastate.Values.{BooleanConstant, IntConstant, LongConstant}
@@ -117,36 +117,36 @@ object TestnetTokenIds extends NetworkTokenIds {
   // GORT / ERG LP
   val gortLpNFT = "043ea12f03769748e436c003886c455ddf1a7cd4aafbd214602822d5213f4e68" // todo: not real
 
-  val buybackNFT = "0158bb202fdf8eacdd4b08e972776077284e5a69708af719669e6f65ceeaf809" // todo: not real
+  val buybackNFT = "9b8a5d2d1fff88653a11ce1d697e8e2e603dbfe34cc7124f4c76e5cd45c5bf34" // todo: not real
 
-  val dexyTokenId = "0d69a552b30df9be519099ec07682039b0610267aaee48d2a1d3dad398287ef5"
+  val dexyTokenId = "68e52efc3a235006e893afcf642a75d4e1e56f8c324b200a4c16d93216d83832"
 
-  val lpTokenId = "0e1f9fb56d3e2ab827cdf4a39ad59c679188ce7fc71df1572f58ae5b7b08ec2f"
+  val lpTokenId = "53f62621df1ada5e27f38032610314125395fdddea39064971f51633468a0af0"
 
   // tokens for main boxes
-  val bankNFT = "0f6209f38beb3189e897df42189b858a2f9d96e0d00d6036333ca4bccc11af22"
-  val lpNFT = "0fa04f3851b18085f160d90bc3dba1c63f2fdc73f884c9fd94395dbfc9c293b6"
+  val bankNFT = "764eeeb81d8f6c566d7abae113ffe558ab86a4c10277800e958a017c86345c78"
+  val lpNFT = "6873424faf94dad45f54d20793dc6214026ab68bd3309b46b5695243174efafa"
 
   // update tokens
-  val updateNFT = "0faa129eecdfc04ba4b454bbf33785f89f9f56eda2df0577d610da3adce65ddb"
-  val ballotTokenId = "0fbc880ca7be40e36b4fb112aaba83dd44bd613ee171c4775a5c6ae4d358e644"
+  val updateNFT = "c7894e6bf1654c321d1bfb1576ba62330f0c5f671142ca9221e9515b3af4d123"
+  val ballotTokenId = "0c4febf15f39966e66fa057123b1439c4cd19229cb2b5b526cd74a5304d4bd20"
 
   // all tokens below for aux boxes (1 for each type of box)
-  val interventionNFT = "102a5f871dd4f3b051dc3295068a5f69af148b5fe9d182353798b67c013f9d9e"
-  val freeMintNFT = "113b18ca82b272dca4499a847ab4ea792cd9f92bd98f5f9975dc1fd2160615ff"
-  val arbitrageMintNFT = "1201d3bb72a9c212d37fdea2a76d0e1857a4f69189901c3fad02b8723174b98c"
-  val payoutNFT = "126a63cd06bdb020a48bb76a5927c67e50ac20a2c3d05fb1e2489b4e41be4339"
+  val interventionNFT = "0734f92848b3c0aa887f976cb2b43c412ecb98612fcd172b468861c01d1c64a0"
+  val freeMintNFT = "9a46aaf31a0c7410d86481240804932417238788dbc5f8478de6d07182cd3be6"
+  val arbitrageMintNFT = "e6a6a03862f94c77d7535dd5492f0934fbc9d89f1689bb4be2d215f0db3342a0"
+  val payoutNFT = "3f44eeaaf64aea3c39b64c49f00f24c9341e236d989ba65710b206a7a17de5c9"
 
-  val lpSwapNFT = "1290ef3c02310d7dd110a9cc6b0a0aa3b4d669ed4c75b3ed9b25652b9189e50d"
-  val lpMintNFT = "12a1cfce7a3ad46b3d7d8a78bf1ec29c210f1ab8216a5670ed6ea0af8abd19b4"
-  val lpRedeemNFT = "12e5820470d332344c73ad21f5b1249c40f2ecbdd8d51db3f912944c279db909"
-  val extractionNFT = "12f11de6defb4478423b08c01a50affa63d4c4ba7a070c87fb66f58ea7c0e4db"
+  val lpSwapNFT = "30e641b65fe4f726693a5aee3f465094baf37a8453530c7d8c749e5d501c64dd"
+  val lpMintNFT = "c6d2b46536607bfdf9ae374786ea2e95a1b62a237998ad2a59b5b1ffbc976ccc"
+  val lpRedeemNFT = "55d05e29148780cab10fec92c28e4b7b88a0de3b264d229a76d501d1faae2881"
+  val extractionNFT = "228f4c97e1857fe2124feebfc521fd2986190f839412cb83aceb8ffd65238192"
 
   // should be reissued every time!
   // boxes for tracking ratio of LP rate and oracle pool rate (see details in Tracking contract)
-  val tracking95NFT = "13a2cc2c2f2954d8b336a0fe95d0ac21e29eb8f60de82661d54b1b8c48e52a86"
-  val tracking98NFT = "13aa951ba2b7f82da62e1b970eca3b8f30ddbf331f8010d60094488ba938f31b"
-  val tracking101NFT = "1432466dbf0c15294546086e6a76701c89a1a6ed6f9179242151d72c92f79f3b"
+  val tracking95NFT = "3e90605cd3db3d72fb34bf5ae1ebb15537cfe36b40ec81014d0e57cf8836c962"
+  val tracking98NFT = "b94d36be8fe53bc07c3c53a2ee892e8398e8565346e1ea4bf42575f00fe7149f"
+  val tracking101NFT = "b94d36be8fe53bc07c3c53a2ee892e8398e8565346e1ea4bf42575f00fe7149f"
 }
 
 object DexySpec extends ContractUtils {
@@ -155,7 +155,7 @@ object DexySpec extends ContractUtils {
   // import TestnetTokenIds._
   // val networkPrefix = MainnetNetworkPrefix
   import TestnetTokenIds._
-  val networkPrefix = MainnetNetworkPrefix
+  val networkPrefix = TestnetNetworkPrefix
 
   // High level idea:
   // There are 3 main boxes in the protocol, and the others are auxiliary boxes to manage the main boxes
