@@ -71,7 +71,7 @@ object MainnetTokenIds extends NetworkTokenIds {
   val gortLpNFT = "d1c9e20657b4e37de3cd279a994266db34b18e6e786371832ad014fd46583198"
 
   // 3 tokens issued to make parallel execution easier
-  val buybackNFT = ""
+  val buybackNFT = "610735cbf197f9de67b3628129feaa5a52403286859d140be719467c0fb94328"
 
   // Dexy LP tokens
   override val lpNFT: String = "905ecdef97381b92c2f0ea9b516f312bfb18082c61b24b40affa6a55555c77c7"
