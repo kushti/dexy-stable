@@ -78,7 +78,7 @@ object MainnetTokenIds extends NetworkTokenIds {
   override val lpSwapNFT: String = "ff7b7eff3c818f9dc573ca03a723a7f6ed1615bf27980ebd4a6c91986b26f801"
   override val lpMintNFT: String = "10b755771f7253cff9727a9ca54bb2867e22b1b236657051c47ea9556c517e10"
   override val lpRedeemNFT: String = "471057efea32bf406d529902217844a258d3d6bedfcdcd3cfbab01872cc0b74c"
-  override val lpTokenId: String = ""
+  override val lpTokenId: String = "cf74432b2d3ab8a1a934b6326a1004e1a19aec7b357c57209018c4aa35226246"
 
   override val tracking95NFT: String = "ff5269b5cdd037ea391b7210e28aeae0034ef670b9c4263995fe2a920e8d5a1d"
   override val tracking98NFT: String = "854bb70ed735b6c6a65ca80ce1f10bf217552d2be9ac936091a127f8c6480eaa"
