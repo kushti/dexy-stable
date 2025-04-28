@@ -155,8 +155,8 @@ object DexySpec extends ContractUtils {
   // todo: for tests, use
   // import TestnetTokenIds._
   // val networkPrefix = MainnetNetworkPrefix
-  import TestnetTokenIds._
-  val networkPrefix = TestnetNetworkPrefix
+  import MainnetTokenIds._
+  val networkPrefix = MainnetNetworkPrefix
 
   // High level idea:
   // There are 3 main boxes in the protocol, and the others are auxiliary boxes to manage the main boxes
