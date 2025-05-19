@@ -101,7 +101,7 @@
 
     val validGap = lastIntervention < HEIGHT - T
 
-    val deltaBankTokens =  bankBoxOut.tokens(1)._2 - bankBoxIn.tokens(1)._2
+    val deltaBankTokens = bankBoxOut.tokens(1)._2 - bankBoxIn.tokens(1)._2
     val deltaBankErgs = bankBoxIn.value - bankBoxOut.value
     val deltaLpX = lpReservesXOut - lpReservesXIn
     val deltaLpY = lpReservesYIn - lpReservesYOut
