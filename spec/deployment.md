@@ -23,6 +23,8 @@ update NFTs should be issued.
 
 ### Tokens
 
+DexyGOLD token = "6122f7289e7bb2df2de273e09d4b2756cda6aeb0f40438dc9d257688f45183ad"
+
 GORT and oracle pool:
 
 * GORT = "7ba2a85fdb302a181578b1f64cb4a533d89b3f8de4159efece75da41041537f9"
@@ -38,17 +40,17 @@ GORT and oracle pool:
 
 Dexy LP tokens:
 
-* Dexy LP token = "376603b9ecbb953202fbac977f418ab5edc9d9effafbbe1418f5aece661dfa1f"
+* Dexy LP token = "cf74432b2d3ab8a1a934b6326a1004e1a19aec7b357c57209018c4aa35226246"
 
 * Dexy LP NFT = "905ecdef97381b92c2f0ea9b516f312bfb18082c61b24b40affa6a55555c77c7"
 
-* LP Swap NFT = "c9f1304c58a1b789c0c5b4c601fa12acde1188fdff245d72bdc549c9296d2aa4"
+* LP Swap NFT = "ff7b7eff3c818f9dc573ca03a723a7f6ed1615bf27980ebd4a6c91986b26f801"
 
 * LP Mint NFT = "19b8281b141d19c5b3843a4a77e616d6df05f601e5908159b1eaf3d9da20e664"
 
 * LP Redeem NFT = "08c47eef5e782f146cae5e8cfb5e9d26b18442f82f3c5808b1563b6e3b23f729"
 
-Bank tokens: 
+Bank tokens:
 
 * Dexy Bank NFT = "75d7bfbfa6d165bfda1bad3e3fda891e67ccdcfc7b4410c1790923de2ccc9f7f"
 
@@ -95,6 +97,9 @@ https://explorer.ergoplatform.com/en/transactions/a221696d22f79cb421cf9a9769dbcd
 * LP extract to the future deployment transaction:
   https://explorer.ergoplatform.com/en/transactions/eb332b956b220309af16b7fb7d079c915e2b6089171ec20d3c9c07225c813a14
 
+* LP deployment transaction:
+  https://explorer.ergoplatform.com/en/transactions/1937585558c9848f788cdc76f81e514dfdf786aa4efb70252453dd4f5b6fbc7a
+
 #### Bank
 
 * Arbitrage Mint deployment transaction:
@@ -104,9 +109,16 @@ https://explorer.ergoplatform.com/en/transactions/a221696d22f79cb421cf9a9769dbcd
   https://explorer.ergoplatform.com/en/transactions/3165ed7b6728de25a28f0ba1448297664da64cef93bd3fdca7c629a754730ec2 
 
 * Payout deployment transaction:
+  https://explorer.ergoplatform.com/en/transactions/feedfed1a958d97499c9ca45adce68811a2e3466ed00c531b310f97ae4c5ef5a
 
 * Intervention:
   https://explorer.ergoplatform.com/en/transactions/d69d119de9fbe4222d0a5e621c9a87cc0d25946143c40ca71717ea8a418808a1
+
+* Buyback deployment transaction:
+  https://explorer.ergoplatform.com/en/transactions/8bab25bb842f45a73fa81bb176ed105c30d820a0ecb024a4992148285d4fd229
+
+* Bank deployment transaction:
+  https://explorer.ergoplatform.com/en/transactions/06ac93ab316aa64576dcc1cfefd2080cf55d04d2423b6b73271ba6a0742322e7
 
 ## Testnet
 

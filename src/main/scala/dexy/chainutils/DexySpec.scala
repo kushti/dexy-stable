@@ -501,7 +501,7 @@ object DexySpec extends ContractUtils {
          |  [
          |    {
          |      "address": "$bankAddress",
-         |      "value": 1000000000,
+         |      "value": 100000000000,
          |      "assets": [
          |        {
          |          "tokenId": "$bankNFT",
@@ -509,7 +509,7 @@ object DexySpec extends ContractUtils {
          |        },
          |        {
          |          "tokenId": "$dexyTokenId",
-         |          "amount": $initialDexyTokens
+         |          "amount": ${initialDexyTokens - 8000}
          |        }
          |      ]
          |    }
@@ -655,7 +655,7 @@ object DexySpec extends ContractUtils {
          |  [ // todo: recheck values on deployment
          |    {
          |      "address": "$lpAddress",
-         |      "value": 43224547253880,
+         |      "value": 1000000000000,
          |      "assets": [
          |        {
          |          "tokenId": "$lpNFT",
@@ -663,11 +663,11 @@ object DexySpec extends ContractUtils {
          |        },
          |        {
          |          "tokenId": "$lpTokenId",
-         |          "amount": ${initialLp - 6400000000L}
+         |          "amount": ${initialLp - 1000000L}
          |        },
          |        {
          |          "tokenId": "$dexyTokenId",
-         |          "amount": 1000000
+         |          "amount": 7813
          |        }
          |      ]
          |    }
