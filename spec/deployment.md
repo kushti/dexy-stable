@@ -92,6 +92,9 @@ https://explorer.ergoplatform.com/en/transactions/a221696d22f79cb421cf9a9769dbcd
 * LP redeem deployment transaction:
   https://explorer.ergoplatform.com/en/transactions/8c85b322551d9b2cfc759470aa66e778aca9561578529569a13195acab070c43
 
+* LP extract to the future deployment transaction:
+  https://explorer.ergoplatform.com/en/transactions/eb332b956b220309af16b7fb7d079c915e2b6089171ec20d3c9c07225c813a14
+
 #### Bank
 
 * Arbitrage Mint deployment transaction:

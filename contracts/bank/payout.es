@@ -17,7 +17,6 @@
 
   // In the above transaction, the "payouts" (rewards) will be stored in a "Reward" box
   // The payout box just enforces the correct logic for such rewards and does not store the actual rewards
-  // The reward box must be protected by a script whose hash is stored in R4 of the payout box
 
   val payoutThreshold = 100000000000000L // nanoErgs (100000 Ergs)
 
