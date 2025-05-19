@@ -198,7 +198,7 @@ We also state following rules for the liquidity pool (which, otherwise, acts as 
 
    \item{Extract for the future: } if the bank is empty and $r$ is below some threshold, it is allowed to extract \sct{}s from the pool and lock by a contract which is releasing \sct{}s in the future when \sct{} price is above the peg.
    \em{To instantiate the rule, we propose to extract \sct{} if $r <= 0.95$ for time period $T_{burn}$ (so the same as in burn). 
-   To prioritize extracted funds over arbitrage mint, we do not have delay in releasing contract. We burn enough to return to the state of stopped withdrawals, so to $r = 0.98$. After extraction the tracker is reset, so another burn will be done sfter $T_{burn}$ at least.}
+   To prioritize extracted funds over arbitrage mint, we do not have delay in releasing contract. We burn enough to return to the state of stopped withdrawals, so close to $r = 0.98$~(exactly, $0.97 <= r <= 0.98$). After extraction the tracker is reset, so another burn will be done sfter $T_{burn}$ at least.}
    \end{enumerate}
 \end{itemize} 
 
