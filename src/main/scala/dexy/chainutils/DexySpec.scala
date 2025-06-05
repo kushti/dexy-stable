@@ -26,6 +26,7 @@ trait NetworkTokenIds {
 
   val buybackNFT: String
 
+  // dexy gold token id
   val dexyTokenId: String
 
   val lpTokenId: String
@@ -56,6 +57,9 @@ trait NetworkTokenIds {
   val tracking101NFT: String
 }
 
+/**
+ * Mainnet deployment data
+ */
 object MainnetTokenIds extends NetworkTokenIds {
 
   // oracle related tokens
@@ -100,6 +104,7 @@ object MainnetTokenIds extends NetworkTokenIds {
 
   override val payoutNFT: String = "26ef992a598eadfddabfd3c51509fb277b075c943b17199407f68c467b9de1ae"
 
+  // DexyGold token
   override val dexyTokenId: String = "6122f7289e7bb2df2de273e09d4b2756cda6aeb0f40438dc9d257688f45183ad"
 
 }
