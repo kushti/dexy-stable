@@ -174,15 +174,7 @@ Instead, we always allow for cautios minting. That is, we whether allow minting 
   \em{To instantiate the rule, we propose to allow for free mint if $0.98 < r < 1.02$. Minting fee in this case is also $0.5\%$. We propose to set $T_free$ to $12$ hours, then bank reserves can grow by $2\%$ of LP volume per day when the peg is okay.}.
 \end{itemize}  
 
-In addition to minting actions, which increase bank reserves, we define following two actions which decrease them: 
-
-\begin{itemize}
-   \item{Intervention: } if price reported by the oracle is lower than one in the pool by significantly enough margin, i.e. $\frac{p*e}{u}$ is less than some constant which is hard-wired into the protocol, then the bank is providing \bc{}s. to restore the price.
-   \em{To instantiate the rule, we propose to allow the bank to intervene if $r <= 0.98$ for time period $T_{int} = 1 {\ day}$.
-       During intervention tracker is reset, so another intervention will be after $T_{int} = 1 {\ day}$ at least. The bank is getting 
-       price to 99.5\% of the oracle price max, but also spending no more than 1\% of its reserves for that.}
-\end{itemize}
-
+ 
 
 We also state following rules for the liquidity pool (which, otherwise, acts as ordinary CP-AMM liquidity pool): 
 
