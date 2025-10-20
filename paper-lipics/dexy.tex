@@ -122,7 +122,7 @@ in DAI), zero-coupon bonds~(as in the Yield protocol), reserve asset~(as in Djed
 In this work, we present \dx{}, a stablecoin protocol where an algorithmic central bank performs interventions in case of a depeg, presented explicitly as a contract with a few predefined rules. The bank tries to stabilize the stablecoin value in the secondary market, using a liquidity pool as a reference market, by providing stablecoin liquidity, when the stablecoin price is over the peg, or injecting basecoins from its reserves, when the stablecoin price is under the peg. In extreme cases, when bank reserves are depleted and the stablecoin price is still under the peg, its value is restored by extracting stablecoins from the liquidity pool~(to inject back when the stablecoin price goes above the peg again). In some aspects, \dx{} could resemble Fei or Gyroscope. 
 
 The rest of the paper is organized as follows.  In Section \ref{sec:design-general}, the \dx{} design in general is explained and
-notation used in other sections is introduced. Section \ref{sec:worst-case} defines the worst-case scenario for bank reserves~(and so, for stablecoin stability). Then \dx{} bank rules are detailed in Section~\ref{sec:detailed-rules}. Stability of the rules are
+notation used in other sections is introduced. Section \ref{sec:worst-case} defines the worst-case scenario for bank reserves~(and so, for stablecoin stability). Then the \dx{} bank rules are detailed in Section~\ref{sec:detailed-rules}. Stability of the rules are
 discussed in Section~\ref{sec:stability}. The trust assumptions that the \dx{} protocol is based on are stated in Section~\ref{sec:kya}.
 Section~\ref{sec:dexygold} a describes concrete \dx{} implementation, the gold-pegged DexyGold stablecoin and its
 tokenomics.
@@ -194,43 +194,51 @@ Instead, we always allow for cautious minting. That is, we allow minting when or
     \emph{To instantiate the rule, we can allow for arbitrage minting if the price $p$ is more than $\frac{u}{e}$ by at least $1\%$ for time period $T_{arb}$ (e.g. 1 hour), with the bank charging $0.5\%$ fee for the operation. After arbitrage mint, it is not possible to do another one within 30 minutes, in order to prevent aggressive liquidity minting via chained transactions, etc.}
 
   \item {Free mint:} we allow to mint up to $\frac{u}{100}$ \sct{}s within time period $T_{free}$. 
-  
+
     \emph{To instantiate the rule, we propose to allow for free mint if $0.98 < r < 1.02$. Minting fee in this case is also $0.5\%$. We propose to set $T_{free}$ to $12$ hours, then bank reserves can grow by $2\%$ of LP volume per day when the peg is okay.}
 \end{itemize}
 
-In addition to minting actions, which increase the bank reserves, we define the following action which decreases the bank reserves: 
+In addition to minting actions, which increase the bank reserves, we define the following action which decreases the bank reserves, but functions as the first stabilization mechanism: 
 
 \begin{itemize}
-   \item{Intervention:} if the price reported by the oracle is lower than the pool price by a significant enough margin, i.e. $r = \frac{p*e}{u} \le C$ for some constant $C$ set as a protocol parameter, then the bank will providing enough basecoins to restore the pool price to the oracle price.
-   \emph{To instantiate the rule, we propose to allow the bank to intervene if $r <= 0.98$ for time period $T_{int} = 1 {\ day}$.
+   \item{Intervention:} if the price reported by the oracle is lower than the pool price by a significant enough margin, i.e. $r = \frac{p*e}{u}$ is less than or equal to some constant that is set as a protocol parameter, then the bank will provide enough basecoins to restore the pool price to the oracle price.
+   
+   \emph{To instantiate the rule, we propose to allow the bank to intervene if $r \le 0.98$ for time period $T_{int} = 1 {\ day}$.
        During the intervention, the period is reset, so another intervention will only occur after $T_{int} = 1 {\ day}$ at least. The bank will provide enough basecoins to get the pool price
        price to 99.5\% of the oracle price max, but making sure to not spend more than 1\% of its reserves for that.}
 \end{itemize}
 
-We also state following rules for the liquidity pool (which, otherwise, acts as ordinary CP-AMM liquidity pool): 
+We also state following rules for the liquidity pool (which, otherwise, acts as an ordinary CP-AMM liquidity pool): 
 
 \begin{itemize}
-   \item{Stopping withdrawals: } if $r$ is below some threshold, withdrawals are stopped, so only swaps are possible.  
-   \em{To instantiate the rule, we propose to stop withdrawals immediately if $r <= 0.98$.}
+   \item{Stopping withdrawals:} if $r$ is below some threshold, withdrawals from liquidity providers are stopped (i.e. liquidity providers cannot redeem their LP tokens for basecoins/stablecoins), so only swaps between basecoins and stablecoins are possible.  
+   
+   \emph{To instantiate the rule, we propose to stop withdrawals immediately if $r \le 0.98$.}
 
-   \item{Second stabilization mechanism: } what if the bank is out of reserves, but \sct{} is still below the peg? In this case we restore price in the pool by removing liquidity, and there are two possible options here:
+   \item{Second stabilization mechanism:} what if the bank is out of reserves, but the basecoin price in the liquidity pool is still above the oracle basecoin price? In this case we restore price in the pool by removing liquidity, and there are two possible options here:
 
    \begin{enumerate}
-   \item{Burn: } if the bank if empty, and $r$ is below some threshold, it is allowed to burn \sct{}s in the pool. 
-   \em{To instantiate the rule, we propose to burn \sct{} if $r <= 0.95$ for time period $T_{burn}$. $T_{burn}$ must be quite big, e.g. $1 {\ week}$. We burn enough to return to the state of stopped withdrawals, so to $r = 0.98$. After burning the tracker is reset, so another burn will be done sfter $T_{burn}$ at least.}
+   \item{Burn:} if the bank if empty, and $r$ is below some threshold, it is allowed to burn \sct{}s in the pool. 
+   
+   \emph{To instantiate the rule, we propose to burn \sct{} if $r \le 0.95$ for a time period $T_{burn}$. $T_{burn}$ must be quite big, e.g. $1 {\ week}$. We burn enough stablecoins to return to the state of stopped withdrawals, so to $r = 0.98$. After burning, the period is reset, so another burn will be done only after $T_{burn}$ amount of time at least.}
 
-   \item{Extract for the future: } if the bank is empty and $r$ is below some threshold, it is allowed to extract \sct{}s from the pool and lock by a contract which is releasing \sct{}s in the future when \sct{} price is above the peg.
-   \em{To instantiate the rule, we propose to extract \sct{} if $r <= 0.95$ for time period $T_{burn}$ (so the same as in burn). 
-   To prioritize extracted funds over arbitrage mint, we do not have delay in releasing contract. We burn enough to return to the state of stopped withdrawals, so close to $r = 0.98$~(exactly, $0.97 <= r <= 0.98$). After extraction the tracker is reset, so another burn will be done sfter $T_{burn}$ at least.}
+   \item{Extract for the future:} if the bank is empty and $r$ is below some threshold, it is allowed to extract \sct{}s from the pool and lock them in a contract, only to be released in the future when the \sct{} price is above the stablecoin oracle price (i.e. the inverse of the basecoin price peg).
+   
+   \emph{To instantiate the rule, we propose to extract \sct{}s if $r \le 0.95$ for time period $T_{burn}$ (so the same as in burn). 
+   To prioritize extracted funds over arbitrage mint, we do not have delay in releasing contract. We burn enough to return to the state of stopped withdrawals, so close to $r = 0.98$~(exactly, $0.97 \le r \le 0.98$). After extraction, the period is reset, so another extraction will be done after $T_{burn}$ amount of time at least.}
    \end{enumerate}
 \end{itemize} 
 
-In addition, we introduce $2\%$ redemption fee to avoid excessive liquidity hopping.
+In addition, we introduce $2\%$ redemption fee for liquidity providers to avoid excessive liquidity hopping.
 
 \section{Stability}
 \label{sec:stability}
 
-test
+With second stabilization mechanism~(burning or extraction) in place, the price in the reference market will be eventually stabilized. However, for liquidity holders, burning is painful, extraction not as much, but still not desirable. Thus, the \dx{} protocol is trying to avoid it (unlike other protocols, such as Gyroscope or Fei, where redemption rate fails and falls below $1$ immediately when the collateralization ratio falls under $100\%$) by giving markets time to self-stabilize, and then doing interventions. However, this could mean slower stabilization, in comparison with other protocols, but slower stabilization helps the bank to play with possible adversaries in an environment with information assymetry, since humans always have access to more information than the algorithmic bank, and with more flexible decision making as well.
+
+\dx{} is also cautious about minting new \sct{}s, which could mean slow growth of the number of stablecoins issued. This could be inconvient, especially for big players, but the protocol is focused on stability in the first place. 
+
+Please note that the liquidity pool is disincentivizing massive bank runs due to its constant-product nature. Actually, massive bank runs are simpler for the bank to resolve, in comparison to the slow drain of the worst-case scenario.
 
 \section{Trust Assumptions}
 \label{sec:kya}
