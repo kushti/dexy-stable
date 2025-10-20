@@ -48,14 +48,15 @@
 
 %\titlerunning{Dummy short title} %TODO optional, please use if title is longer than one line
 
-\author{kushti}{Ergo Platform}{}{}{}%TODO mandatory, please use full name; only 1 author per \author macro; first two parameters are mandatory, other parameters can be empty. Please provide at least the name of the affiliation and the country. The full address is optional. Use additional curly braces to indicate the correct name splitting when the last name consists of multiple name parts.
-\author{scalahub}{Ergo Platform}{}{}{}%TODO mandatory, please use full name; only 1 author per \author macro; first two parameters are mandatory, other parameters can be empty. Please provide at least the name of the affiliation and the country. The full address is optional. Use additional curly braces to indicate the correct name splitting when the last name consists of multiple name parts.
+\author{Alexander Chepurnoy{}}{Ergo Platform}{}{}{}%TODO mandatory, please use full name; only 1 author per \author macro; first two parameters are mandatory, other parameters can be empty. Please provide at least the name of the affiliation and the country. The full address is optional. Use additional curly braces to indicate the correct name splitting when the last name consists of multiple name parts.
+\author{Amitabh Saxena{}}{Ergo Platform}{}{}{}%TODO mandatory, please use full name; only 1 author per \author macro; first two parameters are mandatory, other parameters can be empty. Please provide at least the name of the affiliation and the country. The full address is optional. Use additional curly braces to indicate the correct name splitting when the last name consists of multiple name parts.
+\author{Luca D'Angelo{}}{zenGate Global \and The Stable Order}{}{}{}
 
 %\author{Joan R. Public\footnote{Optional footnote, e.g. to mark corresponding author}}{Department of Informatics, Dummy College, [optional: Address], Country}{joanrpublic@dummycollege.org}{[orcid]}{[funding]}
 
-\authorrunning{kushti and scalahub} %TODO mandatory. First: Use abbreviated first/middle names. Second (only in severe cases): Use first author plus 'et al.'
+\authorrunning{A. Chepurnoy and A. Saxena and L. D'Angelo} %TODO mandatory. First: Use abbreviated first/middle names. Second (only in severe cases): Use first author plus 'et al.'
 
-\Copyright{kushti and scalahub} %TODO mandatory, please use full first names. LIPIcs license is "CC-BY";  http://creativecommons.org/licenses/by/3.0/
+\Copyright{Alexander Chepurnoy and Amitabh Saxena} %TODO mandatory, please use full first names. LIPIcs license is "CC-BY";  http://creativecommons.org/licenses/by/3.0/
 
 \ccsdesc{Applied computing~Economics} %TODO mandatory: Please choose ACM 2012 classifications from https://dl.acm.org/ccs/ccs_flat.cfm 
 
@@ -71,7 +72,7 @@
 
 %\funding{(Optional) general funding statement \dots}%optional, to capture a funding statement, which applies to all authors. Please enter author specific funding statements as fifth argument of the \author macro.
 
-\acknowledgements{Authors would like to thank Ile for his inspiring forum posts.}%optional
+\acknowledgements{Authors would like to thank Bruno for discussions and the extract to future idea, and  Ile for his inspiring forum posts.}%optional
 
 \nolinenumbers %uncomment to disable line numbering
 
@@ -243,25 +244,42 @@ Please note that the liquidity pool is disincentivizing massive bank runs due to
 \section{Trust Assumptions}
 \label{sec:kya}
 
-test
+It is important to explicitly state the assumptions that the protocol is based on, so a user can choose whether to trust it or not.
+
+\begin{itemize}
+  \item{Oracle:} the biggest trust issue in the protocol is the oracle delivering the target price. This trust issue is unavoidable, however, it can be relaxed by using a federation of oracles that produces an average price (after noise filtering) to be delivered to the Dexy central bank, instead of relying on a single entity.
+  It is important to reward oracles from protocol activities~(such as minting), otherwise, they will be incentivized to attack the protocol. See Section~\ref{subsec:oracle-incentivization} for details.
+
+  \item{No governance:} unlike most of stablecoin protocols, we do not consider governance, as usually it is another trust issue. Real world instantiations can consider governance, we suppose that such instantiations should clearly inform about governance-related trust assumptions.
+\end{itemize}
 
 \section{Dexy Gold}
 \label{sec:dexygold}
 
-test
+In this section we consider concrete implementation of the \dx{} protocol, gold-pegged stablecoin named \dxg{}, on the Ergo blockchain.
 
 \subsection{Oracle Incentivization and Tokenomics}
+\label{subsec:oracle-incentivization}
 
-test
+Oracles security is the most important issue for our stablecoin protocol, since this is the only component that does not function autonomously on-chain. Thus, the protocol needs to reward oracles.
+
+Oracle Pools 2.0 framework~\cite{eip23} has support for paying rewards in custom tokens. So we will create GORT (Gold
+Oracle Reward Token), which will be used to reward oracles and also developers.
+
+$X$ oracles wil get up to $2 \cdot X$ GORTs per epoch (one datapoint update), per Oracle Pool v2 design~\cite{eip23}~(
+$2 \cdot X$ if all the oracles are active). We consider $X = 30$ oracles with one hour long epoch, which means up to $60$
+GORTs will be released to oracles.
+
+Any transaction in the protocol that requires the oracle datapoint to be provided as a data-input will charge an oracle fee in \bc{}. This \bc{} will be sent to a BuyBack contract. The BuyBack contract purchases GORT available in a LP on ErgoDex, which is then distributed to the oracle operators.
+Thus, the oracle operators receiving GORT tokens can redeem them for the accumulated \bc{} from fees in the same LP.
+
+In addition to oracles, GORT is used to reward developers. To do that, we consider a flat emission contract, which is
+releasing the same amount per one hour, so 2 GORT per block during initial period (2 years).
 
 \subsection{Implementation}
-
-test
-
-\subsection{Bank Contract}
-
-\subsection{Simulations}
-
+The \dxg{} protocol has been implemented on the Ergo blockchain. The ErgoScript smart-contracts follow a separation-of-concerns design pattern, thus each one handles its own part of the protocol instead of having one giant contract, this results in a total of 18 ErgoScript contracts required for the implementation.
+These 18 contracts are orchestrated together with the corresponding off-chain software for the different protocol interactions and trackers necessary to check the status of the oracle and pool peg, along with the relevant delay periods.
+The smart-contracts, off-chain code, simulations, and tests can be found in the following repository \url{https://github.com/kushti/dexy-stable}
 
 
 %%
