@@ -14,10 +14,7 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
 
   import dexy.chainutils.TestnetTokenIds._
 
-  // ToDo: Add tests (and modify contracts) such that:
-  //   1. Cannot add junk registers in the end
-  //   2. Cannot add junk tokens in the end
-  //   3. Changing NFT/tokensIds/addresses should fail for "sell Dexy" and "No Change" flows as well
+
 
   val dummyTokenId = "59e5ce5aa0d95f5d54a7bc89c46730d9662397067250aa18a0039631c0fad80a"
 
@@ -1244,4 +1241,315 @@ class LpSwapSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     }
   }
 
+  property("Cannot add junk registers in the end") {
+    val lpBalance = 100000000L
+    val reservesXIn = 1000000000000L
+    val reservesYIn = 100000000L
+
+    val rate = reservesYIn.toDouble / reservesXIn
+    val sellX = 10000000L
+    val buyY = (sellX * rate * feeNumLp / feeDenomLp).toLong - 1
+
+    val reservesXOut = reservesXIn + sellX
+    val reservesYOut = reservesYIn - buyY
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val lpBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(reservesXIn)
+          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalance), new ErgoToken(dexyUSD, reservesYIn))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
+          .build()
+          .convertToInputWith(fakeTxId2, fakeIndex)
+
+      val swapBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(lpSwapNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpSwapScript))
+          .build()
+          .convertToInputWith(fakeTxId3, fakeIndex)
+
+      val validLpOutBox = KioskBox(
+        lpAddress,
+        reservesXOut,
+        registers = Array(KioskLong(12345L)), // Junk register
+        tokens = Array((lpNFT, 1), (lpToken, lpBalance), (dexyUSD, reservesYOut))
+      )
+
+      val validSwapOutBox = KioskBox(
+        lpSwapAddress,
+        minStorageRent,
+        registers = Array(),
+        tokens = Array((lpSwapNFT, 1))
+      )
+
+      val dummyOutputBox = KioskBox(
+        changeAddress,
+        dummyNanoErgs,
+        registers = Array(),
+        tokens = Array((dexyUSD, buyY))
+      )
+
+      the[Exception] thrownBy {
+        TxUtil.createTx(
+          Array(lpBox, swapBox, fundingBox),
+          Array(),
+          Array(validLpOutBox, validSwapOutBox, dummyOutputBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          false
+        )
+      } should have message "Script reduced to false"
+    }
+  }
+
+  property("Cannot add junk tokens in the end") {
+    val lpBalance = 100000000L
+    val reservesXIn = 1000000000000L
+    val reservesYIn = 100000000L
+
+    val rate = reservesYIn.toDouble / reservesXIn
+    val sellX = 10000000L
+    val buyY = (sellX * rate * feeNumLp / feeDenomLp).toLong - 1
+
+    val reservesXOut = reservesXIn + sellX
+    val reservesYOut = reservesYIn - buyY
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val lpBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(reservesXIn)
+          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalance), new ErgoToken(dexyUSD, reservesYIn))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
+          .build()
+          .convertToInputWith(fakeTxId2, fakeIndex)
+
+      val swapBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(lpSwapNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpSwapScript))
+          .build()
+          .convertToInputWith(fakeTxId3, fakeIndex)
+
+      val validLpOutBox = KioskBox(
+        lpAddress,
+        reservesXOut,
+        registers = Array(),
+        tokens = Array((lpNFT, 1), (lpToken, lpBalance), (dexyUSD, reservesYOut), (dummyTokenId, 1)) // Junk token
+      )
+
+      val validSwapOutBox = KioskBox(
+        lpSwapAddress,
+        minStorageRent,
+        registers = Array(),
+        tokens = Array((lpSwapNFT, 1))
+      )
+
+      val dummyOutputBox = KioskBox(
+        changeAddress,
+        dummyNanoErgs,
+        registers = Array(),
+        tokens = Array((dexyUSD, buyY))
+      )
+
+      the[Exception] thrownBy {
+        TxUtil.createTx(
+          Array(lpBox, swapBox, fundingBox),
+          Array(),
+          Array(validLpOutBox, validSwapOutBox, dummyOutputBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          false
+        )
+      } should have message "Script reduced to false"
+    }
+  }
+
+  property("Changing NFT should fail for sell Dexy flows") {
+    val lpBalance = 100000000L
+    val reservesXIn = 1000000000000L
+    val reservesYIn = 100000000L
+
+    val rate = reservesYIn.toDouble / reservesXIn
+    val sellY = 1000000L
+    val buyX = (sellY * rate * (feeNumLp) / feeDenomLp).toLong - 100
+
+    val reservesXOut = reservesXIn - buyX
+    val reservesYOut = reservesYIn + sellY
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val lpBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(reservesXIn)
+          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalance), new ErgoToken(dexyUSD, reservesYIn))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
+          .build()
+          .convertToInputWith(fakeTxId2, fakeIndex)
+
+      val swapBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(lpSwapNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpSwapScript))
+          .build()
+          .convertToInputWith(fakeTxId3, fakeIndex)
+
+      val validLpOutBox = KioskBox(
+        lpAddress,
+        reservesXOut,
+        registers = Array(),
+        tokens = Array((dummyTokenId, 1), (lpToken, lpBalance), (dexyUSD, reservesYOut)) // Changed NFT
+      )
+
+      val validSwapOutBox = KioskBox(
+        lpSwapAddress,
+        minStorageRent,
+        registers = Array(),
+        tokens = Array((lpSwapNFT, 1))
+      )
+
+      val dummyOutputBox = KioskBox(
+        changeAddress,
+        dummyNanoErgs,
+        registers = Array(),
+        tokens = Array((dexyUSD, sellY))
+      )
+
+      the[Exception] thrownBy {
+        TxUtil.createTx(
+          Array(lpBox, swapBox, fundingBox),
+          Array(),
+          Array(validLpOutBox, validSwapOutBox, dummyOutputBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          false
+        )
+      } should have message "Script reduced to false"
+    }
+  }
+
+  property("Changing addresses should fail for No Change flows") {
+    val lpBalance = 100000000L
+    val reservesXIn = 1000000000000L
+    val reservesYIn = 100000000L
+
+    val rate = reservesYIn.toDouble / reservesXIn
+    val sellX = 10000000L
+    val buyY = (sellX * rate * feeNumLp / feeDenomLp).toLong - 1
+
+    val reservesXOut = reservesXIn + sellX
+    val reservesYOut = reservesYIn - buyY
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val lpBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(reservesXIn)
+          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalance), new ErgoToken(dexyUSD, reservesYIn))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
+          .build()
+          .convertToInputWith(fakeTxId2, fakeIndex)
+
+      val swapBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(lpSwapNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpSwapScript))
+          .build()
+          .convertToInputWith(fakeTxId3, fakeIndex)
+
+      val validLpOutBox = KioskBox(
+        changeAddress, // Changed address
+        reservesXOut,
+        registers = Array(),
+        tokens = Array((lpNFT, 1), (lpToken, lpBalance), (dexyUSD, reservesYOut))
+      )
+
+      val validSwapOutBox = KioskBox(
+        lpSwapAddress,
+        minStorageRent,
+        registers = Array(),
+        tokens = Array((lpSwapNFT, 1))
+      )
+
+      val dummyOutputBox = KioskBox(
+        changeAddress,
+        dummyNanoErgs,
+        registers = Array(),
+        tokens = Array((dexyUSD, buyY))
+      )
+
+      the[Exception] thrownBy {
+        TxUtil.createTx(
+          Array(lpBox, swapBox, fundingBox),
+          Array(),
+          Array(validLpOutBox, validSwapOutBox, dummyOutputBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          false
+        )
+      } should have message "Script reduced to false"
+    }
+  }
 }
