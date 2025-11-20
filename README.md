@@ -2,6 +2,8 @@
 
 This repository contains everything related to Dexy stablecoin protocol and its testnet and mainnet deployments.
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/kushti/dexy-stable)
+
 ## Contents
 
 * [Whitepaper](paper/dexy.pdf)
