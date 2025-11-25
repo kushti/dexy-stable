@@ -1,4 +1,4 @@
-# Deployment Notes
+# DexyGold Deployment Notes
 
 ## Mainnet
 
