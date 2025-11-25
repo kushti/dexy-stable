@@ -26,17 +26,17 @@ update NFTs should be issued.
 
 ### Tokens
 
-USE (DexyUSD) token = ""
+USE (DexyUSD) token = "bf0e1826d225617aeca3ad9a4df6b700af14dd683631b5ba9857f1b17322e53d"
 
 DORT and oracle pool:
 
-* GORT = ""
+* DORT = ""
 * oracle pool NFT = ""
 * oracle token ID = ""
 
-* GORT LP NFT = ""
+* DORT LP NFT = ""
 
-* GORT Dev emission NFT = ""
+* DORT Dev emission NFT = ""
 
 // 3 tokens be issued to make parallel execution easier
 * Buyback NFT = ""
@@ -69,7 +69,10 @@ Bank tokens:
 
 ### Deployment transactions
 
-* GORT dev emission contract deployment transaction:
+* USE token issuance
+  https://explorer.ergoplatform.com/en/transactions/b3bb8f634a3b85f25879dfa95f5ed6d7b4a3a59f832fcf44b4bdecda4b0dbbe6
+
+* DORT dev emission contract deployment transaction:
   https://explorer.ergoplatform.com/en/transactions/
 
 * Buyback contract deployment transactions:
@@ -133,7 +136,7 @@ oraclePoolNFT = ""
 
 gortDevEmissionNFT: String = "" // todo: not real
 
-// GORT / ERG LP
+// DORT / ERG LP
 gortLpNFT = "" // todo: not real
 
 buybackNFT = "" // todo: not real
