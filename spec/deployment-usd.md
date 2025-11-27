@@ -43,7 +43,7 @@ DORT and oracle pool:
 * DORT Dev emission NFT = "" // no dev emission
 
 // 3 tokens be issued to make parallel execution easier
-* Buyback NFT = "413d16025a7bd8cd049bcce919253dc52bf540c77b3ef8646c9186f51b48e120"
+* Buyback NFT = "dcce07af04ea4f9b7979336476594dc16321547bcc9c6b95a67cb1a94192da4f"
 
 Dexy LP tokens:
 
