@@ -1,17 +1,18 @@
 package dexy.lp
 
-import dexy.chainutils.DexySpec._
+import dexy.chainutils.UseSpec._
 import dexy.Common
-import dexy.chainutils.DexySpec
-import kiosk.ergo.{DhtData, KioskBoolean, KioskBox, KioskInt, KioskLong}
-import kiosk.tx.TxUtil
-import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoToken, HttpClientTesting}
+import dexy.chainutils.UseSpec
+import org.ergoplatform.kiosk.ergo.{DhtData, KioskBoolean, KioskBox, KioskInt, KioskLong}
+import org.ergoplatform.kiosk.tx.TxUtil
+import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, HttpClientTesting}
+import org.ergoplatform.sdk.ErgoToken
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with HttpClientTesting with Common {
 
-  import dexy.chainutils.TestnetTokenIds._
+  import dexy.chainutils.MainnetUseTokenIds._
 
   val ergoClient = createMockedErgoClient(MockData(Nil, Nil))
 
@@ -87,7 +88,7 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
             KioskBoolean(false).getErgoValue, // isBelow is false
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -207,7 +208,7 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
             KioskBoolean(false).getErgoValue, // isBelow is false
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -327,7 +328,7 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
             KioskBoolean(false).getErgoValue, // isBelow is false
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -449,7 +450,7 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
             KioskBoolean(false).getErgoValue, // isBelow is false
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -571,7 +572,7 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
             KioskBoolean(false).getErgoValue, // isBelow is false
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -695,7 +696,7 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
             KioskBoolean(false).getErgoValue, // isBelow is false
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -810,7 +811,7 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
             KioskBoolean(false).getErgoValue, // isBelow is false
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -931,7 +932,7 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
             KioskBoolean(false).getErgoValue, // isBelow is false
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1056,7 +1057,7 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
             KioskBoolean(false).getErgoValue, // isBelow is false
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1181,7 +1182,7 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
             KioskBoolean(false).getErgoValue, // isBelow is false
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1304,7 +1305,7 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
             KioskBoolean(false).getErgoValue, // isBelow is false
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1422,7 +1423,7 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
             KioskBoolean(false).getErgoValue, // isBelow is false
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1542,7 +1543,7 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
             KioskBoolean(false).getErgoValue, // isBelow is false
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1661,7 +1662,7 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
             KioskBoolean(false).getErgoValue, // isBelow is false
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1782,7 +1783,7 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
             KioskBoolean(false).getErgoValue, // isBelow is false
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1905,7 +1906,7 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
             KioskBoolean(false).getErgoValue, // isBelow is false
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2025,7 +2026,7 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
             KioskBoolean(false).getErgoValue, // isBelow is false
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2146,7 +2147,7 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
             KioskBoolean(false).getErgoValue, // isBelow is false
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2270,7 +2271,7 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
             KioskBoolean(false).getErgoValue, // isBelow is false
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2399,7 +2400,7 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
             KioskBoolean(false).getErgoValue, // isBelow is false
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2522,7 +2523,7 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
             KioskBoolean(false).getErgoValue, // isBelow is false
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2650,7 +2651,7 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
             KioskBoolean(false).getErgoValue, // isBelow is false
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2788,7 +2789,7 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2925,7 +2926,7 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 

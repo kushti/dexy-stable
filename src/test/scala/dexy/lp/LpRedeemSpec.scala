@@ -1,17 +1,18 @@
 package dexy.lp
 
 import dexy.Common
-import dexy.chainutils.DexySpec._
-import kiosk.ergo.{DhtData, KioskBox, KioskLong}
-import kiosk.tx.TxUtil
-import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoToken, HttpClientTesting}
+import dexy.chainutils.UseSpec._
+import org.ergoplatform.kiosk.ergo.{DhtData, KioskBox, KioskLong}
+import org.ergoplatform.kiosk.tx.TxUtil
+import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, HttpClientTesting}
+import org.ergoplatform.sdk.ErgoToken
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 // Test Lp contract for redeem Lp tokens
 class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with HttpClientTesting with Common {
 
-  import dexy.chainutils.TestnetTokenIds._
+  import dexy.chainutils.MainnetUseTokenIds._
 
   val ergoClient = createMockedErgoClient(MockData(Nil, Nil))
   val fakeNanoErgs = 10000000000000L
@@ -39,7 +40,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(fakeNanoErgs)
-          .tokens(new ErgoToken(lpToken, lpRedeemed))
+          .tokens(new ErgoToken(lpTokenId, lpRedeemed))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
@@ -60,7 +61,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(reservesXIn)
-          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalanceIn), new ErgoToken(dexyUSD, reservesYIn))
+          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpTokenId, lpBalanceIn), new ErgoToken(dexyUSD, reservesYIn))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
           .build()
           .convertToInputWith(fakeTxId3, fakeIndex)
@@ -79,7 +80,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         lpAddress,
         reservesXOut,
         registers = Array(),
-        tokens = Array((lpNFT, 1), (lpToken, lpBalanceOut), (dexyUSD, reservesYOut))
+        tokens = Array((lpNFT, 1), (lpTokenId, lpBalanceOut), (dexyUSD, reservesYOut))
       )
 
       val validRedeemOutBox = KioskBox(
@@ -127,7 +128,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(fakeNanoErgs)
-          .tokens(new ErgoToken(lpToken, lpRedeemed))
+          .tokens(new ErgoToken(lpTokenId, lpRedeemed))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
@@ -148,7 +149,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(reservesXIn)
-          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalanceIn), new ErgoToken(dexyUSD, reservesYIn))
+          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpTokenId, lpBalanceIn), new ErgoToken(dexyUSD, reservesYIn))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
           .build()
           .convertToInputWith(fakeTxId3, fakeIndex)
@@ -167,7 +168,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         changeAddress, // <--------------- this value is changed
         reservesXOut,
         registers = Array(),
-        tokens = Array((lpNFT, 1), (lpToken, lpBalanceOut), (dexyUSD, reservesYOut))
+        tokens = Array((lpNFT, 1), (lpTokenId, lpBalanceOut), (dexyUSD, reservesYOut))
       )
 
       val validRedeemOutBox = KioskBox(
@@ -214,7 +215,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(fakeNanoErgs)
-          .tokens(new ErgoToken(lpToken, lpRedeemed))
+          .tokens(new ErgoToken(lpTokenId, lpRedeemed))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
@@ -235,7 +236,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(reservesXIn)
-          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalanceIn), new ErgoToken(dexyUSD, reservesYIn))
+          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpTokenId, lpBalanceIn), new ErgoToken(dexyUSD, reservesYIn))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
           .build()
           .convertToInputWith(fakeTxId3, fakeIndex)
@@ -254,7 +255,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         lpAddress,
         reservesXOut,
         registers = Array(),
-        tokens = Array((lpNFT, 1), (lpToken, lpBalanceOut), (dexyUSD, reservesYOut))
+        tokens = Array((lpNFT, 1), (lpTokenId, lpBalanceOut), (dexyUSD, reservesYOut))
       )
 
       val validRedeemOutBox = KioskBox(
@@ -301,7 +302,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(fakeNanoErgs)
-          .tokens(new ErgoToken(lpToken, lpRedeemed))
+          .tokens(new ErgoToken(lpTokenId, lpRedeemed))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
@@ -322,7 +323,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(reservesXIn)
-          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalanceIn), new ErgoToken(dexyUSD, reservesYIn))
+          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpTokenId, lpBalanceIn), new ErgoToken(dexyUSD, reservesYIn))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
           .build()
           .convertToInputWith(fakeTxId3, fakeIndex)
@@ -341,7 +342,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         lpAddress,
         reservesXOut,
         registers = Array(),
-        tokens = Array((lpNFT, 1), (lpToken, lpBalanceOut), (dexyUSD, reservesYOut))
+        tokens = Array((lpNFT, 1), (lpTokenId, lpBalanceOut), (dexyUSD, reservesYOut))
       )
 
       val validRedeemOutBox = KioskBox(
@@ -388,7 +389,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(fakeNanoErgs)
-          .tokens(new ErgoToken(lpToken, lpRedeemed))
+          .tokens(new ErgoToken(lpTokenId, lpRedeemed))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
@@ -409,7 +410,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(reservesXIn)
-          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalanceIn), new ErgoToken(dexyUSD, reservesYIn))
+          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpTokenId, lpBalanceIn), new ErgoToken(dexyUSD, reservesYIn))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
           .build()
           .convertToInputWith(fakeTxId3, fakeIndex)
@@ -428,7 +429,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         lpAddress,
         reservesXOut,
         registers = Array(),
-        tokens = Array((lpNFT, 1), (lpToken, lpBalanceOut), (dexyUSD, reservesYOut))
+        tokens = Array((lpNFT, 1), (lpTokenId, lpBalanceOut), (dexyUSD, reservesYOut))
       )
 
       val validRedeemOutBox = KioskBox(
@@ -475,7 +476,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(fakeNanoErgs)
-          .tokens(new ErgoToken(lpToken, lpRedeemed))
+          .tokens(new ErgoToken(lpTokenId, lpRedeemed))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
@@ -496,7 +497,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(reservesXIn)
-          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalanceIn), new ErgoToken(dexyUSD, reservesYIn))
+          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpTokenId, lpBalanceIn), new ErgoToken(dexyUSD, reservesYIn))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
           .build()
           .convertToInputWith(fakeTxId3, fakeIndex)
@@ -515,7 +516,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         lpAddress,
         reservesXOut,
         registers = Array(),
-        tokens = Array((lpNFT, 1), (lpToken, lpBalanceOut), (dexyUSD, reservesYOut))
+        tokens = Array((lpNFT, 1), (lpTokenId, lpBalanceOut), (dexyUSD, reservesYOut))
       )
 
       val validRedeemOutBox = KioskBox(
@@ -562,7 +563,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(fakeNanoErgs)
-          .tokens(new ErgoToken(lpToken, lpRedeemed))
+          .tokens(new ErgoToken(lpTokenId, lpRedeemed))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
@@ -583,7 +584,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(reservesXIn)
-          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalanceIn), new ErgoToken(dexyUSD, reservesYIn))
+          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpTokenId, lpBalanceIn), new ErgoToken(dexyUSD, reservesYIn))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
           .build()
           .convertToInputWith(fakeTxId3, fakeIndex)
@@ -602,7 +603,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         lpAddress,
         reservesXOut,
         registers = Array(),
-        tokens = Array((lpNFT, 1), (lpToken, lpBalanceOut), (dexyUSD, reservesYOut))
+        tokens = Array((lpNFT, 1), (lpTokenId, lpBalanceOut), (dexyUSD, reservesYOut))
       )
 
       val validRedeemOutBox = KioskBox(
@@ -652,7 +653,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(fakeNanoErgs)
-          .tokens(new ErgoToken(lpToken, lpRedeemed))
+          .tokens(new ErgoToken(lpTokenId, lpRedeemed))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
           .convertToInputWith(fakeTxId1, fakeIndex)
@@ -673,7 +674,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .newTxBuilder()
           .outBoxBuilder
           .value(reservesXIn)
-          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalanceIn), new ErgoToken(dexyUSD, reservesYIn))
+          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpTokenId, lpBalanceIn), new ErgoToken(dexyUSD, reservesYIn))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
           .build()
           .convertToInputWith(fakeTxId3, fakeIndex)
@@ -692,7 +693,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
         lpAddress,
         reservesXOut,
         registers = Array(),
-        tokens = Array((lpNFT, 1), (lpToken, lpBalanceOut), (dexyUSD, reservesYOut))
+        tokens = Array((lpNFT, 1), (lpTokenId, lpBalanceOut), (dexyUSD, reservesYOut))
       )
 
       val validRedeemOutBox = KioskBox(

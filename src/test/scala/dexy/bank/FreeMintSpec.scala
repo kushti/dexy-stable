@@ -1,16 +1,17 @@
 package dexy.bank
 
 import dexy.Common
-import dexy.chainutils.DexySpec._
-import kiosk.ergo.{DhtData, KioskBox, KioskInt, KioskLong}
-import kiosk.tx.TxUtil
+import dexy.chainutils.UseSpec._
+import org.ergoplatform.kiosk.ergo.{DhtData, KioskBox, KioskInt, KioskLong}
+import org.ergoplatform.kiosk.tx.TxUtil
 import org.ergoplatform.appkit._
+import org.ergoplatform.sdk.ErgoToken
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with HttpClientTesting with Common {
 
-  import dexy.chainutils.TestnetTokenIds._
+  import dexy.chainutils.MainnetUseTokenIds._
 
   val ergoClient = createMockedErgoClient(MockData(Nil, Nil))
 

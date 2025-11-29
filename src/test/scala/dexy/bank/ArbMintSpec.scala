@@ -1,16 +1,18 @@
 package dexy.bank
 
 import dexy.Common
-import dexy.chainutils.DexySpec._
-import kiosk.ergo.{DhtData, KioskBoolean, KioskBox, KioskInt, KioskLong}
-import kiosk.tx.TxUtil
+import dexy.chainutils.UseSpec
+import dexy.chainutils.UseSpec._
+import org.ergoplatform.kiosk.ergo.{DhtData, KioskBoolean, KioskBox, KioskInt, KioskLong}
+import org.ergoplatform.kiosk.tx.TxUtil
 import org.ergoplatform.appkit._
+import org.ergoplatform.sdk.ErgoToken
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with HttpClientTesting with Common {
 
-  import dexy.chainutils.TestnetTokenIds._
+  import dexy.chainutils.MainnetUseTokenIds._
 
   val ergoClient = createMockedErgoClient(MockData(Nil, Nil))
 
@@ -3367,8 +3369,8 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(arbMintNFT, 1))
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), arbMintScript))
+          .tokens(new ErgoToken(arbitrageMintNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), arbitrageMintNFT))
           .build()
           .convertToInputWith(fakeTxId5, fakeIndex)
 
@@ -3394,7 +3396,7 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(false).getErgoValue,
             KioskInt(Int.MaxValue).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId7, fakeIndex)
 
@@ -3413,10 +3415,10 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
       )
 
       val validArbMintOutBox = KioskBox(
-        arbMintAddress,
+        arbitrageMintAddress,
         minStorageRent,
         registers = Array(),
-        tokens = Array((arbMintNFT, 1))
+        tokens = Array((arbitrageMintNFT, 1))
       )
 
       val validBuybackOutBox = KioskBox(
@@ -3524,8 +3526,8 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(arbMintNFT, 1))
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), arbMintScript))
+          .tokens(new ErgoToken(arbitrageMintNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), arbitrageMintScript))
           .build()
           .convertToInputWith(fakeTxId5, fakeIndex)
 
@@ -3551,7 +3553,7 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(false).getErgoValue,
             KioskInt(Int.MaxValue).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId7, fakeIndex)
 
@@ -3570,10 +3572,10 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
       )
 
       val validArbMintOutBox = KioskBox(
-        arbMintAddress,
+        arbitrageMintAddress,
         minStorageRent,
         registers = Array(),
-        tokens = Array((arbMintNFT, 1))
+        tokens = Array((arbitrageMintNFT, 1))
       )
 
       val validBuybackOutBox = KioskBox(

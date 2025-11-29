@@ -1,16 +1,17 @@
 package dexy
 
-import dexy.chainutils.DexySpec
-import kiosk.ergo.{DhtData, KioskBoolean, KioskBox, KioskInt, KioskLong}
-import kiosk.tx.TxUtil
-import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoToken, HttpClientTesting}
+import dexy.chainutils.UseSpec
+import org.ergoplatform.kiosk.ergo.{DhtData, KioskBoolean, KioskBox, KioskInt, KioskLong}
+import org.ergoplatform.kiosk.tx.TxUtil
+import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoValue, HttpClientTesting}
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
-import dexy.chainutils.DexySpec._
+import dexy.chainutils.UseSpec._
+import org.ergoplatform.sdk.ErgoToken
 
 class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with HttpClientTesting with Common {
 
-  import dexy.chainutils.TestnetTokenIds._
+  import dexy.chainutils.MainnetUseTokenIds._
 
   val dummyTokenId = "a9e5ce5aa0d95f5d54a7bc89c46730d9662397067250aa18a0039631c0fad80a"
 
@@ -83,10 +84,10 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .registers(
             KioskInt(numIn).getErgoValue, // numerator for 98%
             KioskInt(denomIn).getErgoValue, // denominator for 98%
-            KioskBoolean(true).getErgoValue, // isBelow == true
+            ErgoValue.of(true), // isBelow == true
             KioskInt(trackingHeightIn).getErgoValue // currently set to INF (input box state is "notTriggeredEarlier")
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -179,7 +180,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
             KioskBoolean(false).getErgoValue, // isBelow == false
             KioskInt(trackingHeightIn).getErgoValue // currently set to INF (input box state is "notTriggeredEarlier")
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -274,7 +275,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue // currently set to INF (input box state is "notTriggeredEarlier")
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -367,10 +368,10 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .registers(
             KioskInt(numIn).getErgoValue, // numerator for 98%
             KioskInt(denomIn).getErgoValue, // denominator for 98%
-            KioskBoolean(true).getErgoValue, // isBelow
+            ErgoValue.of(true), // isBelow
             KioskInt(trackingHeightIn).getErgoValue // currently set to INF (input box state is "notTriggeredEarlier")
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -457,7 +458,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue // currently set to INF (input box state is "notTriggeredEarlier")
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -553,7 +554,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue // currently set to INF (input box state is "notTriggeredEarlier")
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -637,7 +638,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue // currently set to INF (input box state is "notTriggeredEarlier")
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -727,7 +728,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue // currently set to INF (input box state is "notTriggeredEarlier")
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -831,7 +832,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .contract(
             ctx.compileContract(
               ConstantsBuilder.empty(),
-              DexySpec.trackingScript
+              UseSpec.trackingScript
             )
           )
           .build()

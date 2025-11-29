@@ -1,14 +1,15 @@
 package dexy.bank
 
 import dexy.Common
-import dexy.chainutils.DexySpec
-import dexy.chainutils.DexySpec._
-import kiosk.ErgoUtil
-import kiosk.encoding.ScalaErgoConverters
-import kiosk.encoding.ScalaErgoConverters.stringToGroupElement
-import kiosk.ergo.{DhtData, KioskBoolean, KioskBox, KioskCollByte, KioskGroupElement, KioskInt, KioskLong}
-import kiosk.tx.TxUtil
-import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoToken, HttpClientTesting}
+import dexy.chainutils.UseSpec
+import dexy.chainutils.UseSpec._
+import org.ergoplatform.kiosk.ErgoUtil
+import org.ergoplatform.kiosk.encoding.ScalaErgoConverters
+import org.ergoplatform.kiosk.encoding.ScalaErgoConverters.stringToGroupElement
+import org.ergoplatform.kiosk.ergo.{DhtData, KioskBoolean, KioskBox, KioskCollByte, KioskGroupElement, KioskInt, KioskLong}
+import org.ergoplatform.kiosk.tx.TxUtil
+import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, HttpClientTesting}
+import org.ergoplatform.sdk.ErgoToken
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import scorex.crypto.hash.Blake2b256
@@ -16,7 +17,7 @@ import scorex.crypto.hash.Blake2b256
 class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks
     with HttpClientTesting with Common {
 
-  import dexy.chainutils.TestnetTokenIds._
+  import dexy.chainutils.MainnetUseTokenIds._
 
   val dummyTokenId = "a1e5ce5aa0d95f5d54a7bc89c46730d9662397067250aa18a0039631c0f5b801"
 
@@ -95,7 +96,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -236,7 +237,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -380,7 +381,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -520,7 +521,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -660,7 +661,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -800,7 +801,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -940,7 +941,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1080,7 +1081,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1220,7 +1221,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1360,7 +1361,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1500,7 +1501,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1640,7 +1641,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1776,7 +1777,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(Int.MaxValue).getErgoValue  // <--------------- this value is changed
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1917,7 +1918,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2060,7 +2061,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2200,7 +2201,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2339,7 +2340,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2482,7 +2483,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2622,7 +2623,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2762,7 +2763,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2900,7 +2901,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -3343,7 +3344,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId3, fakeIndex)
 
@@ -3493,7 +3494,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId3, fakeIndex)
 
@@ -3644,7 +3645,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId3, fakeIndex)
 
@@ -3795,7 +3796,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId3, fakeIndex)
 

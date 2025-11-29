@@ -1,15 +1,15 @@
 package offchain
 
 import io.circe.parser.parse
-import offchain.DexyLpSwap.tokensMapToColl
-import org.ergoplatform.{DataInput, ErgoAddressEncoder, ErgoBox, ErgoBoxCandidate, ErgoScriptPredef, P2PKAddress, UnsignedInput}
+// import offchain.DexyLpSwap.tokensMapToColl
+import org.ergoplatform.{DataInput, ErgoAddressEncoder, ErgoBox, ErgoBoxCandidate, ErgoScriptPredef, ErgoTreePredef, P2PKAddress, UnsignedInput}
 import org.ergoplatform.ErgoBox.{R4, R7}
 import org.ergoplatform.http.api.ApiCodecs
-import org.ergoplatform.modifiers.history.Header
+import org.ergoplatform.modifiers.history.header.Header
 import org.ergoplatform.modifiers.mempool.{ErgoTransaction, ErgoTransactionSerializer, UnsignedErgoTransaction}
 import org.ergoplatform.nodeView.state.{ErgoStateContext, VotingData}
-import org.ergoplatform.settings.{ErgoSettings, ErgoValidationSettings, LaunchParameters}
-import org.ergoplatform.wallet.Constants.eip3DerivationPath
+import org.ergoplatform.sdk.wallet.Constants.eip3DerivationPath
+import org.ergoplatform.settings.ErgoValidationSettings
 import org.ergoplatform.wallet.boxes.BoxSelector.BoxSelectionResult
 import org.ergoplatform.wallet.boxes.DefaultBoxSelector
 import org.ergoplatform.wallet.interpreter.{ErgoProvingInterpreter, TransactionHintsBag}
@@ -17,10 +17,8 @@ import org.ergoplatform.wallet.secrets.JsonSecretStorage
 import org.ergoplatform.wallet.settings.SecretStorageSettings
 import scalaj.http.{Http, HttpOptions}
 import scorex.util.encode.Base16
-import sigmastate.interpreter.ContextExtension
 import org.ergoplatform.wallet.interface4j.SecretString
 import scorex.util.ModifierId
-import sigmastate.Values.IntConstant
 
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Try
@@ -65,7 +63,7 @@ case class OffchainUtils(serverUrl: String,
   val changeAddress = eae.fromString("9gZLYYtsC6EUhj4SK2XySR9duVorTcQxHK8oE4ZTdUEpReTXcAK").get
 
   def feeOut(creationHeight: Int, providedFeeOpt: Option[Long] = None): ErgoBoxCandidate = {
-    new ErgoBoxCandidate(providedFeeOpt.getOrElse(defaultFee), ErgoScriptPredef.feeProposition(720), creationHeight) // 0.001 ERG
+    new ErgoBoxCandidate(providedFeeOpt.getOrElse(defaultFee), ErgoTreePredef.feeProposition(720), creationHeight) // 0.001 ERG
   }
 
   def getJsonAsString(url: String): String = {
@@ -140,13 +138,14 @@ case class OffchainUtils(serverUrl: String,
     oracleState.additionalRegisters(R4).value.asInstanceOf[Long] / 1000000L
   }
 
+  /*
   def changeOuts(selectionResult: BoxSelectionResult[ErgoBox], creationHeight: Int): IndexedSeq[ErgoBoxCandidate] ={
     selectionResult.changeBoxes.toIndexedSeq.map{ba =>
       val tokensMap = tokensMapToColl(ba.tokens)
       new ErgoBoxCandidate(ba.value, changeAddress.script, creationHeight, tokensMap)
     }
-  }
-
+  } */
+/*
   def printlnKey() = {
     val settings = ErgoSettings.read()
     val sss = SecretStorageSettings(localSecretStoragePath, settings.walletSettings.secretStorage.encryption)
@@ -155,8 +154,10 @@ case class OffchainUtils(serverUrl: String,
     val masterKey = jss.secret.get
     val changeKey = masterKey.derive(eip3DerivationPath)
     println(Base16.encode(changeKey.keyBytes))
-  }
+  } */
 
+  /*
+  todo: uncomment and fix
   def signTransaction(txName: String,
                       unsignedTransaction: UnsignedErgoTransaction,
                       boxesToSpend: IndexedSeq[ErgoBox],
@@ -201,7 +202,7 @@ case class OffchainUtils(serverUrl: String,
     val txBytes = ErgoTransactionSerializer.toBytes(matchingTx)
     println(s"$txName tx bytes: " + Base16.encode(txBytes))
     txBytes
-  }
+  } */
 
   private def fetchTrackingBox(trackerType: TrackerType) = {
     (trackerType match {
@@ -211,6 +212,7 @@ case class OffchainUtils(serverUrl: String,
     }).head
   }
 
+  /* todo: uncomment and fix
   def updateTracker(alarmHeight: Option[Int], trackerType: TrackerType): String = {
 
     val creationHeight = currentHeight()
@@ -250,6 +252,7 @@ case class OffchainUtils(serverUrl: String,
     resp
   }
 
+
   def trackersActions(): (Seq[TrackerType], Seq[TrackerType]) = {
     val trackersToSet = ArrayBuffer[TrackerType]()
     val trackersToReset = ArrayBuffer[TrackerType]()
@@ -279,7 +282,10 @@ case class OffchainUtils(serverUrl: String,
       }
     }
     trackersToSet -> trackersToReset
-  }
+  } */
+
+/*
+todo: uncomment and fix
 
   def updateTrackers() = {
     val (trackersToSet, trackersToReset) = trackersActions()
@@ -294,7 +300,7 @@ case class OffchainUtils(serverUrl: String,
       updateTracker(None, trackerType)
       Thread.sleep(200)
     }
-  }
+  } */
 
 }
 
@@ -325,7 +331,7 @@ object Test extends App {
       val y = lpPrice * 100
 
       println(x > y)
-      utils.updateTrackers()
+    //   utils.updateTrackers()
     }
     Thread.sleep(60000) // 1 min
   }

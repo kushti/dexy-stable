@@ -4,8 +4,6 @@ import org.ergoplatform.modifiers.mempool.UnsignedErgoTransaction
 import org.ergoplatform.wallet.boxes.DefaultBoxSelector
 import org.ergoplatform.{ErgoBox, ErgoBoxCandidate, UnsignedInput}
 import scorex.util.ModifierId
-import sigmastate.Values.IntConstant
-import sigmastate.interpreter.ContextExtension
 
 /**
  * Offchain functions to work with GORT buyback contract
@@ -27,6 +25,7 @@ object BuyBackUtils extends App {
 
   def gortLp(): Option[ErgoBox] = utils.unspentScanBoxes(gortLpScanId).headOption
 
+  /* todo: uncomment and fix
   def topUp() = {
     // Top-up:
     //
@@ -41,7 +40,7 @@ object BuyBackUtils extends App {
     val creationHeight = utils.currentHeight()
     val feeOut = utils.feeOut(creationHeight)
 
-    val selectionResult = DefaultBoxSelector.select[ErgoBox](
+    val selectionResult =  new DefaultBoxSelector(None).select[ErgoBox](
         utils.fetchWalletInputs().toIterator,
         (_: ErgoBox) => true,
         toAdd + feeOut.value,
@@ -49,7 +48,7 @@ object BuyBackUtils extends App {
       ).right.toOption.get
 
     val buybackInputBox = buyBackBox().get
-    val buyBackInputBoxes = selectionResult.boxes.toIndexedSeq
+    val buyBackInputBoxes = selectionResult.inputBoxes.toIndexedSeq
 
     val buyBackOutput = new ErgoBoxCandidate(
       buybackInputBox.value + toAdd,
@@ -70,9 +69,9 @@ object BuyBackUtils extends App {
     val inputs = buyBackInput +: buyBackInputBoxes.map(b => new UnsignedInput(b.id))
     val unsignedSwapTx = new UnsignedErgoTransaction(inputs, IndexedSeq.empty, outs)
     utils.signTransaction("Buyback: ", unsignedSwapTx, buybackInputBox +: buyBackInputBoxes, IndexedSeq.empty)
-  }
+  } */
 
-
+/* todo: uncomment and fix
   def buyback() = {
     //   Input         |  Output        |   Data-Input
     // -----------------------------------------------
@@ -85,14 +84,14 @@ object BuyBackUtils extends App {
     val creationHeight = utils.currentHeight()
     val feeOut = utils.feeOut(creationHeight)
 
-    val selectionResult = DefaultBoxSelector.select(
+    val selectionResult =  new DefaultBoxSelector(None).select(
       utils.fetchWalletInputs().toIterator,
       (eb: ErgoBox) => eb.additionalTokens.isEmpty,
       feeOut.value,
       Map.empty
     ).right.toOption.get
 
-    val inputBoxes = IndexedSeq(lpInput, buyBackInput) ++ selectionResult.boxes
+    val inputBoxes = IndexedSeq(lpInput, buyBackInput) ++ selectionResult.inputBoxes
     println("input boxes: " + inputBoxes.drop(2))
     val inputs = inputBoxes.map(b => new UnsignedInput(b.id)).updated(1, new UnsignedInput(buyBackInput.id, ContextExtension(Map((0: Byte) -> IntConstant(0)))))
 
@@ -127,8 +126,8 @@ object BuyBackUtils extends App {
 
     val unsignedSwapTx = new UnsignedErgoTransaction(inputs, IndexedSeq.empty, outputs)
     utils.signTransaction("Buyback: ", unsignedSwapTx, inputBoxes, IndexedSeq.empty)
-  }
+  } */
 
-  buyback()
+ // buyback()
 
 }

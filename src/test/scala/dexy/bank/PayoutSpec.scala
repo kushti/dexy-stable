@@ -1,18 +1,19 @@
 package dexy.bank
 
 import dexy.Common
-import dexy.chainutils.DexySpec
-import dexy.chainutils.DexySpec.{bankAddress, bankScript, buybackAddress, buybackScript, freeMintAddress, freeMintScript, lpScript, payoutAddress, payoutScript}
-import kiosk.ergo.{DhtData, KioskBox, KioskInt, KioskLong}
-import kiosk.tx.TxUtil
-import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ContextVar, ErgoToken, HttpClientTesting}
+import dexy.chainutils.UseSpec
+import dexy.chainutils.UseSpec.{bankAddress, bankScript, buybackAddress, buybackScript, freeMintAddress, freeMintScript, lpScript, payoutAddress, payoutScript}
+import org.ergoplatform.kiosk.ergo.{DhtData, KioskBox, KioskInt, KioskLong}
+import org.ergoplatform.kiosk.tx.TxUtil
+import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ContextVar, HttpClientTesting}
+import org.ergoplatform.sdk.ErgoToken
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks
   with HttpClientTesting with Common {
 
-  import dexy.chainutils.TestnetTokenIds._
+  import dexy.chainutils.MainnetUseTokenIds._
 
   val ergoClient = createMockedErgoClient(MockData(Nil, Nil))
 
@@ -21,7 +22,7 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val fakeNanoErgs = 10000000000000L
 
     val bankReservesXIn = 1000000000000L
-    val bankReservesYIn = DexySpec.initialDexyTokens - 100000L
+    val bankReservesYIn = UseSpec.initialDexyTokens - 100000L
     val bankReservesXOut = bankReservesXIn - bankReservesXIn / 200
     val bankReservesYOut = bankReservesYIn
     val oracleRateXy = 10000L * 1000000L
@@ -123,7 +124,7 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val fakeNanoErgs = 10000000000000L
 
     val bankReservesXIn = 1000000000000L
-    val bankReservesYIn = DexySpec.initialDexyTokens - 100000L
+    val bankReservesYIn = UseSpec.initialDexyTokens - 100000L
     val bankReservesXOut = bankReservesXIn - bankReservesXIn / 200
     val bankReservesYOut = bankReservesYIn
     val oracleRateXy = 10000L * 1000000L
@@ -225,7 +226,7 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val fakeNanoErgs = 10000000000000L
 
     val bankReservesXIn = 1000000000000L
-    val bankReservesYIn = DexySpec.initialDexyTokens - 100000L
+    val bankReservesYIn = UseSpec.initialDexyTokens - 100000L
     val bankReservesXOut = bankReservesXIn - bankReservesXIn / 200 - 1 // <-- this line changed
     val bankReservesYOut = bankReservesYIn
     val oracleRateXy = 10000L * 1000000L
@@ -327,7 +328,7 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val fakeNanoErgs = 10000000000000L
 
     val bankReservesXIn = 1000000000000L
-    val bankReservesYIn = DexySpec.initialDexyTokens - 100000L
+    val bankReservesYIn = UseSpec.initialDexyTokens - 100000L
     val bankReservesXOut = bankReservesXIn - bankReservesXIn / 200
     val bankReservesYOut = bankReservesYIn
     val oracleRateXy = 10000L * 1000000L

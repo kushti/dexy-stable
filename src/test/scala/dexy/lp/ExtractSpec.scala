@@ -1,21 +1,22 @@
 package dexy.lp
 
-import dexy.chainutils.DexySpec._
+import dexy.chainutils.UseSpec._
 import dexy.Common
-import dexy.chainutils.DexySpec
-import kiosk.ErgoUtil
-import kiosk.encoding.ScalaErgoConverters
-import kiosk.encoding.ScalaErgoConverters.stringToGroupElement
-import kiosk.ergo.{DhtData, KioskBoolean, KioskBox, KioskCollByte, KioskGroupElement, KioskInt, KioskLong}
-import kiosk.tx.TxUtil
-import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoToken, HttpClientTesting}
+import dexy.chainutils.UseSpec
+import org.ergoplatform.kiosk.ErgoUtil
+import org.ergoplatform.kiosk.encoding.ScalaErgoConverters
+import org.ergoplatform.kiosk.encoding.ScalaErgoConverters.stringToGroupElement
+import org.ergoplatform.kiosk.ergo.{DhtData, KioskBoolean, KioskBox, KioskCollByte, KioskGroupElement, KioskInt, KioskLong}
+import org.ergoplatform.kiosk.tx.TxUtil
+import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, HttpClientTesting}
+import org.ergoplatform.sdk.ErgoToken
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import scorex.crypto.hash.Blake2b256
 
 class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with HttpClientTesting with Common {
 
-  import dexy.chainutils.TestnetTokenIds._
+  import dexy.chainutils.MainnetUseTokenIds._
 
   val ergoClient = createMockedErgoClient(MockData(Nil, Nil))
 
@@ -107,7 +108,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -231,7 +232,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -358,7 +359,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -484,7 +485,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -612,7 +613,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -740,7 +741,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -870,7 +871,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -999,7 +1000,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1130,7 +1131,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1260,7 +1261,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1391,7 +1392,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1525,7 +1526,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1656,7 +1657,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1786,7 +1787,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1920,7 +1921,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2050,7 +2051,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2179,7 +2180,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2305,7 +2306,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2431,7 +2432,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2561,7 +2562,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2696,7 +2697,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2825,7 +2826,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2959,7 +2960,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -3087,7 +3088,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -3214,7 +3215,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -3618,7 +3619,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(extractNFT, 1))
+          .tokens(new ErgoToken(extractionNFT, 1))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), extractScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
@@ -3635,7 +3636,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue,
             KioskInt(Int.MaxValue).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId5, fakeIndex)
 
@@ -3650,7 +3651,26 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         extractAddress,
         minStorageRent,
         registers = Array(KioskLong(deltaDexy), KioskInt(ctx.getHeight)),
-        tokens = Array((extractNFT, 1))
+        tokens = Array((extractionNFT, 1))
+      )
+
+      println(lpBox)
+      println(extractBox)
+      println(trackingBox)
+      println(fundingBox)
+      println("=================")
+      println(validLpOutBox)
+      println(validExtractOutBox)
+
+      TxUtil.createTx(
+        Array(lpBox, extractBox, trackingBox, fundingBox),
+        Array(oracleBox),
+        Array(validLpOutBox, validExtractOutBox),
+        fee = 1000000L,
+        changeAddress,
+        Array[String](),
+        Array[DhtData](),
+        false
       )
 
       the[Exception] thrownBy {
@@ -3708,7 +3728,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(extractNFT, 1))
+          .tokens(new ErgoToken(extractionNFT, 1))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), extractScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
@@ -3725,7 +3745,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue,
             KioskInt(Int.MaxValue).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId5, fakeIndex)
 
@@ -3740,7 +3760,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         extractAddress,
         minStorageRent,
         registers = Array(KioskLong(deltaDexy), KioskInt(ctx.getHeight)),
-        tokens = Array((extractNFT, 1))
+        tokens = Array((extractionNFT, 1))
       )
 
       the[Exception] thrownBy {
@@ -3807,7 +3827,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(extractNFT, 1))
+          .tokens(new ErgoToken(extractionNFT, 1))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), extractScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
@@ -3824,7 +3844,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue,
             KioskInt(Int.MaxValue).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId5, fakeIndex)
 
@@ -3839,7 +3859,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         extractAddress,
         minStorageRent,
         registers = Array(KioskLong(deltaDexy - 1), KioskInt(ctx.getHeight)), // Taking less Dexy
-        tokens = Array((extractNFT, 1))
+        tokens = Array((extractionNFT, 1))
       )
 
       the[Exception] thrownBy {
@@ -3906,7 +3926,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(extractNFT, 1))
+          .tokens(new ErgoToken(extractionNFT, 1))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), extractScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
@@ -3923,7 +3943,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue,
             KioskInt(ctx.getHeight - T_extract - 1).getErgoValue // Height too old
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId5, fakeIndex)
 
@@ -3938,7 +3958,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         extractAddress,
         minStorageRent,
         registers = Array(KioskLong(deltaDexy), KioskInt(ctx.getHeight)),
-        tokens = Array((extractNFT, 1))
+        tokens = Array((extractionNFT, 1))
       )
 
       the[Exception] thrownBy {
@@ -4005,7 +4025,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
           .newTxBuilder()
           .outBoxBuilder
           .value(minStorageRent)
-          .tokens(new ErgoToken(extractNFT, 1))
+          .tokens(new ErgoToken(extractionNFT, 1))
           .contract(ctx.compileContract(ConstantsBuilder.empty(), extractScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
@@ -4022,7 +4042,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue,
             KioskInt(Int.MaxValue).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId5, fakeIndex)
 
@@ -4037,7 +4057,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         extractAddress,
         minStorageRent,
         registers = Array(KioskLong(deltaDexy), KioskInt(ctx.getHeight)),
-        tokens = Array((extractNFT, 1))
+        tokens = Array((extractionNFT, 1))
       )
 
       the[Exception] thrownBy {
