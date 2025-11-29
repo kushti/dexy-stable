@@ -34,10 +34,10 @@
     // circulating supply of LP tokens
     val supplyLpIn = initialLp - lpReservesIn._2
 
-    // oracle delivers nanoErgs per 1 kg of gold
-    // we divide it by 1000000 to get nanoErg per dexy, i.e. 1mg of gold
+    // oracle delivers nanoErgs per 1 USD
+    // we divide it by 1000 to get nanoErg per USE token (as it has 3 decimals)
     // can assume always > 0 (ref oracle pool contracts) NanoErgs per USD
-    val oracleRateXy = oracleBox.R4[Long].get / 1000000L
+    val oracleRateXy = oracleBox.R4[Long].get / 1000L
     val lpRateXyIn = reservesXIn / reservesYIn  // we can assume that reservesYIn > 0 (since at least one token must exist)
 
     val validOracleBox = oracleBox.tokens(0)._1 == oracleNFT

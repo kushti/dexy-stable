@@ -19,7 +19,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   val dummyNanoErgs = 100000L
 
   property("Redeem Lp (deposit Lp and withdraw Ergs + Dexy) should work") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val lpBalanceIn = 100000000L
 
     val reservesXIn = 1000000000000L
@@ -107,7 +107,7 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("Redeem Lp should fail if Lp address changed") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val lpBalanceIn = 100000000L
 
     val reservesXIn = 1000000000000L

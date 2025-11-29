@@ -25,7 +25,7 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val bankReservesYIn = UseSpec.initialDexyTokens - 100000L
     val bankReservesXOut = bankReservesXIn - bankReservesXIn / 200
     val bankReservesYOut = bankReservesYIn
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
@@ -127,7 +127,7 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val bankReservesYIn = UseSpec.initialDexyTokens - 100000L
     val bankReservesXOut = bankReservesXIn - bankReservesXIn / 200
     val bankReservesYOut = bankReservesYIn
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
@@ -229,7 +229,7 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val bankReservesYIn = UseSpec.initialDexyTokens - 100000L
     val bankReservesXOut = bankReservesXIn - bankReservesXIn / 200 - 1 // <-- this line changed
     val bankReservesYOut = bankReservesYIn
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
@@ -331,7 +331,7 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val bankReservesYIn = UseSpec.initialDexyTokens - 100000L
     val bankReservesXOut = bankReservesXIn - bankReservesXIn / 200
     val bankReservesYOut = bankReservesYIn
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
 

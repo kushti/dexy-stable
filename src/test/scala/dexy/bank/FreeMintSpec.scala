@@ -20,13 +20,13 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   val fakeNanoErgs = 10000000000000L
   val dummyNanoErgs = 100000L
   property("Free mint (remove Dexy from and adding Ergs to bank box) should work") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val bankFeeNum = 3 // implies 0.5 % fee
     val buybackFeeNum = 2 // implies 0.5 % fee
     val feeDenom = 1000
 
-    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom / 1000000L
-    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom / 1000000L
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom / 1000L
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom / 1000L
 
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
@@ -154,13 +154,13 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("Free mint should fail if Bank Dexy token id changed") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val bankFeeNum = 3 // implies 0.5 % fee
     val buybackFeeNum = 2 // implies 0.5 % fee
     val feeDenom = 1000
 
-    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom / 1000000L
-    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom / 1000000L
+    val bankRate = oracleRateXy * (bankFeeNum + feeDenom) / feeDenom / 1000L
+    val buybackRate = oracleRateXy * buybackFeeNum / feeDenom / 1000L
 
     val lpBalance = 100000000L
     val lpReservesX = 100000000000000L
