@@ -60,7 +60,7 @@ object MainnetUseTokenIds extends NetworkTokenIds {
   override val payoutNFT: String = "a2482fca4ca774ef9d3896977e3677b031597c6e312b0c10d47157bb0d6ed69f"
 
   // USE token
-  override val dexyTokenId: String = "bf0e1826d225617aeca3ad9a4df6b700af14dd683631b5ba9857f1b17322e53d"
+  override val dexyTokenId: String = "a55b8735ed1a99e46c2c89f8994aacdf4b1109bdcf682f1e5b34479c6e392669"
 
 }
 
@@ -85,9 +85,9 @@ object UseSpec extends ContractUtils {
 
   // initial number of dexy tokens issued
   // used in payout
-  lazy val initialDexyTokens = 10000000000000L
+  lazy val initialDexyTokens = 1000000000000000000L
 
-  val initialLp = 100000000000L // initially how many Lp minted (and we need to add that many to tokens(1), after removing some for token burning as in UniSwap v2)
+  val initialLp = 9223372036854775000L // initially how many Lp minted (and we need to add that many to tokens(1), after removing some for token burning as in UniSwap v2)
 
   val feeNumLp = 997
   val feeDenomLp = 1000

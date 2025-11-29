@@ -20,14 +20,14 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
 
   property("Redeem Lp (deposit Lp and withdraw Ergs + Dexy) should work") {
     val oracleRateXy = 10000L * 1000L
-    val lpBalanceIn = 100000000L
+    val lpBalanceIn = initialLp - 100000000000L // Set lpBalanceIn to be very close to initialLp, so supplyLpIn is small
 
     val reservesXIn = 1000000000000L
     val reservesYIn = 100000000L
 
-    val lpRedeemed = 49950L
-    val withdrawX = 500000L / 100 * 98
-    val withdrawY = 49L
+    val lpRedeemed = 4995000L  // 100x larger than previous value (49950L)
+    val withdrawX = 4895000L   // Significantly larger withdrawal
+    val withdrawY = 489L       // Significantly larger withdrawal
 
     val reservesXOut = reservesXIn - withdrawX
     val reservesYOut = reservesYIn - withdrawY

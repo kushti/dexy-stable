@@ -26,7 +26,7 @@ update NFTs should be issued.
 
 ### Tokens
 
-USE (DexyUSD) token = "bf0e1826d225617aeca3ad9a4df6b700af14dd683631b5ba9857f1b17322e53d" 
+USE (DexyUSD) token = "a55b8735ed1a99e46c2c89f8994aacdf4b1109bdcf682f1e5b34479c6e392669" 
 
 6 decimals
 
@@ -87,7 +87,7 @@ Bank tokens:
 
 
 * USE token issuance
-  https://explorer.ergoplatform.com/en/transactions/b3bb8f634a3b85f25879dfa95f5ed6d7b4a3a59f832fcf44b4bdecda4b0dbbe6
+  https://explorer.ergoplatform.com/en/transactions/adbf3c5855aa66baf5e45dc192c2bb6dc85f168eafffc9ade7d3fd79137a39cd
 
 
 ### Deployment transactions
