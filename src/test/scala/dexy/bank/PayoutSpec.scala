@@ -23,7 +23,7 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
 
     val bankReservesXIn = 1000000000000L
     val bankReservesYIn = UseSpec.initialDexyTokens - 100000L
-    val bankReservesXOut = bankReservesXIn - bankReservesXIn / 200
+    val bankReservesXOut = bankReservesXIn - bankReservesXIn / 1000  // 0.1% instead of 0.5%
     val bankReservesYOut = bankReservesYIn
     val oracleRateXy = 10000L * 1000L
 
@@ -79,6 +79,16 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
           .convertToInputWith(fakeTxId2, fakeIndex)
+
+      val lpBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(lpNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId3, fakeIndex)
 
       val validPayoutOutBox = KioskBox(
         payoutAddress,
@@ -107,7 +117,7 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
       noException shouldBe thrownBy {
         TxUtil.createTx(
           Array(payoutBox, bankBox, buybackBox.withContextVars(new ContextVar(0, KioskInt(1).getErgoValue)), fundingBox),
-          Array(oracleBox),
+          Array(oracleBox, lpBox),
           Array(validPayoutOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
@@ -125,7 +135,7 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
 
     val bankReservesXIn = 1000000000000L
     val bankReservesYIn = UseSpec.initialDexyTokens - 100000L
-    val bankReservesXOut = bankReservesXIn - bankReservesXIn / 200
+    val bankReservesXOut = bankReservesXIn - bankReservesXIn / 1000  // 0.1% instead of 0.5%
     val bankReservesYOut = bankReservesYIn
     val oracleRateXy = 10000L * 1000L
 
@@ -182,6 +192,16 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
           .build()
           .convertToInputWith(fakeTxId2, fakeIndex)
 
+      val lpBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(lpNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId3, fakeIndex)
+
       val validPayoutOutBox = KioskBox(
         payoutAddress,
         minStorageRent,
@@ -209,7 +229,7 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
       noException shouldBe thrownBy {
         TxUtil.createTx(
           Array(payoutBox, bankBox, buybackBox.withContextVars(new ContextVar(0, KioskInt(1).getErgoValue)), fundingBox),
-          Array(oracleBox),
+          Array(oracleBox, lpBox),
           Array(validPayoutOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
@@ -227,7 +247,7 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
 
     val bankReservesXIn = 1000000000000L
     val bankReservesYIn = UseSpec.initialDexyTokens - 100000L
-    val bankReservesXOut = bankReservesXIn - bankReservesXIn / 200 - 1 // <-- this line changed
+    val bankReservesXOut = bankReservesXIn - bankReservesXIn / 1000 - 1 // <-- this line changed to use 0.1% instead of 0.5%
     val bankReservesYOut = bankReservesYIn
     val oracleRateXy = 10000L * 1000L
 
@@ -329,7 +349,7 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
 
     val bankReservesXIn = 1000000000000L
     val bankReservesYIn = UseSpec.initialDexyTokens - 100000L
-    val bankReservesXOut = bankReservesXIn - bankReservesXIn / 200
+    val bankReservesXOut = bankReservesXIn - bankReservesXIn / 1000  // changed to use 0.1% instead of 0.5%
     val bankReservesYOut = bankReservesYIn
     val oracleRateXy = 10000L * 1000L
 
