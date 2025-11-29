@@ -17,7 +17,7 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
   "org.scalaj" %% "scalaj-http" % "2.4.2",
   "org.ergoplatform" %% "ergo-appkit" % "5.0.4",
-  "org.ergoplatform" %% "kiosk" % "1.0.1",
+  "org.ergoplatform" %% "kiosk" % "1.0.2",
   "org.ergoplatform" %% "ergo-core" % "5.0.20",
   "org.ergoplatform" %% "ergo-wallet" % "5.0.20",
   "com.squareup.okhttp3" % "mockwebserver" % "3.14.9",

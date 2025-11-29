@@ -625,6 +625,8 @@ class ArbMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         )
       )
 
+      println(lpBox.getTokens)
+
       the[Exception] thrownBy {
         TxUtil.createTx(
           Array(arbMintBox, bankBox, buybackBox, fundingBox),
