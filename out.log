@@ -1,0 +1,34 @@
+[info] welcome to sbt 1.5.2 (Private Build Java 1.8.0_472)
+[info] loading global plugins from /home/kushti/.sbt/1.0/plugins
+[info] loading project definition from /home/kushti/ergo/dexy-stable/project
+[info] loading settings for project dexy-stable from build.sbt ...
+[info] set current project to dexy (in build file:/home/kushti/ergo/dexy-stable/)
+dm: 10000001
+[info] ArbMintSpec:
+[info] - Arbitrage mint (remove Dexy from and adding Ergs to bank box) should work
+[info] - Arbitrage mint should fail if threshold is invalid
+[info] - Arbitrage mint should fail if negative amount minted
+[info] - Arbitrage mint should fail if counter not reset and more Dexy taken than allowed
+[info] - Arbitrage mint should work if counter (R4) is reset and max allowed (R5) also reset
+[info] - Arbitrage mint should fail if counter (R4) is reset but max allowed (R5) not reset
+[info] - Arbitrage mint should fail if counter (R4) is reset and max allowed (R5) reset but more Dexy taken than permitted
+[info] - Arbitrage mint should fail if counter is not reset when too many blocks passed
+[info] - Arbitrage mint should fail if register R4 (reset height) of ArbitrageMint box has incorrect value 
+[info] - Arbitrage mint should fail if register R5 (remaining Dexy) of ArbitrageMint box has incorrect value
+[info] - Arbitrage mint should fail if Bank Dexy token id changed
+[info] - Arbitrage mint should fail if wrong ArbitrageMint box NFT
+[info] - Arbitrage mint should fail if wrong Bank box NFT
+[info] - Arbitrage mint should fail if ArbitrageMint box NFT changed
+[info] - Arbitrage mint should fail if Bank box NFT changed
+[info] - Arbitrage mint should fail if Arbitrage box script changed
+[info] - Arbitrage mint should fail if Bank box script changed
+[info] - Arbitrage mint should fail wrong Oracle NFT
+[info] - Arbitrage mint should fail wrong LP NFT
+[info] - Arbitrage mint should fail wrong tracking NFT
+[info] - Arbitrage mint should fail invalid tracking height
+[info] Run completed in 13 seconds, 746 milliseconds.
+[info] Total number of tests run: 21
+[info] Suites: completed 1, aborted 0
+[info] Tests: succeeded 21, failed 0, canceled 0, ignored 0, pending 0
+[info] All tests passed.
+[success] Total time: 21 s, completed Nov 29, 2025 10:48:36 PM
