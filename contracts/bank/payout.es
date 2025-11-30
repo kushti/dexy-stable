@@ -83,7 +83,7 @@
 
   val validPayout = validBuyBackIn                                                && // script of reward box is correct
                     collateralized                                                && // enough over-collateralization
-                    properPayment                                                 && // bank paying 0.5% of its reserves out
+                    properPayment                                                 && // bank paying 0.1% of its reserves out
                     properHeight                                                     // after enough delay
 
   sigmaProp(validBank && validSuccessor && validPayout && validOracle)

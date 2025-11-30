@@ -67,9 +67,6 @@ object MainnetUseTokenIds extends NetworkTokenIds {
 
 object UseSpec extends ContractUtils {
 
-  // todo: for tests, use
-  // import TestnetTokenIds._
-  // val networkPrefix = MainnetNetworkPrefix
   import MainnetUseTokenIds._
   val networkPrefix = MainnetNetworkPrefix
 
