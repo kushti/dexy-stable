@@ -1,7 +1,7 @@
 package gort
 
-import kiosk.encoding.ScalaErgoConverters.{getAddressFromErgoTree, getStringFromAddress}
-import kiosk.script.ScriptUtil
+import org.ergoplatform.kiosk.encoding.ScalaErgoConverters.{getAddressFromErgoTree, getStringFromAddress}
+import org.ergoplatform.kiosk.script.ScriptUtil
 import sigmastate.Values
 
 object OrdinaryLp {

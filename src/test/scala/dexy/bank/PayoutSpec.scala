@@ -1,18 +1,19 @@
 package dexy.bank
 
 import dexy.Common
-import dexy.chainutils.DexySpec
-import dexy.chainutils.DexySpec.{bankAddress, bankScript, buybackAddress, buybackScript, freeMintAddress, freeMintScript, lpScript, payoutAddress, payoutScript}
-import kiosk.ergo.{DhtData, KioskBox, KioskInt, KioskLong}
-import kiosk.tx.TxUtil
-import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ContextVar, ErgoToken, HttpClientTesting}
+import dexy.chainutils.UseSpec
+import dexy.chainutils.UseSpec.{bankAddress, bankScript, buybackAddress, buybackScript, freeMintAddress, freeMintScript, lpScript, payoutAddress, payoutScript}
+import org.ergoplatform.kiosk.ergo.{DhtData, KioskBox, KioskInt, KioskLong}
+import org.ergoplatform.kiosk.tx.TxUtil
+import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ContextVar, HttpClientTesting}
+import org.ergoplatform.sdk.ErgoToken
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks
   with HttpClientTesting with Common {
 
-  import dexy.chainutils.TestnetTokenIds._
+  import dexy.chainutils.MainnetUseTokenIds._
 
   val ergoClient = createMockedErgoClient(MockData(Nil, Nil))
 
@@ -21,10 +22,10 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val fakeNanoErgs = 10000000000000L
 
     val bankReservesXIn = 1000000000000L
-    val bankReservesYIn = DexySpec.initialDexyTokens - 100000L
-    val bankReservesXOut = bankReservesXIn - bankReservesXIn / 200
+    val bankReservesYIn = UseSpec.initialDexyTokens - 100000L
+    val bankReservesXOut = bankReservesXIn - bankReservesXIn / 1000  // 0.1% instead of 0.5%
     val bankReservesYOut = bankReservesYIn
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
@@ -78,6 +79,16 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
           .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
           .build()
           .convertToInputWith(fakeTxId2, fakeIndex)
+
+      val lpBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(lpNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId3, fakeIndex)
 
       val validPayoutOutBox = KioskBox(
         payoutAddress,
@@ -106,7 +117,7 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
       noException shouldBe thrownBy {
         TxUtil.createTx(
           Array(payoutBox, bankBox, buybackBox.withContextVars(new ContextVar(0, KioskInt(1).getErgoValue)), fundingBox),
-          Array(oracleBox),
+          Array(oracleBox, lpBox),
           Array(validPayoutOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
@@ -123,10 +134,10 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val fakeNanoErgs = 10000000000000L
 
     val bankReservesXIn = 1000000000000L
-    val bankReservesYIn = DexySpec.initialDexyTokens - 100000L
-    val bankReservesXOut = bankReservesXIn - bankReservesXIn / 200
+    val bankReservesYIn = UseSpec.initialDexyTokens - 100000L
+    val bankReservesXOut = bankReservesXIn - bankReservesXIn / 1000  // 0.1% instead of 0.5%
     val bankReservesYOut = bankReservesYIn
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
@@ -181,6 +192,16 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
           .build()
           .convertToInputWith(fakeTxId2, fakeIndex)
 
+      val lpBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(lpNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId3, fakeIndex)
+
       val validPayoutOutBox = KioskBox(
         payoutAddress,
         minStorageRent,
@@ -208,7 +229,7 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
       noException shouldBe thrownBy {
         TxUtil.createTx(
           Array(payoutBox, bankBox, buybackBox.withContextVars(new ContextVar(0, KioskInt(1).getErgoValue)), fundingBox),
-          Array(oracleBox),
+          Array(oracleBox, lpBox),
           Array(validPayoutOutBox, validBankOutBox, validBuybackOutBox),
           fee = 1000000L,
           changeAddress,
@@ -225,10 +246,10 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val fakeNanoErgs = 10000000000000L
 
     val bankReservesXIn = 1000000000000L
-    val bankReservesYIn = DexySpec.initialDexyTokens - 100000L
-    val bankReservesXOut = bankReservesXIn - bankReservesXIn / 200 - 1 // <-- this line changed
+    val bankReservesYIn = UseSpec.initialDexyTokens - 100000L
+    val bankReservesXOut = bankReservesXIn - bankReservesXIn / 1000 - 1 // <-- this line changed to use 0.1% instead of 0.5%
     val bankReservesYOut = bankReservesYIn
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
 
@@ -327,10 +348,10 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     val fakeNanoErgs = 10000000000000L
 
     val bankReservesXIn = 1000000000000L
-    val bankReservesYIn = DexySpec.initialDexyTokens - 100000L
-    val bankReservesXOut = bankReservesXIn - bankReservesXIn / 200
+    val bankReservesYIn = UseSpec.initialDexyTokens - 100000L
+    val bankReservesXOut = bankReservesXIn - bankReservesXIn / 1000  // changed to use 0.1% instead of 0.5%
     val bankReservesYOut = bankReservesYIn
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
 

@@ -1,12 +1,12 @@
 package oracles
 
 import dexy.Common
-import dexy.chainutils.TestnetTokenIds
-import kiosk.encoding.ScalaErgoConverters.{getAddressFromErgoTree, getStringFromAddress}
-import kiosk.script.ScriptUtil
+import dexy.chainutils.MainnetUseTokenIds
+import org.ergoplatform.kiosk.encoding.ScalaErgoConverters.{getAddressFromErgoTree, getStringFromAddress}
+import org.ergoplatform.kiosk.script.ScriptUtil
 import scorex.util.encode.Base64
 import sigmastate.Values
-import kiosk.ergo._
+import org.ergoplatform.kiosk.ergo._
 
 case class PoolConfig(epochLength: Int, // blocks
                       minDataPoints: Int,
@@ -27,9 +27,9 @@ object OracleContracts extends Common {
     minDataPoints = 4,
     buffer = 4,
     maxDeviationPercent = 5,
-    poolNFT = TestnetTokenIds.oraclePoolNFT,
+    poolNFT = MainnetUseTokenIds.oraclePoolNFT,
     refreshNFT = "546A576E5A7234753778214125442A472D4B614E645267556B58703273357638",
-    oracleTokenId = TestnetTokenIds.oracleTokenId,
+    oracleTokenId = MainnetUseTokenIds.oracleTokenId,
     updateNFT = "6251655468576D5A7134743777217A25432A462D4A404E635266556A586E3272",
     ballotTokenId = "3F4428472D4B6150645367566B5970337336763979244226452948404D625165",
     minVotes = 6,

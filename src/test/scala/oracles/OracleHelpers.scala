@@ -1,16 +1,18 @@
 package oracles
 
 import dexy.Common
-import kiosk.ergo.{DhtData, KioskBox, KioskGroupElement, KioskInt, KioskLong}
-import kiosk.tx.TxUtil
+import org.ergoplatform.kiosk.ergo.{DhtData, KioskBox, KioskGroupElement, KioskInt, KioskLong}
+import org.ergoplatform.kiosk.tx.TxUtil
 import oracles.OracleContracts.config
-import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ContextVar, ErgoToken, ErgoValue, InputBox}
-import kiosk.ErgoUtil.{addressToGroupElement => addr2Grp}
-import kiosk.encoding.ScalaErgoConverters.{stringToGroupElement => str2Grp}
-import special.sigma.GroupElement
+import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ContextVar, ErgoValue, InputBox}
+import org.ergoplatform.kiosk.ErgoUtil.{addressToGroupElement => addr2Grp}
+import org.ergoplatform.kiosk.encoding.ScalaErgoConverters.{stringToGroupElement => str2Grp}
+import org.ergoplatform.sdk.ErgoToken
+import sigma.GroupElement
+
 
 trait OracleHelpers extends Common {
-  import dexy.chainutils.TestnetTokenIds._
+  import dexy.chainutils.MainnetUseTokenIds._
 
   private lazy val keyPairs: Array[(KioskGroupElement, BigInt)] = Array(
     "9eiuh5bJtw9oWDVcfJnwTm1EHfK5949MEm5DStc2sD1TLwDSrpx" -> "37cc5cb5b54f98f92faef749a53b5ce4e9921890d9fb902b4456957d50791bd0",

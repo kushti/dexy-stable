@@ -1,21 +1,22 @@
 package dexy.lp
 
-import dexy.chainutils.DexySpec._
+import dexy.chainutils.UseSpec._
 import dexy.Common
-import dexy.chainutils.DexySpec
-import kiosk.ErgoUtil
-import kiosk.encoding.ScalaErgoConverters
-import kiosk.encoding.ScalaErgoConverters.stringToGroupElement
-import kiosk.ergo.{DhtData, KioskBoolean, KioskBox, KioskCollByte, KioskGroupElement, KioskInt, KioskLong}
-import kiosk.tx.TxUtil
-import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoToken, HttpClientTesting}
+import dexy.chainutils.UseSpec
+import org.ergoplatform.kiosk.ErgoUtil
+import org.ergoplatform.kiosk.encoding.ScalaErgoConverters
+import org.ergoplatform.kiosk.encoding.ScalaErgoConverters.stringToGroupElement
+import org.ergoplatform.kiosk.ergo.{DhtData, KioskBoolean, KioskBox, KioskCollByte, KioskGroupElement, KioskInt, KioskLong}
+import org.ergoplatform.kiosk.tx.TxUtil
+import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, HttpClientTesting}
+import org.ergoplatform.sdk.ErgoToken
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import scorex.crypto.hash.Blake2b256
 
 class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with HttpClientTesting with Common {
 
-  import dexy.chainutils.TestnetTokenIds._
+  import dexy.chainutils.MainnetUseTokenIds._
 
   val ergoClient = createMockedErgoClient(MockData(Nil, Nil))
 
@@ -25,12 +26,19 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
 
   val fakeNanoErgs = 10000000000000L
   val dummyNanoErgs = 100000L
+  // ToDo: other tests (apart from the template)
+  //  cannot use different tracker (eg. 98 %)
+  //  cannot work without all data inputs present
+  //  cannot take less/more Dexy than extracted (i.e., amount reduced in LP must equal amount increased in extract box)
+  //  cannot work when tracker height is more than allowed
+  //  cannot work when last extraction height is more than allowed
+  //  cannot change LP token amount
 
   val T_delay = 360 // delay between any burn/release operation  ("T_burn" in the paper)
   val T_extract = 720 // blocks for which the rate is below 95%
 
   property("Extract to future (extract Dexy from Lp and store in extract box) should work") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val lpBalanceIn = 100000000L
 
     val lpReservesXIn = 100000000000000L
@@ -46,7 +54,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     // final ratio of X/Y = 9708
     val lpRateXYOut = lpReservesXOut / lpReservesYOut
     assert(lpRateXYOut == 9708)
-    assert(oracleRateXy * 97 / 1000000L < lpRateXYOut * 100 && oracleRateXy * 98 / 1000000L > lpRateXYOut * 100)
+    assert(oracleRateXy * 97 / 1000L < lpRateXYOut * 100 && oracleRateXy * 98 / 1000L > lpRateXYOut * 100)
 
     val lpBalanceOut = lpBalanceIn
 
@@ -107,7 +115,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -162,7 +170,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if bank has enough Ergs") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val lpBalanceIn = 100000000L
 
     val lpReservesXIn = 100000000000000L
@@ -231,7 +239,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -286,7 +294,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if tracking depth is less") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val lpBalanceIn = 100000000L
 
     val lpReservesXIn = 100000000000000L
@@ -358,7 +366,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -413,7 +421,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if not enough delay in last extract") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val lpBalanceIn = 100000000L
 
     val lpReservesXIn = 100000000000000L
@@ -484,7 +492,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -539,7 +547,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if invalid height set in extract output box") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val lpBalanceIn = 100000000L
 
     val lpReservesXIn = 100000000000000L
@@ -612,7 +620,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -668,7 +676,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if LP NFT changed") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val lpBalanceIn = 100000000L
 
     val lpReservesXIn = 100000000000000L
@@ -740,7 +748,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -799,7 +807,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if LP token amount changed") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val lpBalanceIn = 100000000L
 
     val lpReservesXIn = 100000000000000L
@@ -870,7 +878,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -929,7 +937,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if more dexy taken than allowed") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val lpBalanceIn = 100000000L
 
     val lpReservesXIn = 100000000000000L
@@ -999,7 +1007,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1058,7 +1066,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if LP token id changed") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val lpBalanceIn = 100000000L
 
     val lpReservesXIn = 100000000000000L
@@ -1130,7 +1138,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1189,7 +1197,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if Dexy token id changed in LP box") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val lpBalanceIn = 100000000L
 
     val lpReservesXIn = 100000000000000L
@@ -1260,7 +1268,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1319,7 +1327,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if Dexy token id changed in Extract box") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val lpBalanceIn = 100000000L
 
     val lpReservesXIn = 100000000000000L
@@ -1391,7 +1399,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1453,7 +1461,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if extra Dexy tokens in LP box") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val lpBalanceIn = 100000000L
 
     val lpReservesXIn = 100000000000000L
@@ -1525,7 +1533,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1584,7 +1592,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if less Dexy tokens in LP box") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val lpBalanceIn = 100000000L
 
     val lpReservesXIn = 100000000000000L
@@ -1656,7 +1664,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1715,7 +1723,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if extra Dexy tokens in Extract box") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val lpBalanceIn = 100000000L
 
     val lpReservesXIn = 100000000000000L
@@ -1786,7 +1794,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1920,7 +1928,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -1979,7 +1987,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if Extract NFT changed") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val lpBalanceIn = 100000000L
 
     val lpReservesXIn = 100000000000000L
@@ -2050,7 +2058,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2108,7 +2116,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if LP script changed") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val lpBalanceIn = 100000000L
 
     val lpReservesXIn = 100000000000000L
@@ -2179,7 +2187,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2234,7 +2242,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if Extract script changed") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val lpBalanceIn = 100000000L
 
     val lpReservesXIn = 100000000000000L
@@ -2305,7 +2313,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2360,7 +2368,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if wrong LP NFT in and right LP NFT out") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val lpBalanceIn = 100000000L
 
     val lpReservesXIn = 100000000000000L
@@ -2431,7 +2439,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2490,7 +2498,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if wrong LP NFT in and same (wrong) LP NFT out") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val lpBalanceIn = 100000000L
 
     val lpReservesXIn = 100000000000000L
@@ -2561,7 +2569,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2624,7 +2632,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if wrong Extract NFT in and right Extract NFT out") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val lpBalanceIn = 100000000L
 
     val lpReservesXIn = 100000000000000L
@@ -2696,7 +2704,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2754,7 +2762,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if wrong Extract NFT in and same (wrong) Extract NFT out") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val lpBalanceIn = 100000000L
 
     val lpReservesXIn = 100000000000000L
@@ -2825,7 +2833,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -2886,7 +2894,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if wrong Oracle NFT") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val lpBalanceIn = 100000000L
 
     val lpReservesXIn = 100000000000000L
@@ -2959,7 +2967,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -3014,7 +3022,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if wrong Bank NFT") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val lpBalanceIn = 100000000L
 
     val lpReservesXIn = 100000000000000L
@@ -3087,7 +3095,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -3142,7 +3150,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Extract to future should fail if wrong Tracking NFT") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L
     val lpBalanceIn = 100000000L
 
     val lpReservesXIn = 100000000000000L
@@ -3214,7 +3222,7 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeight).getErgoValue
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -3569,489 +3577,4 @@ class ExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     }
   }
 
-  property("Cannot use different tracker (eg. 98%)") {
-    val oracleRateXy = 10000L * 1000000L
-    val lpBalanceIn = 100000000L
-
-    val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 10550000000L
-
-    val deltaDexy = 250000000L
-
-    val lpReservesXOut = lpReservesXIn
-    val lpReservesYOut = lpReservesYIn - deltaDexy
-
-    ergoClient.execute { implicit ctx: BlockchainContext =>
-      val fundingBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(fakeNanoErgs)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
-          .build()
-          .convertToInputWith(fakeTxId1, fakeIndex)
-
-      val oracleBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(minStorageRent)
-          .tokens(new ErgoToken(oraclePoolNFT, 1))
-          .registers(KioskLong(oracleRateXy).getErgoValue)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
-          .build()
-          .convertToInputWith(fakeTxId2, fakeIndex)
-
-      val lpBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(lpReservesXIn)
-          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalanceIn), new ErgoToken(dexyUSD, lpReservesYIn))
-          .registers(KioskLong(lpBalanceIn).getErgoValue)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
-          .build()
-          .convertToInputWith(fakeTxId3, fakeIndex)
-
-      val extractBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(minStorageRent)
-          .tokens(new ErgoToken(extractNFT, 1))
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), extractScript))
-          .build()
-          .convertToInputWith(fakeTxId4, fakeIndex)
-
-      val trackingBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(minStorageRent)
-          .tokens(new ErgoToken(tracking98NFT, 1)) // Wrong tracker - should be 95%
-          .registers(
-            KioskInt(49).getErgoValue,
-            KioskInt(50).getErgoValue,
-            KioskBoolean(true).getErgoValue,
-            KioskInt(Int.MaxValue).getErgoValue
-          )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
-          .build()
-          .convertToInputWith(fakeTxId5, fakeIndex)
-
-      val validLpOutBox = KioskBox(
-        lpAddress,
-        lpReservesXOut,
-        registers = Array(KioskLong(lpBalanceIn)),
-        tokens = Array((lpNFT, 1), (lpToken, lpBalanceIn), (dexyUSD, lpReservesYOut))
-      )
-
-      val validExtractOutBox = KioskBox(
-        extractAddress,
-        minStorageRent,
-        registers = Array(KioskLong(deltaDexy), KioskInt(ctx.getHeight)),
-        tokens = Array((extractNFT, 1))
-      )
-
-      the[Exception] thrownBy {
-        TxUtil.createTx(
-          Array(lpBox, extractBox, trackingBox, fundingBox),
-          Array(oracleBox),
-          Array(validLpOutBox, validExtractOutBox),
-          fee = 1000000L,
-          changeAddress,
-          Array[String](),
-          Array[DhtData](),
-          false
-        )
-      } should have message "Script reduced to false"
-    }
-  }
-
-  property("Cannot work without all data inputs present") {
-    val oracleRateXy = 10000L * 1000000L
-    val lpBalanceIn = 100000000L
-
-    val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 10550000000L
-
-    val deltaDexy = 250000000L
-
-    val lpReservesXOut = lpReservesXIn
-    val lpReservesYOut = lpReservesYIn - deltaDexy
-
-    ergoClient.execute { implicit ctx: BlockchainContext =>
-      val fundingBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(fakeNanoErgs)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
-          .build()
-          .convertToInputWith(fakeTxId1, fakeIndex)
-
-      // Missing oracle box - should fail
-
-      val lpBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(lpReservesXIn)
-          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalanceIn), new ErgoToken(dexyUSD, lpReservesYIn))
-          .registers(KioskLong(lpBalanceIn).getErgoValue)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
-          .build()
-          .convertToInputWith(fakeTxId3, fakeIndex)
-
-      val extractBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(minStorageRent)
-          .tokens(new ErgoToken(extractNFT, 1))
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), extractScript))
-          .build()
-          .convertToInputWith(fakeTxId4, fakeIndex)
-
-      val trackingBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(minStorageRent)
-          .tokens(new ErgoToken(tracking95NFT, 1))
-          .registers(
-            KioskInt(19).getErgoValue,
-            KioskInt(20).getErgoValue,
-            KioskBoolean(true).getErgoValue,
-            KioskInt(Int.MaxValue).getErgoValue
-          )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
-          .build()
-          .convertToInputWith(fakeTxId5, fakeIndex)
-
-      val validLpOutBox = KioskBox(
-        lpAddress,
-        lpReservesXOut,
-        registers = Array(KioskLong(lpBalanceIn)),
-        tokens = Array((lpNFT, 1), (lpToken, lpBalanceIn), (dexyUSD, lpReservesYOut))
-      )
-
-      val validExtractOutBox = KioskBox(
-        extractAddress,
-        minStorageRent,
-        registers = Array(KioskLong(deltaDexy), KioskInt(ctx.getHeight)),
-        tokens = Array((extractNFT, 1))
-      )
-
-      the[Exception] thrownBy {
-        TxUtil.createTx(
-          Array(lpBox, extractBox, trackingBox, fundingBox),
-          Array(), // No oracle box
-          Array(validLpOutBox, validExtractOutBox),
-          fee = 1000000L,
-          changeAddress,
-          Array[String](),
-          Array[DhtData](),
-          false
-        )
-      } should have message "Script reduced to false"
-    }
-  }
-
-  property("Cannot take less Dexy than extracted") {
-    val oracleRateXy = 10000L * 1000000L
-    val lpBalanceIn = 100000000L
-
-    val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 10550000000L
-
-    val deltaDexy = 250000000L
-
-    val lpReservesXOut = lpReservesXIn
-    val lpReservesYOut = lpReservesYIn - deltaDexy
-
-    ergoClient.execute { implicit ctx: BlockchainContext =>
-      val fundingBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(fakeNanoErgs)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
-          .build()
-          .convertToInputWith(fakeTxId1, fakeIndex)
-
-      val oracleBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(minStorageRent)
-          .tokens(new ErgoToken(oraclePoolNFT, 1))
-          .registers(KioskLong(oracleRateXy).getErgoValue)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
-          .build()
-          .convertToInputWith(fakeTxId2, fakeIndex)
-
-      val lpBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(lpReservesXIn)
-          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalanceIn), new ErgoToken(dexyUSD, lpReservesYIn))
-          .registers(KioskLong(lpBalanceIn).getErgoValue)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
-          .build()
-          .convertToInputWith(fakeTxId3, fakeIndex)
-
-      val extractBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(minStorageRent)
-          .tokens(new ErgoToken(extractNFT, 1))
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), extractScript))
-          .build()
-          .convertToInputWith(fakeTxId4, fakeIndex)
-
-      val trackingBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(minStorageRent)
-          .tokens(new ErgoToken(tracking95NFT, 1))
-          .registers(
-            KioskInt(19).getErgoValue,
-            KioskInt(20).getErgoValue,
-            KioskBoolean(true).getErgoValue,
-            KioskInt(Int.MaxValue).getErgoValue
-          )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
-          .build()
-          .convertToInputWith(fakeTxId5, fakeIndex)
-
-      val validLpOutBox = KioskBox(
-        lpAddress,
-        lpReservesXOut,
-        registers = Array(KioskLong(lpBalanceIn)),
-        tokens = Array((lpNFT, 1), (lpToken, lpBalanceIn), (dexyUSD, lpReservesYOut))
-      )
-
-      val validExtractOutBox = KioskBox(
-        extractAddress,
-        minStorageRent,
-        registers = Array(KioskLong(deltaDexy - 1), KioskInt(ctx.getHeight)), // Taking less Dexy
-        tokens = Array((extractNFT, 1))
-      )
-
-      the[Exception] thrownBy {
-        TxUtil.createTx(
-          Array(lpBox, extractBox, trackingBox, fundingBox),
-          Array(oracleBox),
-          Array(validLpOutBox, validExtractOutBox),
-          fee = 1000000L,
-          changeAddress,
-          Array[String](),
-          Array[DhtData](),
-          false
-        )
-      } should have message "Script reduced to false"
-    }
-  }
-
-  property("Cannot work when tracker height is more than allowed") {
-    val oracleRateXy = 10000L * 1000000L
-    val lpBalanceIn = 100000000L
-
-    val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 10550000000L
-
-    val deltaDexy = 250000000L
-
-    val lpReservesXOut = lpReservesXIn
-    val lpReservesYOut = lpReservesYIn - deltaDexy
-
-    ergoClient.execute { implicit ctx: BlockchainContext =>
-      val fundingBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(fakeNanoErgs)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
-          .build()
-          .convertToInputWith(fakeTxId1, fakeIndex)
-
-      val oracleBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(minStorageRent)
-          .tokens(new ErgoToken(oraclePoolNFT, 1))
-          .registers(KioskLong(oracleRateXy).getErgoValue)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
-          .build()
-          .convertToInputWith(fakeTxId2, fakeIndex)
-
-      val lpBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(lpReservesXIn)
-          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalanceIn), new ErgoToken(dexyUSD, lpReservesYIn))
-          .registers(KioskLong(lpBalanceIn).getErgoValue)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
-          .build()
-          .convertToInputWith(fakeTxId3, fakeIndex)
-
-      val extractBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(minStorageRent)
-          .tokens(new ErgoToken(extractNFT, 1))
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), extractScript))
-          .build()
-          .convertToInputWith(fakeTxId4, fakeIndex)
-
-      val trackingBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(minStorageRent)
-          .tokens(new ErgoToken(tracking95NFT, 1))
-          .registers(
-            KioskInt(19).getErgoValue,
-            KioskInt(20).getErgoValue,
-            KioskBoolean(true).getErgoValue,
-            KioskInt(ctx.getHeight - T_extract - 1).getErgoValue // Height too old
-          )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
-          .build()
-          .convertToInputWith(fakeTxId5, fakeIndex)
-
-      val validLpOutBox = KioskBox(
-        lpAddress,
-        lpReservesXOut,
-        registers = Array(KioskLong(lpBalanceIn)),
-        tokens = Array((lpNFT, 1), (lpToken, lpBalanceIn), (dexyUSD, lpReservesYOut))
-      )
-
-      val validExtractOutBox = KioskBox(
-        extractAddress,
-        minStorageRent,
-        registers = Array(KioskLong(deltaDexy), KioskInt(ctx.getHeight)),
-        tokens = Array((extractNFT, 1))
-      )
-
-      the[Exception] thrownBy {
-        TxUtil.createTx(
-          Array(lpBox, extractBox, trackingBox, fundingBox),
-          Array(oracleBox),
-          Array(validLpOutBox, validExtractOutBox),
-          fee = 1000000L,
-          changeAddress,
-          Array[String](),
-          Array[DhtData](),
-          false
-        )
-      } should have message "Script reduced to false"
-    }
-  }
-
-  property("Cannot change LP token amount") {
-    val oracleRateXy = 10000L * 1000000L
-    val lpBalanceIn = 100000000L
-
-    val lpReservesXIn = 100000000000000L
-    val lpReservesYIn = 10550000000L
-
-    val deltaDexy = 250000000L
-
-    val lpReservesXOut = lpReservesXIn
-    val lpReservesYOut = lpReservesYIn - deltaDexy
-
-    ergoClient.execute { implicit ctx: BlockchainContext =>
-      val fundingBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(fakeNanoErgs)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
-          .build()
-          .convertToInputWith(fakeTxId1, fakeIndex)
-
-      val oracleBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(minStorageRent)
-          .tokens(new ErgoToken(oraclePoolNFT, 1))
-          .registers(KioskLong(oracleRateXy).getErgoValue)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
-          .build()
-          .convertToInputWith(fakeTxId2, fakeIndex)
-
-      val lpBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(lpReservesXIn)
-          .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalanceIn), new ErgoToken(dexyUSD, lpReservesYIn))
-          .registers(KioskLong(lpBalanceIn).getErgoValue)
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
-          .build()
-          .convertToInputWith(fakeTxId3, fakeIndex)
-
-      val extractBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(minStorageRent)
-          .tokens(new ErgoToken(extractNFT, 1))
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), extractScript))
-          .build()
-          .convertToInputWith(fakeTxId4, fakeIndex)
-
-      val trackingBox =
-        ctx
-          .newTxBuilder()
-          .outBoxBuilder
-          .value(minStorageRent)
-          .tokens(new ErgoToken(tracking95NFT, 1))
-          .registers(
-            KioskInt(19).getErgoValue,
-            KioskInt(20).getErgoValue,
-            KioskBoolean(true).getErgoValue,
-            KioskInt(Int.MaxValue).getErgoValue
-          )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
-          .build()
-          .convertToInputWith(fakeTxId5, fakeIndex)
-
-      val validLpOutBox = KioskBox(
-        lpAddress,
-        lpReservesXOut,
-        registers = Array(KioskLong(lpBalanceIn)),
-        tokens = Array((lpNFT, 1), (lpToken, lpBalanceIn - 1), (dexyUSD, lpReservesYOut)) // Changed LP token amount
-      )
-
-      val validExtractOutBox = KioskBox(
-        extractAddress,
-        minStorageRent,
-        registers = Array(KioskLong(deltaDexy), KioskInt(ctx.getHeight)),
-        tokens = Array((extractNFT, 1))
-      )
-
-      the[Exception] thrownBy {
-        TxUtil.createTx(
-          Array(lpBox, extractBox, trackingBox, fundingBox),
-          Array(oracleBox),
-          Array(validLpOutBox, validExtractOutBox),
-          fee = 1000000L,
-          changeAddress,
-          Array[String](),
-          Array[DhtData](),
-          false
-        )
-      } should have message "Script reduced to false"
-    }
-  }
 }

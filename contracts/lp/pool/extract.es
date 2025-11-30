@@ -115,10 +115,10 @@
       val validTracking95Box = tracking95Box.tokens(0)._1 == tracking95NFT
       val validTracking101Box = tracking101Box.tokens(0)._1 == tracking101NFT
 
-      // oracle delivers nanoErgs per 1 kg of gold
-      // we divide it by 1000000 to get nanoErg per dexy, i.e. 1mg of gold
+      // oracle delivers nanoErgs per 1 USD
+      // we divide it by 1000 to get nanoErg per USE (since USE token has 3 decimals)
       // can assume always > 0 (ref oracle pool contracts) NanoErgs per USD
-      val oracleRateXY = oracleBox.R4[Long].get / 1000000L
+      val oracleRateXY = oracleBox.R4[Long].get / 1000L
       val lpRateXYOut = reservesXOut / reservesYOut
 
       val validExtractAmount = oracleRateXY * 97 < lpRateXYOut * 100 &&  // oracleRate must be > 0.97 * lpRate at output

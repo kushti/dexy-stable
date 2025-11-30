@@ -1,16 +1,17 @@
 package dexy
 
-import dexy.chainutils.DexySpec
-import kiosk.ergo.{DhtData, KioskBoolean, KioskBox, KioskInt, KioskLong}
-import kiosk.tx.TxUtil
-import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoToken, HttpClientTesting}
+import dexy.chainutils.UseSpec
+import org.ergoplatform.kiosk.ergo.{DhtData, KioskBoolean, KioskBox, KioskInt, KioskLong}
+import org.ergoplatform.kiosk.tx.TxUtil
+import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoValue, HttpClientTesting}
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
-import dexy.chainutils.DexySpec._
+import dexy.chainutils.UseSpec._
+import org.ergoplatform.sdk.ErgoToken
 
 class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with HttpClientTesting with Common {
 
-  import dexy.chainutils.TestnetTokenIds._
+  import dexy.chainutils.MainnetUseTokenIds._
 
   val dummyTokenId = "a9e5ce5aa0d95f5d54a7bc89c46730d9662397067250aa18a0039631c0fad80a"
 
@@ -18,13 +19,13 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   val fakeNanoErgs = 10000000000000L
 
   property("Trigger 98% tracker should work") {
-    // oracle is showing price in X per Y (e.g. nanoErg per mg of gold)
-    // real oracle pool 2.0 delivering price in nanoErg per kg, and contracts are normalizing t by dividing by 1M
+    // oracle is showing price in X per Y (e.g. nanoErg per dexyUSD)
+    // real oracle pool 2.0 delivering price in nanoErg per USD, and contracts are normalizing by dividing by 1000 (for 3 decimals)
     // 98% protocol should be triggered when price below the peg
     // it happens when lp price is below oracle price
 
     val lpInCirc = 10000L
-    val oracleRateXY = 10205L * 1000000L
+    val oracleRateXY = 10205L * 1000L
     val lpBalance = 10000000L
     val reservesX = 10000000000L
     val reservesY = 1000000L
@@ -34,7 +35,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
 
     val lpRateXY = reservesX / reservesY
     val x = lpRateXY * denomIn
-    val y = numIn * oracleRateXY / 1000000L
+    val y = numIn * oracleRateXY / 1000L
 
     val toTrigger = x < y
     assert(toTrigger)
@@ -83,10 +84,10 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .registers(
             KioskInt(numIn).getErgoValue, // numerator for 98%
             KioskInt(denomIn).getErgoValue, // denominator for 98%
-            KioskBoolean(true).getErgoValue, // isBelow == true
+            ErgoValue.of(true), // isBelow == true
             KioskInt(trackingHeightIn).getErgoValue // currently set to INF (input box state is "notTriggeredEarlier")
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -114,10 +115,10 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("Trigger 101% tracker should work") {
-    // oracle is showing price in X per Y (e.g. nanoErg per mg of gold)
+    // oracle is showing price in X per Y (e.g. nanoErg per dexyUSD)
 
     val lpInCirc = 10000L
-    val oracleRateXY = 9088L * 1000000L
+    val oracleRateXY = 9088L * 1000L
     val lpBalance = 10000000L
     val reservesX = 10000000000L
     val reservesY = 1000000L
@@ -127,7 +128,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
 
     val lpRateXY = reservesX / reservesY
     val x = lpRateXY * denomIn
-    val y = numIn * oracleRateXY / 1000000L
+    val y = numIn * oracleRateXY / 1000L
 
     val toTrigger = x > y
     assert(toTrigger)
@@ -179,7 +180,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
             KioskBoolean(false).getErgoValue, // isBelow == false
             KioskInt(trackingHeightIn).getErgoValue // currently set to INF (input box state is "notTriggeredEarlier")
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -210,7 +211,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   property("Trigger 98% tracker should fail if lp price is not below") {
     // following params will decide if its a valid tracking or not
     val lpInCirc = 10000L
-    val oracleRateXY = 10000L * 1000000L
+    val oracleRateXY = 10000L * 1000L
     val lpBalance = 10000000L
     val reservesX = 10000000000L
     val reservesY = 1000000L
@@ -219,10 +220,10 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
     val denomIn = 50 // 49/50 = 98%
 
     val lpRateXY = reservesX / reservesY
-    assert(oracleRateXY == lpRateXY * 1000000L)
+    assert(oracleRateXY == lpRateXY * 1000L)
 
     val x = lpRateXY * denomIn
-    val y = numIn * oracleRateXY / 1000000L
+    val y = numIn * oracleRateXY / 1000L
 
     val toTrigger = x < y
     assert(!toTrigger)
@@ -274,7 +275,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue // currently set to INF (input box state is "notTriggeredEarlier")
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -304,7 +305,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   property("Trigger 98% tracker should fail if tracking address changed") {
     // following params will decide if its a valid tracking or not
     val lpInCirc = 10000L
-    val oracleRateXY = 10210L * 1000000L
+    val oracleRateXY = 10210L * 1000L
     val lpBalance = 10000000L
     val reservesX = 10000000000L
     val reservesY = 1000000L
@@ -314,7 +315,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
 
     val lpRateXY = reservesX / reservesY
     val x = lpRateXY * denomIn
-    val y = numIn * oracleRateXY / 1000000L
+    val y = numIn * oracleRateXY / 1000L
 
     val toTrigger = x < y
     assert(toTrigger)
@@ -367,10 +368,10 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .registers(
             KioskInt(numIn).getErgoValue, // numerator for 98%
             KioskInt(denomIn).getErgoValue, // denominator for 98%
-            KioskBoolean(true).getErgoValue, // isBelow
+            ErgoValue.of(true), // isBelow
             KioskInt(trackingHeightIn).getErgoValue // currently set to INF (input box state is "notTriggeredEarlier")
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -400,7 +401,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   property("Trigger 98% tracker should fail if wrong oracle NFT") {
     // following params will decide if its a valid tracking or not
     val lpInCirc = 10000L
-    val oracleRateXY = 10210L * 1000000L
+    val oracleRateXY = 10210L * 1000L
     val lpBalance = 10000000L
     val reservesX = 10000000000L
     val reservesY = 1000000L
@@ -457,7 +458,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue // currently set to INF (input box state is "notTriggeredEarlier")
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -487,7 +488,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   property("Trigger 98% tracker should fail if wrong lp NFT") {
     // following params will decide if its a valid tracking or not
     val lpInCirc = 10000L
-    val oracleRateXY = 10210L * 1000000L
+    val oracleRateXY = 10210L * 1000L
     val lpBalance = 10000000L
     val reservesX = 10000000000L
     val reservesY = 1000000L
@@ -497,7 +498,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
 
     val lpRateXY = reservesX / reservesY
     val x = lpRateXY * denomIn
-    val y = numIn * oracleRateXY / 1000000L
+    val y = numIn * oracleRateXY / 1000L
 
     val toTrigger = x < y
     assert(toTrigger)
@@ -553,7 +554,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue // currently set to INF (input box state is "notTriggeredEarlier")
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
@@ -582,7 +583,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
 
   property("Trigger 98% tracker should fail if already triggered") {
     val lpInCirc = 10000L
-    val oracleRateXY = 10205L * 1000000L
+    val oracleRateXY = 10205L * 1000L
     val lpBalance = 10000000L
     val reservesX = 10000000000L
     val reservesY = 1000000L
@@ -637,13 +638,13 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue // currently set to INF (input box state is "notTriggeredEarlier")
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
       val lpRateXY = reservesX / reservesY
       val x = lpRateXY * denomIn
-      val y = numIn * oracleRateXY / 1000000L
+      val y = numIn * oracleRateXY / 1000L
 
       val toTrigger = x < y
       assert(toTrigger)
@@ -672,7 +673,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
 
   property("Reset 98% tracker should work") {
     val lpInCirc = 10000L
-    val oracleRateXY = 10000L * 1000000L
+    val oracleRateXY = 10000L * 1000L
     val lpBalance = 10000000L
     val reservesX = 10000000000L
     val reservesY = 1000000L
@@ -727,13 +728,13 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
             KioskBoolean(true).getErgoValue, // isBelow
             KioskInt(trackingHeightIn).getErgoValue // currently set to INF (input box state is "notTriggeredEarlier")
           )
-          .contract(ctx.compileContract(ConstantsBuilder.empty(), DexySpec.trackingScript))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
       val lpRateXY = reservesX / reservesY
       val x = lpRateXY * denomIn
-      val y = numIn * oracleRateXY / 1000000L
+      val y = numIn * oracleRateXY / 1000L
 
       println(x)
       println(y)
@@ -765,7 +766,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
 
   property("Reset 98% tracker should fail if condition not satisfied") {
     val lpInCirc = 10000L
-    val oracleRateXY = 10210L * 1000000L
+    val oracleRateXY = 10210L * 1000L
     val lpBalance = 10000000L
     val reservesX = 10000000000L
     val reservesY = 1000000L
@@ -831,7 +832,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           .contract(
             ctx.compileContract(
               ConstantsBuilder.empty(),
-              DexySpec.trackingScript
+              UseSpec.trackingScript
             )
           )
           .build()
@@ -839,7 +840,7 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
 
       val lpRateXY = reservesX / reservesY
       val x = lpRateXY * denomIn
-      val y = numIn * oracleRateXY / 1000000L
+      val y = numIn * oracleRateXY / 1000L
 
       val toReset = x >= y
       assert(!toReset)
