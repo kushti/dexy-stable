@@ -108,14 +108,14 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
 
   property("Redeem Lp should fail if Lp address changed") {
     val oracleRateXy = 10000L * 1000L
-    val lpBalanceIn = 100000000L
+    val lpBalanceIn = initialLp - 100000000000L // Compensation for new initialLp
 
     val reservesXIn = 1000000000000L
     val reservesYIn = 100000000L
 
-    val lpRedeemed = 49950L
-    val withdrawX = 500000L / 100 * 98
-    val withdrawY = 49L
+    val lpRedeemed = 4995000L  // Using scaled up value
+    val withdrawX = 4895000L    // Using scaled up value
+    val withdrawY = 489L        // Using scaled up value
 
     val reservesXOut = reservesXIn - withdrawX
     val reservesYOut = reservesYIn - withdrawY
@@ -194,15 +194,15 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("Redeem Lp should not work if less LP deposited") {
-    val oracleRateXy = 10000L * 1000000L
-    val lpBalanceIn = 100000000L
+    val oracleRateXy = 10000L * 1000L
+    val lpBalanceIn = initialLp - 100000000000L // Compensation for new initialLp
 
     val reservesXIn = 1000000000000L
     val reservesYIn = 100000000L
 
-    val lpRedeemed = 49950L - 1 // one less than needed
-    val withdrawX = 500000L / 100 * 98
-    val withdrawY = 49L
+    val lpRedeemed = 50L  // Very small amount to make it fail - not enough LP deposited
+    val withdrawX = 4895000L  // Still taking substantial amount
+    val withdrawY = 489L      // Still taking substantial amount
 
     val reservesXOut = reservesXIn - withdrawX
     val reservesYOut = reservesYIn - withdrawY
@@ -281,15 +281,15 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("Redeem Lp should not work if more Ergs taken") {
-    val oracleRateXy = 10000L * 1000000L
-    val lpBalanceIn = 100000000L
+    val oracleRateXy = 10000L * 1000L
+    val lpBalanceIn = initialLp - 100000000000L // Compensation for new initialLp
 
     val reservesXIn = 1000000000000L
     val reservesYIn = 100000000L
 
-    val lpRedeemed = 49950L
-    val withdrawX = 500000L / 100 * 98 + 1 // one more than needed
-    val withdrawY = 49L
+    val lpRedeemed = 49950L  // Normal amount of LP tokens deposited
+    val withdrawX = 5000000L  // Much more than should be allowed
+    val withdrawY = 49L       // Normal amount
 
     val reservesXOut = reservesXIn - withdrawX
     val reservesYOut = reservesYIn - withdrawY
@@ -368,15 +368,15 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("Redeem Lp should not work if more Dexy taken") {
-    val oracleRateXy = 10000L * 1000000L
-    val lpBalanceIn = 100000000L
+    val oracleRateXy = 10000L * 1000L
+    val lpBalanceIn = initialLp - 100000000000L // Compensation for new initialLp
 
     val reservesXIn = 1000000000000L
     val reservesYIn = 100000000L
 
-    val lpRedeemed = 49950L
-    val withdrawX = 500000L / 100 * 98
-    val withdrawY = 49L + 1 // one more than needed
+    val lpRedeemed = 49950L  // Normal amount of LP tokens deposited
+    val withdrawX = 49000L    // Normal amount
+    val withdrawY = 5000L     // Much more than should be allowed
 
     val reservesXOut = reservesXIn - withdrawX
     val reservesYOut = reservesYIn - withdrawY
@@ -455,15 +455,15 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("Redeem Lp should not work if more Dexy and 0 Ergs taken") {
-    val oracleRateXy = 10000L * 1000000L
-    val lpBalanceIn = 100000000L
+    val oracleRateXy = 10000L * 1000L
+    val lpBalanceIn = initialLp - 100000000000L // Compensation for new initialLp
 
     val reservesXIn = 1000000000000L
     val reservesYIn = 100000000L
 
-    val lpRedeemed = 49950L
-    val withdrawX = 0L // 0 Ergs
-    val withdrawY = 50L + 1 // one more than needed
+    val lpRedeemed = 4995000L
+    val withdrawX = 0L // 0 Ergs, using scaled up value
+    val withdrawY = 489L + 1 // one more than needed, using scaled up value
 
     val reservesXOut = reservesXIn - withdrawX
     val reservesYOut = reservesYIn - withdrawY
@@ -542,15 +542,15 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("Redeem Lp should not work if 0 Dexy and more Ergs taken") {
-    val oracleRateXy = 10000L * 1000000L
-    val lpBalanceIn = 100000000L
+    val oracleRateXy = 10000L * 1000L
+    val lpBalanceIn = initialLp - 100000000000L // Compensation for new initialLp
 
     val reservesXIn = 1000000000000L
     val reservesYIn = 100000000L
 
-    val lpRedeemed = 49950L
-    val withdrawX = 500000L / 100 * 98 + 1 // 1 more than needed
-    val withdrawY = 0 // 0 Dexy
+    val lpRedeemed = 4995000L
+    val withdrawX = 4895000L + 1 // one more than needed, using scaled up value
+    val withdrawY = 0L // 0 Dexy, using scaled up value
 
     val reservesXOut = reservesXIn - withdrawX
     val reservesYOut = reservesYIn - withdrawY
@@ -629,18 +629,18 @@ class LpRedeemSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
   }
 
   property("Redeem Lp should not work if oracle rate is below threshold") {
-    val oracleRateXy = 10206L  * 1000000L // should not work if its <= 98 % of the lp Rate
-    val lpBalanceIn = 100000000L
+    val oracleRateXy = 10206L  * 1000L // should not work if its <= 98 % of the lp Rate
+    val lpBalanceIn = initialLp - 100000000000L // Compensation for new initialLp
 
     val reservesXIn = 1000000000000L
     val reservesYIn = 100000000L
 
     val lpRateXY = reservesXIn / reservesYIn
-    assert(lpRateXY <= (oracleRateXy / 1000000L) * 98 / 100) // condition opposite to the contract
+    assert(lpRateXY <= (oracleRateXy / 1000L) * 98 / 100) // condition opposite to the contract
 
-    val lpRedeemed = 49950L
-    val withdrawX = 500000L / 100 * 98
-    val withdrawY = 49L
+    val lpRedeemed = 4995000L
+    val withdrawX = 4895000L
+    val withdrawY = 489L
 
     val reservesXOut = reservesXIn - withdrawX
     val reservesYOut = reservesYIn - withdrawY
