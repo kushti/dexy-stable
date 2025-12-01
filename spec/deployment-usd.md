@@ -96,6 +96,8 @@ Bank tokens:
   https://explorer.ergoplatform.com/en/transactions/
 
 * Buyback contract deployment transactions:
+ https://explorer.ergoplatform.com/en/transactions/8d23e4c1630fcd4f53a641a0893a797e1f694e411bd7c12a6d4eb7ba39acaeb0
+ // todo: 2 more
 
 #### Tracking
 
@@ -129,18 +131,15 @@ Bank tokens:
 #### Bank
 
 * Arbitrage Mint deployment transaction:
-  https://explorer.ergoplatform.com/en/transactions/
+  https://explorer.ergoplatform.com/en/transactions/2047420e116ea8f062fed7e8077f58502f6ec1f641908067b492fe6f61056c0c
 
 * Free Mint deployment transaction:
-  https://explorer.ergoplatform.com/en/transactions/
+  https://explorer.ergoplatform.com/en/transactions/f3bcf6875720464cd0bb34c93875022fd9fb8471538f8c1b056a1da2d70b22c5
 
 * Payout deployment transaction:
   https://explorer.ergoplatform.com/en/transactions/
 
 * Intervention:
-  https://explorer.ergoplatform.com/en/transactions/
-
-* Buyback deployment transaction:
   https://explorer.ergoplatform.com/en/transactions/
 
 * Bank deployment transaction:

@@ -3,7 +3,7 @@ package dexy.bank
 import dexy.Common
 import dexy.chainutils.UseSpec
 import dexy.chainutils.UseSpec.{bankAddress, bankScript, buybackAddress, buybackScript, freeMintAddress, freeMintScript, lpScript, payoutAddress, payoutScript}
-import org.ergoplatform.kiosk.ergo.{DhtData, KioskBox, KioskInt, KioskLong}
+import org.ergoplatform.kiosk.ergo.{DhtData, KioskBox, KioskCollByte, KioskInt, KioskLong}
 import org.ergoplatform.kiosk.tx.TxUtil
 import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ContextVar, HttpClientTesting}
 import org.ergoplatform.sdk.ErgoToken
@@ -107,7 +107,7 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
       val validBuybackOutBox = KioskBox(
         buybackAddress,
         fakeNanoErgs + (bankReservesXIn - bankReservesXOut),
-        registers = Array(),
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
         tokens = Array(
           (buybackNFT, 1)
         )
@@ -219,7 +219,7 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
       val validBuybackOutBox = KioskBox(
         buybackAddress,
         fakeNanoErgs + (bankReservesXIn - bankReservesXOut - 1),
-        registers = Array(),
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
         tokens = Array(
           (buybackNFT, 1)
         )
@@ -321,7 +321,7 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
       val validBuybackOutBox = KioskBox(
         buybackAddress,
         fakeNanoErgs + (bankReservesXIn - bankReservesXOut),
-        registers = Array(),
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
         tokens = Array(
           (buybackNFT, 1)
         )
@@ -423,7 +423,7 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
       val validBuybackOutBox = KioskBox(
         buybackAddress,
         fakeNanoErgs + (bankReservesXIn - bankReservesXOut),
-        registers = Array(),
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
         tokens = Array(
           (buybackNFT, 1)
         )

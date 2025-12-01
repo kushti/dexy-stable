@@ -2,7 +2,7 @@ package dexy.bank
 
 import dexy.Common
 import dexy.chainutils.UseSpec._
-import org.ergoplatform.kiosk.ergo.{DhtData, KioskBox, KioskInt, KioskLong}
+import org.ergoplatform.kiosk.ergo.{DhtData, KioskBox, KioskCollByte, KioskInt, KioskLong}
 import org.ergoplatform.kiosk.tx.TxUtil
 import org.ergoplatform.appkit._
 import org.ergoplatform.sdk.ErgoToken
@@ -125,14 +125,14 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
       val validBankOutBox = KioskBox(
         bankAddress,
         bankReservesXOut,
-        registers = Array(),
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
         tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
       )
 
       val validBuybackOutBox = KioskBox(
         buybackAddress,
         fakeNanoErgs + buybackErgsAdded,
-        registers = Array(),
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
         tokens = Array(
           (buybackNFT, 1)
         )
@@ -260,7 +260,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
       val validBankOutBox = KioskBox(
         bankAddress,
         bankReservesXOut,
-        registers = Array(),
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
         tokens = Array(
                         (bankNFT, 1),
                         (dummyTokenId, bankReservesYOut) // <-- this value has changed
@@ -270,7 +270,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
       val validBuybackOutBox = KioskBox(
         buybackAddress,
         fakeNanoErgs + buybackErgsAdded,
-        registers = Array(),
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
         tokens = Array(
           (buybackNFT, 1)
         )
@@ -397,7 +397,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
       val validBankOutBox = KioskBox(
         changeAddress, // <-- this value has changed
         bankReservesXOut,
-        registers = Array(),
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
         tokens = Array(
           (bankNFT, 1),
           (dexyUSD, bankReservesYOut)
@@ -407,7 +407,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
       val validBuybackOutBox = KioskBox(
         buybackAddress,
         fakeNanoErgs + buybackErgsAdded,
-        registers = Array(),
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
         tokens = Array(
           (buybackNFT, 1)
         )
@@ -534,7 +534,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
       val validBankOutBox = KioskBox(
         bankAddress,
         bankReservesXOut,
-        registers = Array(),
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
         tokens = Array(
           (bankNFT, 1),
           (dexyUSD, bankReservesYOut)
@@ -544,7 +544,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
       val validBuybackOutBox = KioskBox(
         buybackAddress,
         fakeNanoErgs + buybackErgsAdded,
-        registers = Array(),
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
         tokens = Array(
           (buybackNFT, 1)
         )
@@ -674,7 +674,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
       val validBankOutBox = KioskBox(
         bankAddress,
         bankReservesXOut,
-        registers = Array(),
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
         tokens = Array(
           (bankNFT, 1),
           (dexyUSD, bankReservesYOut)
@@ -684,7 +684,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
       val validBuybackOutBox = KioskBox(
         buybackAddress,
         fakeNanoErgs + buybackErgsAdded,
-        registers = Array(),
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
         tokens = Array(
           (buybackNFT, 1)
         )
@@ -814,7 +814,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
       val validBankOutBox = KioskBox(
         bankAddress,
         bankReservesXOut,
-        registers = Array(),
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
         tokens = Array(
           (bankNFT, 1),
           (dexyUSD, bankReservesYOut)
@@ -824,7 +824,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
       val validBuybackOutBox = KioskBox(
         buybackAddress,
         fakeNanoErgs + buybackErgsAdded,
-        registers = Array(),
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
         tokens = Array(
           (buybackNFT, 1)
         )
@@ -956,7 +956,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
       val validBankOutBox = KioskBox(
         bankAddress,
         bankReservesXOut,
-        registers = Array(),
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
         tokens = Array(
           (bankNFT, 1),
           (dexyUSD, bankReservesYOut)
@@ -966,7 +966,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
       val validBuybackOutBox = KioskBox(
         buybackAddress,
         fakeNanoErgs + buybackErgsAdded,
-        registers = Array(),
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
         tokens = Array(
           (buybackNFT, 1)
         )
@@ -1098,7 +1098,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
       val validBankOutBox = KioskBox(
         bankAddress,
         bankReservesXOut,
-        registers = Array(),
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
         tokens = Array(
           (dummyTokenId, 1),  // <-- this value has changed
           (dexyUSD, bankReservesYOut)
@@ -1108,7 +1108,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
       val validBuybackOutBox = KioskBox(
         buybackAddress,
         fakeNanoErgs + buybackErgsAdded,
-        registers = Array(),
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
         tokens = Array(
           (buybackNFT, 1)
         )
@@ -1240,7 +1240,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
       val validBankOutBox = KioskBox(
         bankAddress,
         bankReservesXOut,
-        registers = Array(),
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
         tokens = Array(
           (bankNFT, 1),
           (dexyUSD, bankReservesYOut)
@@ -1250,7 +1250,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
       val validBuybackOutBox = KioskBox(
         buybackAddress,
         fakeNanoErgs + buybackErgsAdded,
-        registers = Array(),
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
         tokens = Array(
           (buybackNFT, 1)
         )
@@ -1382,7 +1382,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
       val validBankOutBox = KioskBox(
         bankAddress,
         bankReservesXOut,
-        registers = Array(),
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
         tokens = Array(
           (bankNFT, 1),
           (dexyUSD, bankReservesYOut)
@@ -1392,7 +1392,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
       val validBuybackOutBox = KioskBox(
         buybackAddress,
         fakeNanoErgs + buybackErgsAdded,
-        registers = Array(),
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
         tokens = Array(
           (buybackNFT, 1)
         )
@@ -1527,7 +1527,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
       val validBankOutBox = KioskBox(
         bankAddress,
         bankReservesXOut,
-        registers = Array(),
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
         tokens = Array(
           (bankNFT, 1),
           (dexyUSD, bankReservesYOut)
@@ -1537,7 +1537,7 @@ class FreeMintSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
       val validBuybackOutBox = KioskBox(
         buybackAddress,
         fakeNanoErgs + buybackErgsAdded,
-        registers = Array(),
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
         tokens = Array(
           (buybackNFT, 1)
         )
