@@ -137,7 +137,7 @@ Bank tokens:
   https://explorer.ergoplatform.com/en/transactions/f3bcf6875720464cd0bb34c93875022fd9fb8471538f8c1b056a1da2d70b22c5
 
 * Payout deployment transaction:
-  https://explorer.ergoplatform.com/en/transactions/
+  https://explorer.ergoplatform.com/en/transactions/e0f1e73c28324c791f1739857bc2a394fe3f5cdef507e3477567a049eb9ec650
 
 * Intervention:
   https://explorer.ergoplatform.com/en/transactions/

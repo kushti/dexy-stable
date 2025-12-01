@@ -15,10 +15,10 @@
   // 1 Bank     |  Bank     |
   // 2 BuyBack  |  BuyBack  |
 
-  // In the above transaction, the "payouts" (rewards) will be stored in a "Reward" box
+  // In the above transaction, the "payouts" (rewards) will be stored in the "buyback" box
   // The payout box just enforces the correct logic for such rewards and does not store the actual rewards
 
-  val payoutThreshold = 100000000000000L // nanoErgs (100000 Ergs)
+  val payoutThreshold = 1000000000000000L // nanoErgs (1000000 Ergs)
 
   val oracleNFT = fromBase64("$oracleNFT") // to identify oracle pool box
   val lpNFT = fromBase64("$lpNFT")
@@ -56,7 +56,7 @@
   val oracleRate = oracleBox.R4[Long].get / 1000L
 
   val dexyInCirculation = $initialDexyTokens - bankDexy
-  val collateralized = oracleRate * dexyInCirculation * 12 < bankBoxIn.value // > 1200% collateralization
+  val collateralized = oracleRate * dexyInCirculation * 12L < bankBoxIn.value // > 1200% collateralization
 
   val maxPaymentAmount = bankBoxIn.value / 1000 // 0.1 % max can be taken
   val paymentAmount = bankBoxIn.value - bankBoxOut.value
