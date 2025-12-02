@@ -547,7 +547,7 @@ object UseSpec extends ContractUtils {
          |  [
          |    {
          |      "address": "$extractAddress",
-         |      "value": 1000000000,
+         |      "value": 10000000000,
          |      "assets": [
          |        {
          |          "tokenId": "$extractionNFT",

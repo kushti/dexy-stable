@@ -114,16 +114,16 @@ Bank tokens:
 #### LP
 
 * LP Swap deployment transaction:
-  https://explorer.ergoplatform.com/en/transactions/
+  https://explorer.ergoplatform.com/en/transactions/95cc9bbd79973bbb7c5f826a6f10e8d6cf1d6e5f64969a133bc2bf1a678d7252
 
 * LP Mint deployment transaction:
-  https://explorer.ergoplatform.com/en/transactions/
+  https://explorer.ergoplatform.com/en/transactions/f2b6972e9b0bd98a21a05af7d2e0ac7111e74f3310731ec1b47812adb14b5195
 
 * LP redeem deployment transaction:
-  https://explorer.ergoplatform.com/en/transactions/
+  https://explorer.ergoplatform.com/en/transactions/f4c0ed2a7193f0deb1aa524c3c09370a6862ab21d235748464f5d4d923c362db
 
 * LP extract to the future deployment transaction:
-  https://explorer.ergoplatform.com/en/transactions/
+  https://explorer.ergoplatform.com/en/transactions/444950dc95202a09d85eafdcbf78fc12dcf89dab5f395e672567646b8b3bac95
 
 * LP deployment transaction:
   https://explorer.ergoplatform.com/en/transactions/
