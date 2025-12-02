@@ -1,12 +1,13 @@
 package hodl
 
 import dexy.Common
-import dexy.chainutils.DexySpec.readContract
-import kiosk.encoding.ScalaErgoConverters.{getAddressFromErgoTree, getStringFromAddress}
-import kiosk.ergo.{DhtData, KioskBox, KioskLong}
-import kiosk.script.ScriptUtil
-import kiosk.tx.TxUtil
-import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoToken, HttpClientTesting}
+import dexy.chainutils.UseSpec.readContract
+import org.ergoplatform.kiosk.encoding.ScalaErgoConverters.{getAddressFromErgoTree, getStringFromAddress}
+import org.ergoplatform.kiosk.ergo.{DhtData, KioskBox, KioskLong}
+import org.ergoplatform.kiosk.script.ScriptUtil
+import org.ergoplatform.kiosk.tx.TxUtil
+import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, HttpClientTesting}
+import org.ergoplatform.sdk.ErgoToken
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import sigmastate.Values

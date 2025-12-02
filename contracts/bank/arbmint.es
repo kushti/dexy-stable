@@ -74,10 +74,10 @@
 
   val isCounterReset = HEIGHT > selfInR4
 
-  // oracle delivers nanoErgs per 1 kg of gold
-  // we divide it by 1000000 to get nanoErg per dexy, i.e. 1mg of gold
+  // oracle delivers nanoErgs per 1 USD
+  // we divide it by 1000 to get nanoErg per USE (since USE token has 3 decimals)
   // can assume always > 0 (ref oracle pool contracts) NanoErgs per USD
-  val oracleRate = oracleBox.R4[Long].get / 1000000L
+  val oracleRate = oracleBox.R4[Long].get / 1000L
 
   val lpReservesX = lpBox.value
   val lpReservesY = lpBox.tokens(2)._2 // dexyReserves

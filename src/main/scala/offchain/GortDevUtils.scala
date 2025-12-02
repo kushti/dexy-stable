@@ -6,8 +6,6 @@ import org.ergoplatform.wallet.boxes.DefaultBoxSelector
 import org.ergoplatform.{ErgoAddressEncoder, ErgoBox, ErgoBoxCandidate, UnsignedInput}
 import scorex.util.ModifierId
 import scorex.util.encode.Base16
-import sigmastate.Values.{ByteConstant, IntConstant, ShortConstant}
-import sigmastate.interpreter.ContextExtension
 import scala.util.Try
 
 /**
@@ -26,6 +24,9 @@ object GortDevUtils extends App {
 
   def gortDevEmission(): Option[ErgoBox] = utils.unspentScanBoxes(devEmissionScanId).headOption
 
+  /*
+todo: uncomment and fix
+
   def payout(): Unit = {
     val res = Try {
       val eae = new ErgoAddressEncoder(ErgoAddressEncoder.MainnetNetworkPrefix)
@@ -37,18 +38,18 @@ object GortDevUtils extends App {
 
       val inGort = emissionInputBox.additionalTokens.apply(1)
 
-      val selectionResult = DefaultBoxSelector.select[ErgoBox](
+      val selectionResult = new DefaultBoxSelector(None).select[ErgoBox](
         utils.fetchWalletInputs().toIterator,
         (_: ErgoBox) => true,
         2 * feeOut.value,
         Map.empty[ModifierId, Long]
       ).right.toOption.get
 
-      val inputBoxes = IndexedSeq(emissionInputBox) ++ selectionResult.boxes
+      val inputBoxes = IndexedSeq(emissionInputBox) ++ selectionResult.inputBoxes
 
       val ce = ContextExtension(Map(0.toByte -> ShortConstant(0), 1.toByte -> ByteConstant(1)))
       val inputs = IndexedSeq(new UnsignedInput(emissionInputBox.id, ce)) ++
-        selectionResult.boxes.map(b => new UnsignedInput(b.id))
+        selectionResult.inputBoxes.map(b => new UnsignedInput(b.id))
 
       // R4 (int) - last payment height
       // R5 (SigmaProp) - auth
@@ -57,7 +58,7 @@ object GortDevUtils extends App {
 
       val toWithdraw = Math.min(inGort._2 - 1, currentHeight - prevPaymentHeight)
 
-      val outRegs = inRegs.updated(R4, IntConstant(currentHeight))
+      val outRegs = inRegs.toMap.updated(R4, IntConstant(currentHeight))
       val outTokens = emissionInputBox.additionalTokens.updated(1, inGort._1 -> (inGort._2 - toWithdraw))
 
       val emissionOut = new ErgoBoxCandidate(emissionInputBox.value, emissionInputBox.ergoTree, currentHeight, outTokens, outRegs)
@@ -76,7 +77,7 @@ object GortDevUtils extends App {
       Base16.encode(txId)
     }
     println("Payout result: " + res)
-  }
+  } */
 
-  payout()
+  // payout()
 }

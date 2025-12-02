@@ -15,10 +15,10 @@
   // 1 Bank     |  Bank     |
   // 2 BuyBack  |  BuyBack  |
 
-  // In the above transaction, the "payouts" (rewards) will be stored in a "Reward" box
+  // In the above transaction, the "payouts" (rewards) will be stored in the "buyback" box
   // The payout box just enforces the correct logic for such rewards and does not store the actual rewards
 
-  val payoutThreshold = 100000000000000L // nanoErgs (100000 Ergs)
+  val payoutThreshold = 1000000000000000L // nanoErgs (1000000 Ergs)
 
   val oracleNFT = fromBase64("$oracleNFT") // to identify oracle pool box
   val lpNFT = fromBase64("$lpNFT")
@@ -50,15 +50,15 @@
 
   val bankDexy = bankBoxIn.tokens(1)._2
 
-  // oracle delivers nanoErgs per 1 kg of gold
-  // we divide it by 1000000 to get nanoErg per dexy, i.e. 1mg of gold
+  // oracle delivers nanoErgs per 1 USD
+  // we divide it by 1000 to get nanoErg per USE (since USE token has 3 decimals)
   // can assume always > 0 (ref oracle pool contracts) NanoErgs per USD
-  val oracleRate = oracleBox.R4[Long].get / 1000000L
+  val oracleRate = oracleBox.R4[Long].get / 1000L
 
   val dexyInCirculation = $initialDexyTokens - bankDexy
-  val collateralized = oracleRate * dexyInCirculation * 8 < bankBoxIn.value // > 800% collateralization
+  val collateralized = oracleRate * dexyInCirculation * 12L < bankBoxIn.value // > 1200% collateralization
 
-  val maxPaymentAmount = bankBoxIn.value / 200 // 0.5 % max can be taken
+  val maxPaymentAmount = bankBoxIn.value / 1000 // 0.1 % max can be taken
   val paymentAmount = bankBoxIn.value - bankBoxOut.value
   val properPayment = (paymentAmount > 0) && (paymentAmount <= maxPaymentAmount) &&
                         (buybackBoxOut.value - buybackBoxIn.value == paymentAmount)
@@ -83,7 +83,7 @@
 
   val validPayout = validBuyBackIn                                                && // script of reward box is correct
                     collateralized                                                && // enough over-collateralization
-                    properPayment                                                 && // bank paying 0.5% of its reserves out
+                    properPayment                                                 && // bank paying 0.1% of its reserves out
                     properHeight                                                     // after enough delay
 
   sigmaProp(validBank && validSuccessor && validPayout && validOracle)

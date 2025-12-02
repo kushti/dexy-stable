@@ -9,7 +9,7 @@
   //  - gort (always must be at least one)
   //
   //  Registers:
-  //    None
+  //    R4 - id of self-input (can be none initially)
   //
   // Buyback:
   //
@@ -53,7 +53,9 @@
 
     val selfOut = OUTPUTS(1)
     val selfOutCorrect = selfOut.tokens(0)._1 == buybackNft &&
-                          selfOut.tokens(1)._1 == fromBase64("$gortId")
+                          selfOut.tokens(1)._1 == fromBase64("$gortId") &&
+                          selfOut.propositionBytes == SELF.propositionBytes &&
+                          selfOut.R4[Coll[Byte]].get == SELF.id
 
     val price = poolInput.value / poolInput.tokens(2)._2
     val gortObtained = selfOut.tokens(1)._2 - SELF.tokens(1)._2
@@ -69,7 +71,8 @@
     val selfOut = OUTPUTS(2)
     val topUp = selfOut.tokens == SELF.tokens &&
                 selfOut.propositionBytes == SELF.propositionBytes &&
-                SELF.value < selfOut.value
+                SELF.value < selfOut.value &&
+                selfOut.R4[Coll[Byte]].get == SELF.id
     sigmaProp(topUp)
   } else {
     // return path
@@ -102,7 +105,8 @@
                    selfOut.tokens(1)._1 == SELF.tokens(1)._1 &&
                    selfOut.propositionBytes == SELF.propositionBytes &&
                    SELF.value == selfOut.value &&
-                   properGiving
+                   properGiving &&
+                   selfOut.R4[Coll[Byte]].get == SELF.id
 
     sigmaProp(giveback)
   }

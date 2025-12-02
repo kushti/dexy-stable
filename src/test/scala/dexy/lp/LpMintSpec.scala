@@ -1,10 +1,11 @@
 package dexy.lp
 
 import dexy.Common
-import dexy.chainutils.DexySpec._
-import kiosk.ergo.{DhtData, KioskBox}
-import kiosk.tx.TxUtil
-import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoToken, HttpClientTesting}
+import dexy.chainutils.UseSpec._
+import org.ergoplatform.kiosk.ergo.{DhtData, KioskBox}
+import org.ergoplatform.kiosk.tx.TxUtil
+import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, HttpClientTesting}
+import org.ergoplatform.sdk.ErgoToken
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
@@ -12,7 +13,7 @@ import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 // Test Lp contract for mint Lp tokens
 class LpMintSpec  extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with HttpClientTesting with Common {
 
-  import dexy.chainutils.TestnetTokenIds._
+  import dexy.chainutils.MainnetUseTokenIds._
 
   val ergoClient = createMockedErgoClient(MockData(Nil, Nil))
   val fakeNanoErgs = 10000000000000L
@@ -33,7 +34,7 @@ class LpMintSpec  extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     val deltaReservesX = depositX
     val deltaReservesY = depositY
 
-    val supplyLpIn = initialLp - lpBalanceIn
+    val supplyLpIn = initialLp - lpBalanceIn - (initialLp - 100000000000L) // final deduction as in gold initial LP lower
 
     val sharesUnlockedX = BigInt(deltaReservesX) * supplyLpIn / reservesXIn
     val sharesUnlockedY = BigInt(deltaReservesY) * supplyLpIn / reservesYIn
@@ -215,7 +216,7 @@ class LpMintSpec  extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     val deltaReservesX = depositX
     val deltaReservesY = depositY
 
-    val supplyLpIn = initialLp - lpBalanceIn
+    val supplyLpIn = initialLp - lpBalanceIn - (initialLp - 100000000000L) // final deduction as in gold initial LP lower
 
     val sharesUnlockedX = BigInt(deltaReservesX) * supplyLpIn / reservesXIn
     val sharesUnlockedY = BigInt(deltaReservesY) * supplyLpIn / reservesYIn
@@ -396,7 +397,7 @@ class LpMintSpec  extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     val deltaReservesX = depositX
     val deltaReservesY = depositY
 
-    val supplyLpIn = initialLp - lpBalanceIn
+    val supplyLpIn = initialLp - lpBalanceIn - (initialLp - 100000000000L) // final deduction as in gold initial LP lower
 
     val sharesUnlockedX = BigInt(deltaReservesX) * supplyLpIn / reservesXIn
     val sharesUnlockedY = BigInt(deltaReservesY) * supplyLpIn / reservesYIn
@@ -582,7 +583,7 @@ class LpMintSpec  extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
     val deltaReservesX = depositX
     val deltaReservesY = depositY
 
-    val supplyLpIn = initialLp - lpBalanceIn
+    val supplyLpIn = initialLp - lpBalanceIn - (initialLp - 100000000000L) // final deduction as in gold initial LP lower
 
     val sharesUnlockedX = BigInt(deltaReservesX) * supplyLpIn / reservesXIn
     val sharesUnlockedY = BigInt(deltaReservesY) * supplyLpIn / reservesYIn
@@ -754,6 +755,7 @@ class LpMintSpec  extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
   }
 
   property("Can take less LP tokens") {
+    val initialLp = 100000000000L
     val lpBalanceIn = 100000000L
 
     val reservesXIn = 1000000000000L
@@ -828,6 +830,9 @@ class LpMintSpec  extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
         registers = Array(),
         tokens = Array((lpToken, sharesUnlocked.toLong))
       )
+      println(validLpOutBox.tokens.toList)
+      println(validLpMintOutBox.tokens.toList)
+      println(dummyOutputBox.tokens.toList)
 
       noException shouldBe thrownBy {
         TxUtil.createTx(Array(lpBox, lpMintBox, fundingBox), Array(),
