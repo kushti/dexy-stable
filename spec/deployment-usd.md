@@ -126,7 +126,7 @@ Bank tokens:
   https://explorer.ergoplatform.com/en/transactions/444950dc95202a09d85eafdcbf78fc12dcf89dab5f395e672567646b8b3bac95
 
 * LP deployment transaction:
-  https://explorer.ergoplatform.com/en/transactions/
+  https://explorer.ergoplatform.com/en/transactions/1eff5a9e7b517d90720d401313b91acf1bf002acf78d5cfc9b22cd0509daf0bc
 
 #### Bank
 
@@ -143,4 +143,4 @@ Bank tokens:
   https://explorer.ergoplatform.com/en/transactions/0d8364e7ebc4a9c2c2d7726ccd496e0cef78a342c2b2e8f43f1a3e93213253ed
 
 * Bank deployment transaction:
-  https://explorer.ergoplatform.com/en/transactions/
+  https://explorer.ergoplatform.com/en/transactions/2ab9da11fc216660e974842cc3b7705e62ebb9e0bf5ff78e53f9cd40abadd117

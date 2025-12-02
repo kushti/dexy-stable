@@ -410,27 +410,6 @@ object UseSpec extends ContractUtils {
          |""".stripMargin
     }
 
-    def bankContractDeploymentRequest(): String = {
-      s"""
-         |  [
-         |    {
-         |      "address": "$bankAddress",
-         |      "value": 100000000000,
-         |      "assets": [
-         |        {
-         |          "tokenId": "$bankNFT",
-         |          "amount": 1
-         |        },
-         |        {
-         |          "tokenId": "$dexyTokenId",
-         |          "amount": ${initialDexyTokens - 8000}
-         |        }
-         |      ]
-         |    }
-         |  ]
-         |""".stripMargin
-    }
-
     def buybackContractDeploymentRequest(): String = {
       s"""
          |  [
@@ -565,11 +544,19 @@ object UseSpec extends ContractUtils {
 
 
     def lpDeploymentRequest(): String = {
+      val ergsToPut = 395158 / 2
+      val nanoErgsToPut = ergsToPut * 1000000000L
+      val useToPut = Math.round(ergsToPut * 0.538 * 1000.0)
+      println("useToPut: " + useToPut)
+      val lpToTake = Math.sqrt(nanoErgsToPut.toDouble * useToPut.toDouble).toLong
+
+      println("lpToTake: " + lpToTake)
+
       s"""
-         |  [ // todo: recheck values on deployment
+         |  [
          |    {
          |      "address": "$lpAddress",
-         |      "value": 1000000000000,
+         |      "value": ${nanoErgsToPut},
          |      "assets": [
          |        {
          |          "tokenId": "$lpNFT",
@@ -577,11 +564,35 @@ object UseSpec extends ContractUtils {
          |        },
          |        {
          |          "tokenId": "$lpTokenId",
-         |          "amount": ${initialLp - 1000000L}
+         |          "amount": ${initialLp - lpToTake}
          |        },
          |        {
          |          "tokenId": "$dexyTokenId",
-         |          "amount": 7813
+         |          "amount": ${useToPut}
+         |        }
+         |      ]
+         |    }
+         |  ]
+         |""".stripMargin
+    }
+
+    def bankContractDeploymentRequest(): String = {
+      val ergsToPut = 395158 / 2 + 18000
+      val nanoErgsToPut = ergsToPut * 1000000000L
+
+      s"""
+         |  [
+         |    {
+         |      "address": "$bankAddress",
+         |      "value": ${nanoErgsToPut},
+         |      "assets": [
+         |        {
+         |          "tokenId": "$bankNFT",
+         |          "amount": 1
+         |        },
+         |        {
+         |          "tokenId": "$dexyTokenId",
+         |          "amount": ${999999999883982777L}
          |        }
          |      ]
          |    }
