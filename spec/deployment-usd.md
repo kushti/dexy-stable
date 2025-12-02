@@ -102,13 +102,13 @@ Bank tokens:
 #### Tracking
 
 * Tracking 95% deployment transaction:
-  https://explorer.ergoplatform.com/en/transactions/
+  https://explorer.ergoplatform.com/en/transactions/dc5654d3c4c4d69d3fe534bbe878aa9bd57eef04562f4717b807310fc8807656
 
 * Tracking 98% deployment transaction:
-  https://explorer.ergoplatform.com/en/transactions/
+  https://explorer.ergoplatform.com/en/transactions/551450deb3ae5f2b9059aa4239a1e381bdcd95a64f7a3de9808dd59dd8903d58
 
 * Tracking 101% deployment transaction:
-  https://explorer.ergoplatform.com/en/transactions/
+  https://explorer.ergoplatform.com/en/transactions/c54b872f97f2a01eb6609ce8ccaa545754c09018339b42191451b7e8cba7c1a2
 
 
 #### LP
@@ -140,7 +140,7 @@ Bank tokens:
   https://explorer.ergoplatform.com/en/transactions/e0f1e73c28324c791f1739857bc2a394fe3f5cdef507e3477567a049eb9ec650
 
 * Intervention:
-  https://explorer.ergoplatform.com/en/transactions/
+  https://explorer.ergoplatform.com/en/transactions/0d8364e7ebc4a9c2c2d7726ccd496e0cef78a342c2b2e8f43f1a3e93213253ed
 
 * Bank deployment transaction:
   https://explorer.ergoplatform.com/en/transactions/

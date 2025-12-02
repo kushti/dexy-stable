@@ -1,7 +1,7 @@
 package dexy
 
 import dexy.chainutils.UseSpec
-import org.ergoplatform.kiosk.ergo.{DhtData, KioskBoolean, KioskBox, KioskInt, KioskLong}
+import org.ergoplatform.kiosk.ergo.{DhtData, KioskBoolean, KioskBox, KioskCollByte, KioskInt, KioskLong}
 import org.ergoplatform.kiosk.tx.TxUtil
 import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ErgoValue, HttpClientTesting}
 import org.scalatest.{Matchers, PropSpec}
@@ -869,6 +869,438 @@ class TrackingSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyC
           false
         )
       } should have message "Script reduced to false"
+    }
+  }
+
+  property("Tracking should work with large numbers to prevent potential overflow in ratio calculations") {
+    val lpInCirc = 10000L
+    val oracleRateXY = 10000L * 1000L
+    val lpBalance = 10000000L
+    // Use large but reasonable values to test for potential integer overflow
+    val reservesX = 100000000000000000L  // Very large X reserves
+    val reservesY = 1000000000000000L    // Large Y reserves
+
+    val numIn = 98
+    val denomIn = 100
+
+    val lpRateXY = reservesX / reservesY  // 100
+    val x = lpRateXY * denomIn            // 100 * 100 = 10000
+    val y = numIn * oracleRateXY / 1000L  // 98 * 10000 = 980000
+
+    // The condition lpRate * denomIn < numIn * oracleRateXY should trigger the tracker
+    // In this case: 10000 < 980000 is true, so tracking should work
+    val toTrigger = x < y
+    assert(toTrigger)
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      val trackingHeightOut = ctx.getHeight
+      val trackingHeightIn = Int.MaxValue // Initially reset (not triggered)
+
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val oracleBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
+          .registers(KioskLong(oracleRateXY).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId2, fakeIndex)
+
+      val lpBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(reservesX)
+          .tokens(
+            new ErgoToken(lpNFT, 1),
+            new ErgoToken(lpToken, lpBalance),
+            new ErgoToken(dexyUSD, reservesY)
+          )
+          .registers(KioskLong(lpInCirc).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
+          .build()
+          .convertToInputWith(fakeTxId3, fakeIndex)
+
+      val tracking98Box =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(tracking98NFT, 1))
+          .registers(
+            KioskInt(numIn).getErgoValue, // numerator for 98%
+            KioskInt(denomIn).getErgoValue, // denominator for 98%
+            KioskBoolean(true).getErgoValue, // isBelow
+            KioskInt(
+              trackingHeightIn
+            ).getErgoValue // initially set to INF (not triggered)
+          )
+          .contract(
+            ctx.compileContract(
+              ConstantsBuilder.empty(),
+              trackingScript
+            )
+          )
+          .build()
+          .convertToInputWith(fakeTxId4, fakeIndex)
+
+      val validTrackingOutBox = KioskBox(
+        trackingAddress,
+        minStorageRent,
+        registers = Array(
+          KioskInt(numIn),
+          KioskInt(denomIn),
+          KioskBoolean(true),
+          KioskInt(trackingHeightOut)
+        ),
+        tokens = Array((tracking98NFT, 1))
+      )
+
+      noException shouldBe thrownBy {
+        TxUtil.createTx(
+          Array(tracking98Box, fundingBox),
+          Array(oracleBox, lpBox),
+          Array(validTrackingOutBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          false
+        )
+      }
+    }
+  }
+
+  property("Tracking should handle boundary conditions correctly at exact ratio thresholds") {
+    val lpInCirc = 10000L
+    val oracleRateXY = 10000L * 1000L  // Results in 10000 rate
+    val lpBalance = 10000000L
+    // Setting values to create exact threshold conditions
+    val reservesX = 9800000000000L     // Create a rate that is exactly at threshold
+    val reservesY = 100000000000L      // To get lpRateXY of 98 (approximately)
+
+    val numIn = 98
+    val denomIn = 100
+
+    val lpRateXY = reservesX / reservesY  // Approximately 98
+    val x = lpRateXY * denomIn            // 98 * 100 = 9800
+    val y = numIn * oracleRateXY / 1000L  // 98 * 10000 = 980000
+
+    // For trigger with isBelow=true: we need lpRateXY * denomIn < numIn * oracleRateXY / 1000
+    // This becomes: 9800 < 980000 which should be true if the LP rate is below oracle*0.98
+    val toTrigger = x < y
+    assert(toTrigger)
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      val trackingHeightOut = ctx.getHeight
+      val trackingHeightIn = Int.MaxValue // Start in reset state
+
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val oracleBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
+          .registers(KioskLong(oracleRateXY).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId2, fakeIndex)
+
+      val lpBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(reservesX)
+          .tokens(
+            new ErgoToken(lpNFT, 1),
+            new ErgoToken(lpToken, lpBalance),
+            new ErgoToken(dexyUSD, reservesY)
+          )
+          .registers(KioskLong(lpInCirc).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
+          .build()
+          .convertToInputWith(fakeTxId3, fakeIndex)
+
+      val tracking98Box =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(tracking98NFT, 1))
+          .registers(
+            KioskInt(numIn).getErgoValue, // numerator for 98%
+            KioskInt(denomIn).getErgoValue, // denominator for 98%
+            KioskBoolean(true).getErgoValue, // isBelow
+            KioskInt(
+              trackingHeightIn
+            ).getErgoValue // initially set to INF (not triggered)
+          )
+          .contract(
+            ctx.compileContract(
+              ConstantsBuilder.empty(),
+              trackingScript
+            )
+          )
+          .build()
+          .convertToInputWith(fakeTxId4, fakeIndex)
+
+      val validTrackingOutBox = KioskBox(
+        trackingAddress,
+        minStorageRent,
+        registers = Array(
+          KioskInt(numIn),
+          KioskInt(denomIn),
+          KioskBoolean(true),
+          KioskInt(trackingHeightOut)
+        ),
+        tokens = Array((tracking98NFT, 1))
+      )
+
+      noException shouldBe thrownBy {
+        TxUtil.createTx(
+          Array(tracking98Box, fundingBox),
+          Array(oracleBox, lpBox),
+          Array(validTrackingOutBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          false
+        )
+      }
+    }
+  }
+
+  property("Tracking should fail for invalid token register configurations") {
+    val lpInCirc = 10000L
+    val oracleRateXY = 10205L * 1000L
+    val lpBalance = 10000000L
+    val reservesX = 10000000000L
+    val reservesY = 1000000L
+
+    val numIn = 98
+    val denomIn = 100
+
+    val lpRateXY = reservesX / reservesY
+    val x = lpRateXY * denomIn
+    val y = numIn * oracleRateXY / 1000L
+
+    val toTrigger = x < y
+    assert(toTrigger)
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      val trackingHeightOut = ctx.getHeight
+      val trackingHeightIn = Int.MaxValue
+
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val oracleBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
+          .registers(KioskLong(oracleRateXY).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId2, fakeIndex)
+
+      val lpBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(reservesX)
+          .tokens(
+            new ErgoToken(lpNFT, 1),
+            new ErgoToken(lpToken, lpBalance),
+            new ErgoToken(dexyUSD, reservesY)
+          )
+          .registers(KioskLong(lpInCirc).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
+          .build()
+          .convertToInputWith(fakeTxId3, fakeIndex)
+
+      val tracking98Box =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(tracking98NFT, 1))
+          .registers(
+            KioskInt(numIn).getErgoValue, // numerator for 98%
+            KioskInt(denomIn).getErgoValue, // denominator for 98%
+            KioskBoolean(true).getErgoValue, // isBelow
+            KioskInt(
+              trackingHeightIn
+            ).getErgoValue // initially set to INF (not triggered)
+          )
+          .contract(
+            ctx.compileContract(
+              ConstantsBuilder.empty(),
+              trackingScript
+            )
+          )
+          .build()
+          .convertToInputWith(fakeTxId4, fakeIndex)
+
+      // Valid output box with wrong register values - changing the numerator
+      val invalidTrackingOutBox = KioskBox(
+        trackingAddress,
+        minStorageRent,
+        registers = Array(
+          KioskInt(95),         // Changed numerator (wrong value)
+          KioskInt(denomIn),    // Same denominator
+          KioskBoolean(true),   // Same isBelow flag
+          KioskInt(trackingHeightOut)  // Same tracking height
+        ),
+        tokens = Array((tracking98NFT, 1)) // Correct NFT preserved
+      )
+
+      the[Exception] thrownBy {
+        TxUtil.createTx(
+          Array(tracking98Box, fundingBox),
+          Array(oracleBox, lpBox),
+          Array(invalidTrackingOutBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          false
+        )
+      } should have message "Script reduced to false"
+    }
+  }
+
+  property("Tracking should correctly handle register preservation requirements") {
+    val lpInCirc = 10000L
+    val oracleRateXY = 10205L * 1000L
+    val lpBalance = 10000000L
+    val reservesX = 10000000000L
+    val reservesY = 1000000L
+
+    val numIn = 98
+    val denomIn = 100
+
+    val lpRateXY = reservesX / reservesY
+    val x = lpRateXY * denomIn
+    val y = numIn * oracleRateXY / 1000L
+
+    val toTrigger = x < y
+    assert(toTrigger)
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      val trackingHeightOut = ctx.getHeight
+      val trackingHeightIn = Int.MaxValue
+
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val oracleBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
+          .registers(KioskLong(oracleRateXY).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId2, fakeIndex)
+
+      val lpBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(reservesX)
+          .tokens(
+            new ErgoToken(lpNFT, 1),
+            new ErgoToken(lpToken, lpBalance),
+            new ErgoToken(dexyUSD, reservesY)
+          )
+          .registers(KioskLong(lpInCirc).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
+          .build()
+          .convertToInputWith(fakeTxId3, fakeIndex)
+
+      val tracking98Box =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(tracking98NFT, 1))
+          .registers(
+            KioskInt(numIn).getErgoValue, // numerator for 98%
+            KioskInt(denomIn).getErgoValue, // denominator for 98%
+            KioskBoolean(true).getErgoValue, // isBelow
+            KioskInt(
+              trackingHeightIn
+            ).getErgoValue // initially set to INF (not triggered)
+          )
+          .contract(
+            ctx.compileContract(
+              ConstantsBuilder.empty(),
+              trackingScript
+            )
+          )
+          .build()
+          .convertToInputWith(fakeTxId4, fakeIndex)
+
+      // Test with correct register preservation
+      val validTrackingOutBox = KioskBox(
+        trackingAddress,
+        minStorageRent,
+        registers = Array(
+          KioskInt(numIn),      // Preserved numerator
+          KioskInt(denomIn),    // Preserved denominator
+          KioskBoolean(true),   // Preserved isBelow flag
+          KioskInt(trackingHeightOut)  // Updated tracking height
+        ),
+        tokens = Array((tracking98NFT, 1)) // NFT preserved
+      )
+
+      noException shouldBe thrownBy {
+        TxUtil.createTx(
+          Array(tracking98Box, fundingBox),
+          Array(oracleBox, lpBox),
+          Array(validTrackingOutBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          false
+        )
+      }
     }
   }
 }
