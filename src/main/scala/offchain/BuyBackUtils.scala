@@ -4,7 +4,11 @@ import org.ergoplatform.modifiers.mempool.UnsignedErgoTransaction
 import org.ergoplatform.wallet.boxes.DefaultBoxSelector
 import org.ergoplatform.{ErgoBox, ErgoBoxCandidate, UnsignedInput}
 import scorex.util.ModifierId
-import sigmastate.Values.IntConstant
+import sigma.Extensions._
+import sigmastate.eval.Extensions._
+import sigmastate.eval._
+import sigmastate.Values.{IntConstant, ShortConstant, ByteConstant}
+import sigma.Colls
 import sigmastate.interpreter.ContextExtension
 
 /**
@@ -41,7 +45,7 @@ object BuyBackUtils extends App {
     val creationHeight = utils.currentHeight()
     val feeOut = utils.feeOut(creationHeight)
 
-    val selectionResult = DefaultBoxSelector.select[ErgoBox](
+    val selectionResult =  new DefaultBoxSelector(None).select[ErgoBox](
         utils.fetchWalletInputs().toIterator,
         (_: ErgoBox) => true,
         toAdd + feeOut.value,
@@ -49,7 +53,7 @@ object BuyBackUtils extends App {
       ).right.toOption.get
 
     val buybackInputBox = buyBackBox().get
-    val buyBackInputBoxes = selectionResult.boxes.toIndexedSeq
+    val buyBackInputBoxes = selectionResult.inputBoxes.toIndexedSeq
 
     val buyBackOutput = new ErgoBoxCandidate(
       buybackInputBox.value + toAdd,
@@ -72,7 +76,6 @@ object BuyBackUtils extends App {
     utils.signTransaction("Buyback: ", unsignedSwapTx, buybackInputBox +: buyBackInputBoxes, IndexedSeq.empty)
   }
 
-
   def buyback() = {
     //   Input         |  Output        |   Data-Input
     // -----------------------------------------------
@@ -85,14 +88,14 @@ object BuyBackUtils extends App {
     val creationHeight = utils.currentHeight()
     val feeOut = utils.feeOut(creationHeight)
 
-    val selectionResult = DefaultBoxSelector.select(
+    val selectionResult =  new DefaultBoxSelector(None).select(
       utils.fetchWalletInputs().toIterator,
       (eb: ErgoBox) => eb.additionalTokens.isEmpty,
       feeOut.value,
       Map.empty
     ).right.toOption.get
 
-    val inputBoxes = IndexedSeq(lpInput, buyBackInput) ++ selectionResult.boxes
+    val inputBoxes = IndexedSeq(lpInput, buyBackInput) ++ selectionResult.inputBoxes
     println("input boxes: " + inputBoxes.drop(2))
     val inputs = inputBoxes.map(b => new UnsignedInput(b.id)).updated(1, new UnsignedInput(buyBackInput.id, ContextExtension(Map((0: Byte) -> IntConstant(0)))))
 

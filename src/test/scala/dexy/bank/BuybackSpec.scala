@@ -1,10 +1,11 @@
 package dexy.bank
 
 import dexy.Common
-import kiosk.ergo.{DhtData, KioskBox, KioskInt, KioskLong}
-import kiosk.tx.TxUtil
 import oracles.OracleHelpers
 import org.ergoplatform.appkit._
+import org.ergoplatform.kiosk.ergo.{DhtData, KioskBox, KioskCollByte, KioskInt, KioskLong}
+import org.ergoplatform.kiosk.tx.TxUtil
+import org.ergoplatform.sdk.ErgoToken
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
@@ -13,9 +14,9 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
 
   import gort.OrdinaryLp._
   import oracles.OracleContracts._
-  import dexy.chainutils.DexySpec._
+  import dexy.chainutils.UseSpec._
 
-  import dexy.chainutils.TestnetTokenIds._
+  import dexy.chainutils.MainnetUseTokenIds._
 
   val ergoClient = createMockedErgoClient(MockData(Nil, Nil))
 
@@ -128,7 +129,7 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
       val outputs = Array[KioskBox](
         KioskBox(oraclePoolAddress, minStorageRent, Array(KioskLong(1002), KioskInt(1)), Array((config.poolNFT, 1), (rewardTokenId, defaultGortSupply - 10 + 500 - 1))),
         KioskBox(refreshAddress, minStorageRent, Array.empty, Array((config.refreshNFT, 1))),
-        KioskBox(buybackAddress, minStorageRent, Array.empty, Array((buybackNFT, 1), (gort, 1))),
+        KioskBox(buybackAddress, minStorageRent, Array(KioskCollByte(buyBackBox.getId.getBytes)), Array((buybackNFT, 1), (gort, 1))),
         KioskBox(oracleAddress, minStorageRent, Array(pubKey1), Array((config.oracleTokenId, 1), (rewardTokenId, 16))),
         KioskBox(oracleAddress, minStorageRent, Array(pubKey2), Array((config.oracleTokenId, 1), (rewardTokenId, 21))),
         KioskBox(oracleAddress, minStorageRent, Array(pubKey3), Array((config.oracleTokenId, 1), (rewardTokenId, 31))),
@@ -173,7 +174,7 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
 
       val outputs = Array[KioskBox](
         KioskBox(ordinaryLpAddress, gortLpErg + ergDelta, Array(KioskInt(995)), Array((gortLpNFT, 1), (gortLpToken, 1000000000L), (gort, gortLpGort - 500))),
-        KioskBox(buybackAddress, buybackErg - ergDelta, Array.empty, Array((buybackNFT, 1), (gort, 1000)))
+        KioskBox(buybackAddress, buybackErg - ergDelta, Array(KioskCollByte(buyBackBox.getId.getBytes)), Array((buybackNFT, 1), (gort, 1000)))
       )
 
       noException shouldBe thrownBy {
@@ -203,7 +204,7 @@ class BuybackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyCh
       val outputs = Array[KioskBox](
         KioskBox(junkAddress, minStorageRent, Array.empty, Array.empty),
         KioskBox(junkAddress, minStorageRent, Array.empty, Array.empty),
-        KioskBox(buybackAddress, buyBackBox.getValue + 1000000, Array.empty, Array((buybackNFT, 1), (gort, 500)))
+        KioskBox(buybackAddress, buyBackBox.getValue + 1000000, Array(KioskCollByte(buyBackBox.getId.getBytes)), Array((buybackNFT, 1), (gort, 500)))
       )
 
       noException shouldBe thrownBy {

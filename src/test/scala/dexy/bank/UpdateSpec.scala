@@ -1,13 +1,14 @@
 package dexy.bank
 
 import dexy.Common
-import dexy.chainutils.DexySpec.{ballotAddress, bankAddress, bankErgoTree, bankScript, bankUpdateAddress, payoutAddress}
-import kiosk.ErgoUtil
-import kiosk.encoding.ScalaErgoConverters
-import kiosk.encoding.ScalaErgoConverters.stringToGroupElement
-import kiosk.ergo.{DhtData, KioskBox, KioskCollByte, KioskGroupElement, KioskInt}
-import kiosk.tx.TxUtil
-import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ContextVar, ErgoToken, HttpClientTesting}
+import dexy.chainutils.UseSpec.{ballotAddress, bankAddress, bankErgoTree, bankScript, bankUpdateAddress, payoutAddress}
+import org.ergoplatform.kiosk.ErgoUtil
+import org.ergoplatform.kiosk.encoding.ScalaErgoConverters
+import org.ergoplatform.kiosk.encoding.ScalaErgoConverters.stringToGroupElement
+import org.ergoplatform.kiosk.ergo.{DhtData, KioskBox, KioskCollByte, KioskGroupElement, KioskInt}
+import org.ergoplatform.kiosk.tx.TxUtil
+import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ContextVar, HttpClientTesting}
+import org.ergoplatform.sdk.ErgoToken
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import scorex.crypto.hash.Blake2b256
@@ -15,7 +16,7 @@ import scorex.crypto.hash.Blake2b256
 class UpdateSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks
   with HttpClientTesting with Common {
 
-  import dexy.chainutils.TestnetTokenIds._
+  import dexy.chainutils.MainnetUseTokenIds._
 
   val ergoClient = createMockedErgoClient(MockData(Nil, Nil))
 

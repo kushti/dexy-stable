@@ -26,9 +26,9 @@ update NFTs should be issued.
 
 ### Tokens
 
-USE (DexyUSD) token = "bf0e1826d225617aeca3ad9a4df6b700af14dd683631b5ba9857f1b17322e53d" 
+USE (DexyUSD) token = "a55b8735ed1a99e46c2c89f8994aacdf4b1109bdcf682f1e5b34479c6e392669" 
 
-6 decimals
+3 decimals
 
 DORT and oracle pool:
 
@@ -87,7 +87,7 @@ Bank tokens:
 
 
 * USE token issuance
-  https://explorer.ergoplatform.com/en/transactions/b3bb8f634a3b85f25879dfa95f5ed6d7b4a3a59f832fcf44b4bdecda4b0dbbe6
+  https://explorer.ergoplatform.com/en/transactions/adbf3c5855aa66baf5e45dc192c2bb6dc85f168eafffc9ade7d3fd79137a39cd
 
 
 ### Deployment transactions
@@ -96,52 +96,51 @@ Bank tokens:
   https://explorer.ergoplatform.com/en/transactions/
 
 * Buyback contract deployment transactions:
+ https://explorer.ergoplatform.com/en/transactions/8d23e4c1630fcd4f53a641a0893a797e1f694e411bd7c12a6d4eb7ba39acaeb0
+ // todo: 2 more
 
 #### Tracking
 
 * Tracking 95% deployment transaction:
-  https://explorer.ergoplatform.com/en/transactions/
+  https://explorer.ergoplatform.com/en/transactions/dc5654d3c4c4d69d3fe534bbe878aa9bd57eef04562f4717b807310fc8807656
 
 * Tracking 98% deployment transaction:
-  https://explorer.ergoplatform.com/en/transactions/
+  https://explorer.ergoplatform.com/en/transactions/551450deb3ae5f2b9059aa4239a1e381bdcd95a64f7a3de9808dd59dd8903d58
 
 * Tracking 101% deployment transaction:
-  https://explorer.ergoplatform.com/en/transactions/
+  https://explorer.ergoplatform.com/en/transactions/c54b872f97f2a01eb6609ce8ccaa545754c09018339b42191451b7e8cba7c1a2
 
 
 #### LP
 
 * LP Swap deployment transaction:
-  https://explorer.ergoplatform.com/en/transactions/
+  https://explorer.ergoplatform.com/en/transactions/95cc9bbd79973bbb7c5f826a6f10e8d6cf1d6e5f64969a133bc2bf1a678d7252
 
 * LP Mint deployment transaction:
-  https://explorer.ergoplatform.com/en/transactions/
+  https://explorer.ergoplatform.com/en/transactions/f2b6972e9b0bd98a21a05af7d2e0ac7111e74f3310731ec1b47812adb14b5195
 
 * LP redeem deployment transaction:
-  https://explorer.ergoplatform.com/en/transactions/
+  https://explorer.ergoplatform.com/en/transactions/f4c0ed2a7193f0deb1aa524c3c09370a6862ab21d235748464f5d4d923c362db
 
 * LP extract to the future deployment transaction:
-  https://explorer.ergoplatform.com/en/transactions/
+  https://explorer.ergoplatform.com/en/transactions/444950dc95202a09d85eafdcbf78fc12dcf89dab5f395e672567646b8b3bac95
 
 * LP deployment transaction:
-  https://explorer.ergoplatform.com/en/transactions/
+  https://explorer.ergoplatform.com/en/transactions/1eff5a9e7b517d90720d401313b91acf1bf002acf78d5cfc9b22cd0509daf0bc
 
 #### Bank
 
 * Arbitrage Mint deployment transaction:
-  https://explorer.ergoplatform.com/en/transactions/
+  https://explorer.ergoplatform.com/en/transactions/2047420e116ea8f062fed7e8077f58502f6ec1f641908067b492fe6f61056c0c
 
 * Free Mint deployment transaction:
-  https://explorer.ergoplatform.com/en/transactions/
+  https://explorer.ergoplatform.com/en/transactions/f3bcf6875720464cd0bb34c93875022fd9fb8471538f8c1b056a1da2d70b22c5
 
 * Payout deployment transaction:
-  https://explorer.ergoplatform.com/en/transactions/
+  https://explorer.ergoplatform.com/en/transactions/e0f1e73c28324c791f1739857bc2a394fe3f5cdef507e3477567a049eb9ec650
 
 * Intervention:
-  https://explorer.ergoplatform.com/en/transactions/
-
-* Buyback deployment transaction:
-  https://explorer.ergoplatform.com/en/transactions/
+  https://explorer.ergoplatform.com/en/transactions/0d8364e7ebc4a9c2c2d7726ccd496e0cef78a342c2b2e8f43f1a3e93213253ed
 
 * Bank deployment transaction:
-  https://explorer.ergoplatform.com/en/transactions/
+  https://explorer.ergoplatform.com/en/transactions/2ab9da11fc216660e974842cc3b7705e62ebb9e0bf5ff78e53f9cd40abadd117

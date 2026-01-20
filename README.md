@@ -8,8 +8,10 @@ This repository contains everything related to Dexy stablecoin protocol and its 
 
 * [Whitepaper](paper/dexy.pdf)
 * [Contracts](contracts/)
-* [deployment details for DexyGold](spec/deployment-gold.md)
-* [deployment details for DexyUSD](spec/deployment-usd.md)
+* [Specification](spec/spec.md)
+* [Deployment details for DexyGold](spec/deployment-gold.md)
+* [Deployment details for DexyUSD](spec/deployment-usd.md)
+* [Dexy Stablecoin Improvement Proposals (UIPs)](Uips/)
 
 
 ## TODO

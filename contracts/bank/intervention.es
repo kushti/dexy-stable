@@ -78,10 +78,10 @@
     val lpReservesXInBigInt = lpReservesXIn.toBigInt   // we can assume that reservesYIn > 0 (since at least one token must exist)
     val lpReservesXOutBigInt = lpReservesXOut.toBigInt  // we can assume that reservesYOut > 0 (since at least one token must exist)
 
-    // oracle delivers nanoErgs per 1 kg of gold
-    // we divide it by 1000000 to get nanoErg per dexy, i.e. 1mg of gold
+    // oracle delivers nanoErgs per 1 USD
+    // we divide it by 1000 to get nanoErg per USE (since USE token has 3 decimals)
     // can assume always > 0 (ref oracle pool contracts) NanoErgs per USD
-    val oracleRateXy = (oracleBox.R4[Long].get / 1000000L).toBigInt
+    val oracleRateXy = (oracleBox.R4[Long].get / 1000L).toBigInt
 
     val validThreshold = lpReservesXInBigInt * 100 < oracleRateXy * thresholdPercent * lpReservesYIn
 

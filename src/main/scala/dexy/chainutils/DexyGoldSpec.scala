@@ -1,61 +1,13 @@
 package dexy.chainutils
 
-import dexy.chainutils.ScriptUtil.{getAddressFromErgoTree, getStringFromAddress}
-import kiosk.ergo._
+import org.ergoplatform.kiosk.ergo._
 import org.ergoplatform.{ErgoAddressEncoder, P2PKAddress}
 import org.ergoplatform.ErgoAddressEncoder.{MainnetNetworkPrefix, TestnetNetworkPrefix}
 import scorex.crypto.encode.Base16
 import scorex.util.encode.Base64
 import sigmastate.Values.{BooleanConstant, IntConstant, LongConstant}
-import sigmastate.basics.DLogProtocol.ProveDlog
+import sigmastate.crypto.DLogProtocol.ProveDlog
 import sigmastate.serialization.ValueSerializer
-
-trait NetworkTokenIds {
-  // oracle related tokens
-  // take token IDs below from oracle pool UI
-  // Gold Oracle Reward Token
-  val gort: String
-  val oracleTokenId: String
-  val oraclePoolNFT: String
-
-  // GORT dev emission contract NFT
-  val gortDevEmissionNFT: String
-
-  // GORT / ERG LP
-  val gortLpNFT: String
-
-  val buybackNFT: String
-
-  // dexy gold token id
-  val dexyTokenId: String
-
-  val lpTokenId: String
-
-  // tokens for main boxes
-  val bankNFT: String
-  val lpNFT: String
-
-  // update tokens
-  val updateNFT: String
-  val ballotTokenId: String
-
-  // all tokens below for aux boxes (1 for each type of box)
-  val interventionNFT: String
-  val freeMintNFT: String
-  val arbitrageMintNFT: String
-  val payoutNFT: String
-
-  val lpSwapNFT: String
-  val lpMintNFT: String
-  val lpRedeemNFT: String
-  val extractionNFT: String
-
-  // should be reissued every time!
-  // boxes for tracking ratio of LP rate and oracle pool rate (see details in Tracking contract)
-  val tracking95NFT: String
-  val tracking98NFT: String
-  val tracking101NFT: String
-}
 
 /**
  * Mainnet deployment data for DexyGold
@@ -109,61 +61,6 @@ object MainnetDexyGoldTokenIds extends NetworkTokenIds {
 
 }
 
-/**
- * Mainnet deployment data for USE (DexyUSD)
- */
-object MainnetUseTokenIds extends NetworkTokenIds {
-
-  // oracle related tokens
-  // take token IDs below from oracle pool UI
-
-  // DORT
-  val gort = "ae399fcb751e8e247d0da8179a2bcca2aa5119fff9c85721ffab9cdc9a3cb2dd"
-
-  // USD oracle pool data
-  val oracleTokenId = "74fa4aee3607ceb7bdefd51a856861b5dbfa434a8f6c93bfe967de8ed1a30a78"
-  val oraclePoolNFT = "6a2b821b5727e85beb5e78b4efb9f0250d59cd48481d2ded2c23e91ba1d07c66"
-
-  val gortDevEmissionNFT: String = "" // no emission for USD oracle
-
-  // GORT / ERG LP
-  val gortLpNFT = "35bc71897cd44d1a624285c54a0be66b69d1c61674603ed89dfe136f32035f0e"
-
-  // 3 tokens issued to make parallel execution easier
-  val buybackNFT = "dcce07af04ea4f9b7979336476594dc16321547bcc9c6b95a67cb1a94192da4f"
-
-  // Dexy LP tokens
-  override val lpNFT: String = "4ecaa1aac9846b1454563ae51746db95a3a40ee9f8c5f5301afbe348ae803d41"
-  override val lpSwapNFT: String = "ef461517a55b8bfcd30356f112928f3333b5b50faf472e8374081307a09110cf"
-  override val lpMintNFT: String = "2cf9fb512f487254777ac1d086a55cda9e74a1009fe0d30390a3792f050de58f"
-  override val lpRedeemNFT: String = "1bfea21924f670ca5f13dd6819ed3bf833ec5a3113d5b6ae87d806db29b94b9a"
-  override val lpTokenId: String = "804a66426283b8281240df8f9de783651986f20ad6391a71b26b9e7d6faad099"
-
-  override val tracking95NFT: String = "57af5c7446d419e98e2e6fbd4bce9029cd589f8094686c457902feb472f194ec"
-  override val tracking98NFT: String = "47472f675d7791462520d78b6c676e65c23b7c11ca54d73d3e031aadb5d56be2"
-  override val tracking101NFT: String = "fec586b8d7b92b336a5fea060556cbb4ced15d5334dcb7ca9f9a7bb6ca866c42"
-
-  override val bankNFT: String = "78c24bdf41283f45208664cd8eb78e2ffa7fbb29f26ebb43e6b31a46b3b975ae"
-
-  override val updateNFT: String = "f77b3cac4f77a31aeffaf716070345b3b04330bbba02e27671015129fb74e883"
-
-  override val ballotTokenId: String = "a67d769e70b98e56e81de78fb8dcc689e037754932da67edf49bab420ec8986e"
-
-  override val interventionNFT: String = "dbf655f0f6101cb03316e931a689412126fefbfb7c78bd9869ad6a1a58c1b424"
-
-  override val extractionNFT: String = "bc685d6ad1703ba5775736308fd892807edc04f48ba7a52e802fab241a59962c"
-
-  override val arbitrageMintNFT: String = "c79bef6fe21c788546beab08c963999d5ef74151a9b7fd6c1843f626eea0ecf5"
-
-  override val freeMintNFT: String = "40db16e1ed50b16077b19102390f36b41ca35c64af87426d04af3b9340859051"
-
-  override val payoutNFT: String = "a2482fca4ca774ef9d3896977e3677b031597c6e312b0c10d47157bb0d6ed69f"
-
-  // USE token
-  override val dexyTokenId: String = "bf0e1826d225617aeca3ad9a4df6b700af14dd683631b5ba9857f1b17322e53d"
-
-}
-
 object TestnetTokenIds extends NetworkTokenIds {
 
   // oracle related tokens
@@ -210,13 +107,15 @@ object TestnetTokenIds extends NetworkTokenIds {
   val tracking101NFT = "f14b42ab7a8ff1ba2e2b7056e27cd9c7e018c355499c385850db7f34da881431"
 }
 
-object DexySpec extends ContractUtils {
+object DexyGoldSpec extends ContractUtils {
 
   // todo: for tests, use
   // import TestnetTokenIds._
   // val networkPrefix = MainnetNetworkPrefix
   import TestnetTokenIds._
   val networkPrefix = MainnetNetworkPrefix
+
+  val scriptUtil = new ScriptUtil(networkPrefix)
 
   // High level idea:
   // There are 3 main boxes in the protocol, and the others are auxiliary boxes to manage the main boxes
@@ -257,7 +156,7 @@ object DexySpec extends ContractUtils {
     "lpSwapNFT" -> lpSwapNFT,
     "lpMintNFT" -> lpMintNFT,
     "lpRedeemNFT" -> lpRedeemNFT
-  ).mapValues(hex => Base64.encode(hex.decodeHex)) ++ Map(
+  ).map{case (k, hex) => k -> Base64.encode(hex.decodeHex)} ++ Map(
     "initialDexyTokens" -> (initialDexyTokens.toString + "L"),
     "feeNumLp" -> (feeNumLp.toString + "L"),
     "feeDenomLp" -> (feeDenomLp.toString + "L"),
@@ -272,8 +171,8 @@ object DexySpec extends ContractUtils {
 
   // GORT dev emission script
   val gortDevEmissionScript = readContract("gort-dev/emission.es")
-  val gortDevEmissionErgoTree = ScriptUtil.compile(Map(), gortDevEmissionScript)
-  val gortDevEmissionAddress = getStringFromAddress(getAddressFromErgoTree(gortDevEmissionErgoTree))
+  val gortDevEmissionErgoTree = scriptUtil.compile(Map(), gortDevEmissionScript)
+  val gortDevEmissionAddress = scriptUtil.getStringFromAddress(scriptUtil.getAddressFromErgoTree(gortDevEmissionErgoTree))
 
   // arbitrage mint box
   val arbitrageMintScript = readContract("bank/arbmint.es")
@@ -297,63 +196,64 @@ object DexySpec extends ContractUtils {
 
   val trackingScript = readContract("tracking.es")
 
-  val trackingErgoTree = ScriptUtil.compile(Map(), trackingScript)
-  val trackingAddress = getStringFromAddress(getAddressFromErgoTree(trackingErgoTree))
+  val trackingErgoTree = scriptUtil.compile(Map(), trackingScript)
+  val trackingAddress = scriptUtil.getStringFromAddress(scriptUtil.getAddressFromErgoTree(trackingErgoTree))
 
   val bankScript = readContract("bank/bank.es")
-  val bankErgoTree = ScriptUtil.compile(Map(), bankScript)
-  val bankAddress = getStringFromAddress(getAddressFromErgoTree(bankErgoTree))
+  val bankErgoTree = scriptUtil.compile(Map(), bankScript)
+  val bankAddress = scriptUtil.getStringFromAddress(scriptUtil.getAddressFromErgoTree(bankErgoTree))
 
   val ballotScript = readContract("bank/update/ballot.es")
-  val ballotErgoTree = ScriptUtil.compile(Map(), ballotScript)
-  val ballotAddress = getStringFromAddress(getAddressFromErgoTree(ballotErgoTree))
+  val ballotErgoTree = scriptUtil.compile(Map(), ballotScript)
+  val ballotAddress = scriptUtil.getStringFromAddress(scriptUtil.getAddressFromErgoTree(ballotErgoTree))
 
   val bankUpdateScript = readContract("bank/update/update.es", "contractToUpdateNFT" -> defaultSubstitutionMap("bankNFT"))
-  val bankUpdateErgoTree = ScriptUtil.compile(Map(), bankUpdateScript)
-  val bankUpdateAddress = getStringFromAddress(getAddressFromErgoTree(bankUpdateErgoTree))
+  val bankUpdateErgoTree = scriptUtil.compile(Map(), bankUpdateScript)
+  val bankUpdateAddress = scriptUtil.getStringFromAddress(scriptUtil.getAddressFromErgoTree(bankUpdateErgoTree))
 
   val extractUpdateScript = readContract("bank/update/update.es", "contractToUpdateNFT" -> defaultSubstitutionMap("extractionNFT"))
-  val extractUpdateErgoTree = ScriptUtil.compile(Map(), extractUpdateScript)
-  val extractUpdateAddress = getStringFromAddress(getAddressFromErgoTree(extractUpdateErgoTree))
+  val extractUpdateErgoTree = scriptUtil.compile(Map(), extractUpdateScript)
+  val extractUpdateAddress = scriptUtil.getStringFromAddress(scriptUtil.getAddressFromErgoTree(extractUpdateErgoTree))
 
   val interventionUpdateScript = readContract("bank/update/update.es", "contractToUpdateNFT" -> defaultSubstitutionMap("interventionNFT"))
-  val interventionUpdateErgoTree = ScriptUtil.compile(Map(), interventionUpdateScript)
+  val interventionUpdateErgoTree = scriptUtil.compile(Map(), interventionUpdateScript)
+  import scriptUtil._
   val interventionUpdateAddress = getStringFromAddress(getAddressFromErgoTree(interventionUpdateErgoTree))
 
-  val arbitrageMintErgoTree = ScriptUtil.compile(Map(), arbitrageMintScript)
+  val arbitrageMintErgoTree = scriptUtil.compile(Map(), arbitrageMintScript)
   val arbitrageMintAddress = getStringFromAddress(getAddressFromErgoTree(arbitrageMintErgoTree))
-  val freeMintErgoTree = ScriptUtil.compile(Map(), freeMintScript)
+  val freeMintErgoTree = scriptUtil.compile(Map(), freeMintScript)
   val freeMintAddress = getStringFromAddress(getAddressFromErgoTree(freeMintErgoTree))
-  val payoutErgoTree = ScriptUtil.compile(Map(), payoutScript)
+  val payoutErgoTree = scriptUtil.compile(Map(), payoutScript)
   val payoutAddress = getStringFromAddress(getAddressFromErgoTree(payoutErgoTree))
 
   val interventionScript = readContract("bank/intervention.es")
-  val interventionErgoTree = ScriptUtil.compile(Map(), interventionScript)
+  val interventionErgoTree = scriptUtil.compile(Map(), interventionScript)
   val interventionAddress = getStringFromAddress(getAddressFromErgoTree(interventionErgoTree))
 
   val buybackScript = readContract("bank/buyback.es")
-  val buybackErgoTree = ScriptUtil.compile(Map(), buybackScript)
+  val buybackErgoTree = scriptUtil.compile(Map(), buybackScript)
   val buybackAddress = getStringFromAddress(getAddressFromErgoTree(buybackErgoTree))
 
 
-  val lpErgoTree = ScriptUtil.compile(Map(), lpScript)
+  val lpErgoTree = scriptUtil.compile(Map(), lpScript)
   val lpAddress = getStringFromAddress(getAddressFromErgoTree(lpErgoTree))
-  val lpSwapErgoTree = ScriptUtil.compile(Map(), lpSwapScript)
+  val lpSwapErgoTree = scriptUtil.compile(Map(), lpSwapScript)
   val lpSwapAddress = getStringFromAddress(getAddressFromErgoTree(lpSwapErgoTree))
-  val lpMintErgoTree = ScriptUtil.compile(Map(), lpMintScript)
+  val lpMintErgoTree = scriptUtil.compile(Map(), lpMintScript)
   val lpMintAddress = getStringFromAddress(getAddressFromErgoTree(lpMintErgoTree))
-  val lpRedeemErgoTree = ScriptUtil.compile(Map(), lpRedeemScript)
+  val lpRedeemErgoTree = scriptUtil.compile(Map(), lpRedeemScript)
   val lpRedeemAddress = getStringFromAddress(getAddressFromErgoTree(lpRedeemErgoTree))
-  val extractErgoTree = ScriptUtil.compile(Map(), extractScript)
+  val extractErgoTree = scriptUtil.compile(Map(), extractScript)
   val extractAddress = getStringFromAddress(getAddressFromErgoTree(extractErgoTree))
 
   // proxy contracts (used in tests only)
   val lpSwapBuyV1Script = readContract("lp/proxy/SwapBuyV1.es")
-  val lpSwapBuyV1ErgoTree = ScriptUtil.compile(Map(), lpSwapBuyV1Script)
+  val lpSwapBuyV1ErgoTree = scriptUtil.compile(Map(), lpSwapBuyV1Script)
   val lpSwapBuyV1Address = getStringFromAddress(getAddressFromErgoTree(lpSwapBuyV1ErgoTree))
 
   val lpSwapSellV1Script = readContract("lp/proxy/SwapSellV1.es")
-  val lpSwapSellV1ErgoTree = ScriptUtil.compile(Map(), lpSwapSellV1Script)
+  val lpSwapSellV1ErgoTree = scriptUtil.compile(Map(), lpSwapSellV1Script)
   val lpSwapSellV1Address = getStringFromAddress(getAddressFromErgoTree(lpSwapSellV1ErgoTree))
 
   def main(args: Array[String]): Unit = {

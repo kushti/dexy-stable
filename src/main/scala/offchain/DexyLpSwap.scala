@@ -1,18 +1,17 @@
 package offchain
 
-import dexy.chainutils.DexySpec.feeDenomLp
+import dexy.chainutils.DexyGoldSpec.feeDenomLp
 import dexy.chainutils.TestnetTokenIds
 import org.ergoplatform.ErgoBox.TokenId
 import org.ergoplatform.modifiers.mempool.UnsignedErgoTransaction
-import org.ergoplatform.wallet.TokensMap
+import org.ergoplatform.sdk.wallet.TokensMap
 import org.ergoplatform.wallet.boxes.DefaultBoxSelector
 import org.ergoplatform.{ErgoBox, ErgoBoxCandidate, UnsignedInput}
 import scorex.crypto.hash.Digest32
 import scorex.util.{ModifierId, idToBytes}
-import special.collection.Coll
+import sigma.{Coll, Colls}
 import sigmastate.eval._
 import sigmastate.eval.Extensions._
-import sigmastate.eval.OrderingOps.BigIntOrdering
 
 import scala.math.Ordered.orderingToOrdered
 
@@ -32,9 +31,18 @@ object DexyLpSwap extends App {
 
   def lpBox() = utils.fetchSingleBox(dexyLpScanId)
 
-  def tokensMapToColl(tokens: TokensMap): Coll[(TokenId, Long)] =
-    tokens.toSeq.map {t => (Digest32 @@ idToBytes(t._1)) -> t._2}.toArray.toColl
+  def tokensMapToColl(tokens: TokensMap): Coll[(TokenId, Long)] = {
+    import scorex.util.idToBytes
+    val tokenPairs = tokens.toSeq.map { case (tokenId, amount) =>
+      val tokenIdBytes = idToBytes(tokenId)
+      val taggedTokenId = tokenIdBytes.asInstanceOf[TokenId]
+      (taggedTokenId, amount)
+    }.toArray
+    Colls.fromArray(tokenPairs)
+  }
 
+  /*
+   todo: uncomment and fix
   def inject(nanoErgs: Long, dexyAmount: Long): Array[Byte] = {
     require(nanoErgs == 0 || dexyAmount == 0, "One of nanoErgs, dexyAmount should be 0")
     val lpInput = lpBox()
@@ -51,7 +59,7 @@ object DexyLpSwap extends App {
       Map.empty
     }
 
-    val selectionResult = DefaultBoxSelector.select[ErgoBox](
+    val selectionResult = new DefaultBoxSelector(None).select[ErgoBox](
       utils.fetchWalletInputs().toIterator,
       (_: ErgoBox) => true,
       ergNeeded,
@@ -96,7 +104,7 @@ object DexyLpSwap extends App {
     println("right: " + (outputErg2 - inputErg.toBigInt) * (3 - 1000).toBigInt * inputDexy.toBigInt)
     assert((outputDexy2 - inputDexy.toBigInt) * inputErg.toBigInt * 1000.toBigInt >= (outputErg - inputErg).toBigInt * inputDexy.toBigInt * (3 - 1000).toBigInt)
 
-    val inputBoxes = IndexedSeq(lpInput, swapInput) ++ selectionResult.boxes
+    val inputBoxes = IndexedSeq(lpInput, swapInput) ++ selectionResult.inputBoxes
     val inputs = inputBoxes.map(b => new UnsignedInput(b.id))
 
     val lpOutput: ErgoBoxCandidate = new ErgoBoxCandidate(
@@ -119,11 +127,11 @@ object DexyLpSwap extends App {
     val unsignedSwapTx = new UnsignedErgoTransaction(inputs, IndexedSeq.empty, outputs)
     utils.signTransaction("LP swap: ", unsignedSwapTx, inputBoxes, IndexedSeq.empty)
   }
-
+  */
 
   println("DEX price: " + utils.dexPrice)
   println("Oracle price: " + utils.oraclePrice)
   println("Ratio: " + utils.dexPrice.toDouble / utils.oraclePrice)
   println("Pool size: " + lpBox().value / 1000000000L + " ERG")
-  inject(4000000000000L,0)
+   // inject(4000000000000L,0)
 }
