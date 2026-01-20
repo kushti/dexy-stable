@@ -48,5 +48,5 @@ This change affects the intervention contract logic and may require redeployment
 
 The intervention contract will need to be updated to:
 - Calculate intervention amounts based on LP reserves instead of bank reserves
-- Adjust the intervention size parameter from 1% to 0.5% of bank reserves
+- Adjust the intervention size parameter from 1% to 0.5% of LP reserves
 - Implement logic for increased intervention frequency
