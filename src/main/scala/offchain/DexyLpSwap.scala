@@ -31,10 +31,15 @@ object DexyLpSwap extends App {
 
   def lpBox() = utils.fetchSingleBox(dexyLpScanId)
 
-/*
   def tokensMapToColl(tokens: TokensMap): Coll[(TokenId, Long)] = {
-    Colls.fromArray(tokens.toSeq.map {t => (Digest32 @@ idToBytes(t._1)) -> t._2}.toArray)
-  } */
+    import scorex.util.idToBytes
+    val tokenPairs = tokens.toSeq.map { case (tokenId, amount) =>
+      val tokenIdBytes = idToBytes(tokenId)
+      val taggedTokenId = tokenIdBytes.asInstanceOf[TokenId]
+      (taggedTokenId, amount)
+    }.toArray
+    Colls.fromArray(tokenPairs)
+  }
 
   /*
    todo: uncomment and fix
