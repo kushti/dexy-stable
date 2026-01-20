@@ -51,6 +51,8 @@ The Dexy stablecoin protocol consists of multiple interconnected smart contracts
   - `spec.md`: Main protocol specification
   - `deployment-usd.md`: Deployment details for DexyUSD
   - `deployment-gold.md`: Deployment details for DexyGold
+- **`/Uips/`**: Dexy Stablecoin Improvement Proposals
+  - UIPs: Enhancement proposals for protocol improvements
 
 ## Code Style Guidelines
 

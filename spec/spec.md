@@ -8,8 +8,8 @@
 
 ## Description
 
-This EIP defines a design for a stablecoin called "Dexy", first proposed by @kushti. 
-Dexy uses a combination of oracle-pool and a liquidity pool. 
+This EIP defines a design for a stablecoin called "Dexy", first proposed by @kushti.
+Dexy uses a combination of oracle-pool and a liquidity pool.
 
 Below are the main aspects of Dexy.
 
@@ -35,6 +35,14 @@ On the other hand, if before the threshold the rate goes higher than oracle pool
 
 The LP uses a "cross-counter" to keep count of the number of times the LP rate has crossed the oracle pool rate (from below or above) in a swap transaction.
 If the cross-counter is preserved at swap initiation and completion then swap is valid, else it is aborted. This logic is present in the swapping box.
+
+## Dexy Stablecoin Improvement Proposals (UIPs)
+
+The Dexy protocol evolution is guided by Improvement Proposals documented in the [Uips](../Uips/) directory. These proposals detail enhancements, modifications, and new features for the protocol.
+
+## Contract Specifications
+
+The core contracts are detailed below:
 
 ## Emission Contract
 
