@@ -26,9 +26,9 @@ update NFTs should be issued.
 
 ### Tokens
 
-USE (DexyUSD) token = "bf0e1826d225617aeca3ad9a4df6b700af14dd683631b5ba9857f1b17322e53d" 
+USE (DexyUSD) token = "a55b8735ed1a99e46c2c89f8994aacdf4b1109bdcf682f1e5b34479c6e392669" 
 
-6 decimals
+3 decimals
 
 DORT and oracle pool:
 
