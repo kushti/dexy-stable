@@ -2,7 +2,7 @@
   // Intervention script. It encodes intervention action, where the bank is buying back Dexy tokens from the LP to
   // restore the peg in the LP.
   //
-  // Parameters: intervention happens every T = 360 blocks if Dexy token price in the LP is <= 98% of oracle price.
+  // Parameters: intervention happens every T = 180 blocks if Dexy token price in the LP is <= 98% of oracle price (UIP-001).
   //
   // This box: Intervention box
   //
@@ -38,7 +38,7 @@
 
   val lastIntervention = SELF.creationInfo._1
   val buffer = 5 // error margin in height
-  val T = 360 // from paper, gap between two interventions
+  val T = 180 // gap between two interventions (UIP-001: doubled frequency)
   val T_int = 20 // blocks after which a trigger swap event can be completed, provided rate has not crossed oracle pool rate
 
   val bankNFT = fromBase64("$bankNFT")
@@ -111,7 +111,7 @@
     val validTracking = trackingHeight < HEIGHT - T_int // at least T_int blocks have passed since the tracking started
 
     val validMaxSpending = lpReservesXOutBigInt * 1000 <= oracleRateXy * lpReservesYOut * 995  &&   // new rate must be <= 99.5 * oracle rate
-                           deltaBankErgs <= bankBoxIn.value / 100 // no more than 1% of reserves spent per intervention
+                           deltaBankErgs <= lpReservesXIn / 200 // no more than 0.5% of LP reserves spent per intervention (UIP-001)
 
     // dexy price
     val price = lpBoxIn.value / lpBoxIn.tokens(2)._2
