@@ -2,3 +2,5 @@
 .git/
 target/
 out/
+.metals
+.vscode

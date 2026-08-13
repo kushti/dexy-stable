@@ -1,0 +1,117 @@
+
+\documentclass{ifcolog}
+
+\usepackage{makeidx}
+
+
+\title{The IFCoLog Class Style:\protect \\ Guide for Authors}
+
+\titlerunning{IFCoLog Class Style}
+
+%\addauthor{IFCoLog}{International Federation of Computational Logic}
+\addauthor[michael.gabbay@kcl.ac.uk]
+  {Michael Gabbay}
+  {King's College London, Strand WC2R 2LS, UK}
+\addauthor[m.gabbay@hw.ac.uk]
+  {Murdoch Gabbay}
+  {Heriot-Watt University Edinburgh, EH14 4AS, UK}
+
+\authorrunning{IFCoLog}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+A simple guide for using the IFColog class file. 
+Version of February 2018.
+\end{abstract}
+
+
+
+\section{About the class file}
+\label{about}
+
+
+\begin{enumerate*}
+\item
+The default paper size is 7 by 10 inches. With a print area of 140 by 210 millimetres.
+\item
+The base font is Computer Modern, 10pt, and the {\sf sans-serif} font is {\sf Helvetica}.
+\item
+The reference list is condensed. The default bibliography style is \texttt{plain}.
+\item
+To insert images, pdfs etc, use the \texttt{graphicx} package.
+For good printing quality images should be at least 300dpi (dots per inch).
+\item
+Note that page numbers will be \emph{changed} when papers are collected into a single volume.
+\item
+Figures are surrounded by a box.
+\end{enumerate*}
+
+\section{Preamble}
+\label{preamble}
+
+The front matter of an article is slightly different from others. Authors are added by a series of \verb+\addauthor+ commands, in addition to the \verb+\titlerunning+ and \linebreak \verb+\authorrunning+
+commands, see Figure~\ref{fig1}.
+
+\begin{figure}[t]
+\begin{verbatim}
+\title{The IFCoLog Class File: A Brief Guide}
+
+\titlerunning{IFCoLog Class File}
+
+\addauthor[michael.gabbay@kcl.ac.uk]
+  {Michael Gabbay}
+  {King's College London, Strand WC2R 2LS, UK}
+\addauthor[m.gabbay@hw.ac.uk]
+  {Murdoch Gabbay}
+  {Heriot-Watt University Edinburgh, EH14 4AS, UK}
+
+\authorrunning{$\backslash$authornames}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+  A simple guide for using the IFColog class file.
+\end{abstract}
+\end{verbatim}
+\caption{The preamble for this document}\label{fig1}
+\end{figure}
+
+The message reminding authors to thank the referees can be removed by placing the \verb+\titlethanks+ command in the preamble, followed by a message thanking the referees. 
+To have no message use \verb+\titlethanks{}+.
+
+\section{Section headings and capitalisation}
+\label{section-headings}
+
+Section and paragraph headings are invoked via the standard
+commands, such as
+\verb+\section+,
+\verb+\subsection+,
+\verb+\subsubsection+, and
+Paper titles should follow the style commonly referred to as `Title Case' for headings:
+
+\begin{enumerate*}
+\item
+Capitalise the first word in a title, regardless of part of speech.
+\item
+Capitalise all nouns, pronouns, verbs, adjectives, adverbs.
+\item
+Lowercase `to' as part of an infinitive.
+\item
+Lowercase all articles, prepositions and coordinating conjunctions.
+\item
+Other section headings should have just the first word capitalised.
+\end{enumerate*}
+
+\section{Overfull hboxes}
+
+IFCoLog class file uses the \texttt{draft} option. A text overflow within any environment will be highlighted by a thick black line in the right margin. In the case of large tables or complex figures, use the \verb+\scalebox+ command to reduce sizes. For example in \texttt{quote} environment:
+\begin{quote}
+All work and no play makes Jack a dull boy. All work and no play makes Jack a dull boy. All work and no play makes Jack a dull boy. All work and no play makes Jack a dull boy.
+All~work~and~no play~makes~Jack~a~dull~boy. All~work~and~no play~makes~Jack a~dull~boy. All~work~and~no play~makes~Jack a~dull~boy.
+\end{quote}
+
+\end{document}
+
