@@ -17,8 +17,7 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
   "org.scalaj" %% "scalaj-http" % "2.4.2",
   "org.ergoplatform" %% "ergo-appkit" % "5.0.4",
-  "org.ergoplatform" %% "kiosk" % "1.0.2",
-  "org.ergoplatform" %% "ergo-core" % "5.0.20",
+  "org.ergoplatform" %% "kiosk" % "1.0.0", // published locally (master of github.com/ergoplatform/kiosk); 1.0.2 is unavailable
   "org.ergoplatform" %% "ergo-wallet" % "5.0.20",
   "com.squareup.okhttp3" % "mockwebserver" % "3.14.9",
   "org.scalatest" %% "scalatest" % "3.0.8" ,
@@ -33,3 +32,6 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-generic",
   "io.circe" %% "circe-parser"
 ).map(_ % circeVersion)
+
+// scrypto snapshot that sigma-state 5.0.13 points to was purged from Sonatype; force the identical release
+dependencyOverrides += "org.scorexfoundation" %% "scrypto" % "2.3.0"

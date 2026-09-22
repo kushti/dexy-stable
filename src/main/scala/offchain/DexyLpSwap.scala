@@ -3,7 +3,7 @@ package offchain
 import dexy.chainutils.DexyGoldSpec.feeDenomLp
 import dexy.chainutils.TestnetTokenIds
 import org.ergoplatform.ErgoBox.TokenId
-import org.ergoplatform.modifiers.mempool.UnsignedErgoTransaction
+import org.ergoplatform.UnsignedErgoLikeTransaction
 import org.ergoplatform.sdk.wallet.TokensMap
 import org.ergoplatform.wallet.boxes.DefaultBoxSelector
 import org.ergoplatform.{ErgoBox, ErgoBoxCandidate, UnsignedInput}
@@ -34,9 +34,7 @@ object DexyLpSwap extends App {
   def tokensMapToColl(tokens: TokensMap): Coll[(TokenId, Long)] = {
     import scorex.util.idToBytes
     val tokenPairs = tokens.toSeq.map { case (tokenId, amount) =>
-      val tokenIdBytes = idToBytes(tokenId)
-      val taggedTokenId = tokenIdBytes.asInstanceOf[TokenId]
-      (taggedTokenId, amount)
+      (Colls.fromArray(idToBytes(tokenId)).asInstanceOf[TokenId], amount)
     }.toArray
     Colls.fromArray(tokenPairs)
   }
@@ -124,7 +122,7 @@ object DexyLpSwap extends App {
 
     val outputs = IndexedSeq(lpOutput, swapOutput) ++ utils.changeOuts(selectionResult, creationHeight) ++ IndexedSeq(feeOut)
 
-    val unsignedSwapTx = new UnsignedErgoTransaction(inputs, IndexedSeq.empty, outputs)
+    val unsignedSwapTx = UnsignedErgoLikeTransaction(inputs, IndexedSeq.empty, outputs)
     utils.signTransaction("LP swap: ", unsignedSwapTx, inputBoxes, IndexedSeq.empty)
   }
   */

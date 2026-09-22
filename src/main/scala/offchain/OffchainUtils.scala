@@ -1,28 +1,80 @@
 package offchain
 
+import io.circe.{Decoder, Json}
 import io.circe.parser.parse
 import offchain.DexyLpSwap.tokensMapToColl
-import org.ergoplatform.{DataInput, ErgoAddressEncoder, ErgoBox, ErgoBoxCandidate, ErgoScriptPredef, ErgoTreePredef, P2PKAddress, UnsignedInput}
-import org.ergoplatform.ErgoBox.{R4, R7}
-import org.ergoplatform.http.api.ApiCodecs
-import org.ergoplatform.modifiers.history.header.Header
-import org.ergoplatform.modifiers.mempool.{ErgoTransaction, ErgoTransactionSerializer, UnsignedErgoTransaction}
-import org.ergoplatform.nodeView.state.{ErgoStateContext, VotingData}
+import org.ergoplatform.{DataInput, ErgoAddressEncoder, ErgoBox, ErgoBoxCandidate, ErgoLikeTransaction, ErgoScriptPredef, ErgoTreePredef, P2PKAddress, UnsignedErgoLikeTransaction, UnsignedInput}
+import org.ergoplatform.ErgoBox.{NonMandatoryRegisterId, R4, R7}
 import org.ergoplatform.sdk.wallet.Constants.eip3DerivationPath
-import org.ergoplatform.settings.ErgoValidationSettings
-import org.ergoplatform.wallet.Constants
+import org.ergoplatform.sdk.wallet.secrets.ExtendedSecretKey
+import org.ergoplatform.sdk.wallet.settings.EncryptionSettings
 import org.ergoplatform.wallet.boxes.BoxSelector.BoxSelectionResult
 import org.ergoplatform.wallet.boxes.DefaultBoxSelector
-import org.ergoplatform.wallet.interpreter.{ErgoProvingInterpreter, TransactionHintsBag}
+import org.ergoplatform.wallet.interface4j.SecretString
+import org.ergoplatform.wallet.interpreter.ErgoUnsafeProver
 import org.ergoplatform.wallet.secrets.JsonSecretStorage
 import org.ergoplatform.wallet.settings.SecretStorageSettings
 import scalaj.http.{Http, HttpOptions}
+import scorex.crypto.hash.Blake2b256
 import scorex.util.encode.Base16
-import org.ergoplatform.wallet.interface4j.SecretString
 import scorex.util.ModifierId
+import sigmastate.SType
+import sigmastate.Values.{ErgoTree, EvaluatedValue}
+import sigmastate.crypto.DLogProtocol
+import sigmastate.eval._
+import sigmastate.eval.Extensions._
+import sigmastate.serialization.{ErgoTreeSerializer, ValueSerializer}
+import sigma.{Coll, Colls}
 
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Try
+
+/**
+ * Minimal JSON decoder for ErgoBox from node / explorer box JSON (replaces the ergo-core ApiCodecs).
+ * Register values are deserialized with sigmastate's ValueSerializer.
+ */
+object ErgoBoxCodecs {
+  private def decodeTokens(assets: Seq[Json]): Coll[(ErgoBox.TokenId, Long)] = {
+    Colls.fromArray(assets.map { a =>
+      val id = a.hcursor.downField("tokenId").as[String].getOrElse(throw new Exception(s"no tokenId in $a"))
+      val amt = a.hcursor.downField("amount").as[Long].getOrElse(throw new Exception(s"no amount in $a"))
+      (Colls.fromArray(Base16.decode(id).get).asInstanceOf[ErgoBox.TokenId], amt)
+    }.toArray)
+  }
+
+  private def decodeRegisters(regs: Json): Map[NonMandatoryRegisterId, EvaluatedValue[_ <: SType]] = {
+    val fields = regs.asObject.map(_.toMap).getOrElse(Map.empty)
+    fields.map { case (name, valueJson) =>
+      val hex = valueJson.asString.getOrElse(
+        valueJson.hcursor.downField("serializedValue").as[String]
+          .getOrElse(throw new Exception(s"cannot parse register $name in $valueJson")))
+      val regId = ErgoBox.registerByName.get(name)
+        .getOrElse(throw new Exception(s"unknown register $name")).asInstanceOf[NonMandatoryRegisterId]
+      val v = ValueSerializer.deserialize(Base16.decode(hex).get).asInstanceOf[EvaluatedValue[_ <: SType]]
+      (regId, v)
+    }
+  }
+
+  implicit val decodeErgoBox: Decoder[ErgoBox] = Decoder.instance { c =>
+    for {
+      value <- c.downField("value").as[Long]
+      treeHex <- c.downField("ergoTree").as[String]
+      creationHeight <- c.downField("creationHeight").as[Int]
+      txId <- c.downField("transactionId").as[String]
+      index <- c.downField("index").as[Int]
+      assets <- c.downField("assets").as[Seq[Json]]
+      registers <- c.downField("additionalRegisters").as[Json]
+    } yield new ErgoBox(
+      value,
+      ErgoTreeSerializer.DefaultSerializer.deserializeErgoTree(Base16.decode(treeHex).get),
+      decodeTokens(assets),
+      decodeRegisters(registers),
+      txId.asInstanceOf[ModifierId],
+      index.toShort,
+      creationHeight
+    )
+  }
+}
 
 sealed trait TrackerType {
   val name: String
@@ -57,7 +109,7 @@ case class OffchainUtils(serverUrl: String,
                     apiKey: String,
                     localSecretStoragePath: String,
                     localSecretUnlockPass: String,
-                    dexyScanIds: DexyScanIds) extends ApiCodecs {
+                    dexyScanIds: DexyScanIds) {
   val defaultFee = 1000000L
   val eae = new ErgoAddressEncoder(ErgoAddressEncoder.MainnetNetworkPrefix)
   //todo: get change address via api from server
@@ -65,6 +117,11 @@ case class OffchainUtils(serverUrl: String,
 
   def feeOut(creationHeight: Int, providedFeeOpt: Option[Long] = None): ErgoBoxCandidate = {
     new ErgoBoxCandidate(providedFeeOpt.getOrElse(defaultFee), ErgoTreePredef.feeProposition(720), creationHeight) // 0.001 ERG
+  }
+
+  def explorerHeight(): Int = {
+    val json = parse(getJsonAsString("https://api.ergoplatform.com/api/v1/networkState")).toOption.get
+    json.hcursor.downField("height").as[Int].getOrElse(throw new Exception("no height in explorer networkState"))
   }
 
   def getJsonAsString(url: String): String = {
@@ -96,16 +153,19 @@ case class OffchainUtils(serverUrl: String,
     json.\\("fullHeight").head.asNumber.get.toInt.get
   }
 
-  def lastHeader(): Header = {
-    val infoUrl = s"$serverUrl/blocks/lastHeaders/1"
-    val json = parse(getJsonAsString(infoUrl)).toOption.get
-    json.as[Seq[Header]].toOption.get.head
+  val explorerUrl = "https://api.ergoplatform.com/api/v1/boxes"
+
+  def fetchBoxById(boxId: String): ErgoBox = {
+    val json = parse(getJsonAsString(s"$explorerUrl/$boxId")).toOption.get
+    require(json.hcursor.downField("spentTransactionId").focus.flatMap(_.asString).isEmpty,
+      s"box $boxId is already spent (per explorer)")
+    json.as[ErgoBox](ErgoBoxCodecs.decodeErgoBox).toOption.get
   }
 
   def unspentScanBoxes(scanId: Int): Seq[ErgoBox] = {
     val scanUnspentUrl = s"$serverUrl/scan/unspentBoxes/$scanId?minConfirmations=0&maxConfirmations=-1&minInclusionHeight=0&maxInclusionHeight=-1"
     val boxesUnspentJson = parse(getJsonAsString(scanUnspentUrl)).toOption.get
-    boxesUnspentJson.\\("box").map(_.as[ErgoBox].toOption.get)
+    boxesUnspentJson.\\("box").map(_.as[ErgoBox](ErgoBoxCodecs.decodeErgoBox).toOption.get)
   }
 
   def fetchSingleBox(scanId: Int): ErgoBox =  {
@@ -116,7 +176,7 @@ case class OffchainUtils(serverUrl: String,
     val boxesUnspentUrl = s"$serverUrl/wallet/boxes/unspent?minConfirmations=0&maxConfirmations=-1&minInclusionHeight=0&maxInclusionHeight=-1"
     val boxesUnspentJson = parse(getJsonAsString(boxesUnspentUrl)).toOption.get
 
-    boxesUnspentJson.\\("box").map(_.as[ErgoBox].toOption.get)
+    boxesUnspentJson.\\("box").map(_.as[ErgoBox](ErgoBoxCodecs.decodeErgoBox).toOption.get)
   }
 
   def tracking95Box(): Option[ErgoBox] = unspentScanBoxes(dexyScanIds.tracking95ScanId).headOption
@@ -156,20 +216,44 @@ case class OffchainUtils(serverUrl: String,
     println(Base16.encode(changeKey.keyBytes))
   } */
 
+  private def p2pkTreeBytes(w: java.math.BigInteger): Array[Byte] = {
+    // canonical P2PK contract tree: header 0x00 0x08 0xcd || compressed group element
+    ErgoTree.fromSigmaBoolean(new DLogProtocol.DLogProverInput(w).publicImage).bytes
+  }
+
+  /**
+   * Signs the P2PK inputs of unsignedTransaction whose script matches a key derived from the local keystore
+   * (master + EIP-3 change key). Inputs with non-P2PK scripts (e.g. the bank box spent via its update path)
+   * are left with an empty proof. Set secretStorageOpt to use a keystore other than the default one.
+   */
   def signTransaction(txName: String,
-                      unsignedTransaction: UnsignedErgoTransaction,
+                      unsignedTransaction: UnsignedErgoLikeTransaction,
                       boxesToSpend: IndexedSeq[ErgoBox],
                       dataBoxes: IndexedSeq[ErgoBox],
-                      additionalLocalSecretStoragePath: Option[String] = None): Array[Byte] = {
-    // Since I've been unable to find the correct import paths after multiple attempts,
-    // I'll implement this using the original commented code approach but with placeholders
-    // that should be replaced with the correct implementations once the import paths are known
+                      secretStorageOpt: Option[(String, String)] = None): Array[Byte] = {
+    val (storagePath, storagePass) = secretStorageOpt.getOrElse((localSecretStoragePath, localSecretUnlockPass))
+    val sss = SecretStorageSettings(storagePath, EncryptionSettings("HmacSHA256", 128000, 256))
+    val jss = JsonSecretStorage.readFile(sss).get
+    jss.unlock(SecretString.create(storagePass))
+    val masterKey = jss.secret.get
+    val changeKey = masterKey.derive(eip3DerivationPath).asInstanceOf[ExtendedSecretKey]
+    val keys = Seq(masterKey, changeKey).map(k => new java.math.BigInteger(1, k.keyBytes))
 
-    // This function should load secrets from the keystore and sign the transaction
-    // The original implementation used ErgoSettings and LaunchParameters which I couldn't import correctly
-    // For now, I'll throw an exception to indicate that this needs to be properly implemented
-    // with the correct import paths for Ergo 5.0.20
-    throw new NotImplementedError("signTransaction needs to be implemented with correct Ergo 5.0.20 imports for ErgoSettings and LaunchParameters")
+    // map from base16 box id to the secret controlling it (matching by P2PK proposition bytes)
+    val sigs: Map[String, DLogProtocol.DLogProverInput] = boxesToSpend.flatMap { box =>
+      keys.find(k => java.util.Arrays.equals(box.ergoTree.bytes, p2pkTreeBytes(k)))
+        .map(k => Base16.encode(box.id) -> new DLogProtocol.DLogProverInput(k))
+    }.toMap
+
+    require(sigs.nonEmpty,
+      s"$txName no secret in keystore $storagePath matches any input script " +
+        s"(inputs: ${boxesToSpend.map(b => Base16.encode(b.id)).mkString(", ")})")
+
+    val signed = ErgoUnsafeProver.prove(unsignedTransaction, sigs)
+    val txBytes = ErgoLikeTransaction.serializer.toBytes(signed)
+    println(s"$txName tx id: ${Base16.encode(Blake2b256(txBytes))}")
+    println(s"$txName tx bytes: ${Base16.encode(txBytes)}")
+    txBytes
   }
 
   private def fetchTrackingBox(trackerType: TrackerType) = {

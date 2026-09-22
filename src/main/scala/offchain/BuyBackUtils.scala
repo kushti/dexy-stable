@@ -1,6 +1,6 @@
 package offchain
 
-import org.ergoplatform.modifiers.mempool.UnsignedErgoTransaction
+import org.ergoplatform.UnsignedErgoLikeTransaction
 import org.ergoplatform.wallet.boxes.DefaultBoxSelector
 import org.ergoplatform.{ErgoBox, ErgoBoxCandidate, UnsignedInput}
 import scorex.util.ModifierId
@@ -72,7 +72,7 @@ object BuyBackUtils extends App {
 
     val buyBackInput = new UnsignedInput(buybackInputBox.id, ContextExtension(Map((0: Byte) -> IntConstant(1))))
     val inputs = buyBackInput +: buyBackInputBoxes.map(b => new UnsignedInput(b.id))
-    val unsignedSwapTx = new UnsignedErgoTransaction(inputs, IndexedSeq.empty, outs)
+    val unsignedSwapTx = UnsignedErgoLikeTransaction(inputs, IndexedSeq.empty, outs)
     utils.signTransaction("Buyback: ", unsignedSwapTx, buybackInputBox +: buyBackInputBoxes, IndexedSeq.empty)
   }
 
@@ -128,7 +128,7 @@ object BuyBackUtils extends App {
 
     val outputs = IndexedSeq(lpOutput, buyBackOutput) ++ utils.changeOuts(selectionResult, creationHeight) ++ IndexedSeq(feeOut)
 
-    val unsignedSwapTx = new UnsignedErgoTransaction(inputs, IndexedSeq.empty, outputs)
+    val unsignedSwapTx = UnsignedErgoLikeTransaction(inputs, IndexedSeq.empty, outputs)
     utils.signTransaction("Buyback: ", unsignedSwapTx, inputBoxes, IndexedSeq.empty)
   }
 
