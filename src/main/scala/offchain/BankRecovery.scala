@@ -32,7 +32,7 @@ object BankRecovery extends App {
     apiKey = "",
     localSecretStoragePath = "",
     localSecretUnlockPass = "",
-    dexyScanIds = OffchainUtils.scanIds)
+    dexyNftIds = OffchainUtils.nftIds)
 
   // second keystore, used for prep-gold (the DexyGold treasury P2PK key may live in a different keystore)
   val localSecretStoragePath2 = ""
@@ -64,7 +64,7 @@ object BankRecovery extends App {
     val treasury = utils.fetchBoxById(goldTreasuryBoxId)
     requireBoxHasToken(treasury, goldUpdateNFT, "treasury")
 
-    val creationHeight = utils.explorerHeight()
+    val creationHeight = utils.currentHeight()
     val feeOut = utils.feeOut(creationHeight, Some(2000000L)) // 0.002 ERG
 
     val carrierValue = 1000000L // min value for a box holding one token
@@ -109,7 +109,7 @@ object BankRecovery extends App {
 
     val trusted = utils.eae.fromString(trustedAddress).get.asInstanceOf[P2PKAddress]
 
-    val creationHeight = utils.explorerHeight()
+    val creationHeight = utils.currentHeight()
     val feeOut = utils.feeOut(creationHeight, Some(2000000L)) // 0.002 ERG
 
     // bank value minus fee goes to the trusted address, with all bank tokens (incl. bankNFT)

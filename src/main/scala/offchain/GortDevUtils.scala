@@ -18,11 +18,12 @@ object GortDevUtils extends App {
     apiKey = "hello",
     localSecretStoragePath = "/home/kushti/ergo/backup/gortkeystore",
     localSecretUnlockPass = "wpass",
-    dexyScanIds = OffchainUtils.scanIds)
+    dexyNftIds = OffchainUtils.nftIds)
 
-  val devEmissionScanId: Int = 45
+  // GORT dev emission box is identified by its NFT via the node's /blockchain extra indices
+  val devEmissionNFT: String = dexy.chainutils.MainnetDexyGoldTokenIds.gortDevEmissionNFT
 
-  def gortDevEmission(): Option[ErgoBox] = utils.unspentScanBoxes(devEmissionScanId).headOption
+  def gortDevEmission(): Option[ErgoBox] = utils.unspentBoxesByTokenId(devEmissionNFT).headOption
 
   /*
 todo: uncomment and fix

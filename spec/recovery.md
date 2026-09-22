@@ -26,8 +26,8 @@ Preconditions
    The signing code tries the master key and the EIP-3 change key of each keystore. Fill
    `localSecretStoragePath(2)` / `localSecretUnlockPass(2)` in `src/main/scala/offchain/BankRecovery.scala`.
 2. A trusted P2PK address (a `9...` mainnet address whose key is held securely offline if possible).
-3. Network access to the explorer (boxes are fetched from `api.ergoplatform.com`) and to the node
-   (`serverUrl` in `OffchainUtils`, used only for the current height and for broadcasting).
+3. A synced mainnet Ergo node with `ergo { extraIndex = true }` (all box reads use the node's
+   `/blockchain` extra-index API; `serverUrl` in `OffchainUtils`/`BankRecovery`).
 4. `sbt compile` passes (see "Build notes" below).
 
 Snapshot of the relevant boxes (2026-09-08, height ~1868825 — RE-VERIFY before executing; the bank box
@@ -41,8 +41,9 @@ changes on every protocol action):
 Verify freshness:
 
 ```bash
-curl -s https://api.ergoplatform.com/api/v1/boxes/unspent/byTokenId/78c24bdf41283f45208664cd8eb78e2ffa7fbb29f26ebb43e6b31a46b3b975ae | python3 -m json.tool | grep boxId
-curl -s https://api.ergoplatform.com/api/v1/boxes/unspent/byTokenId/75d7bfbfa6d165bfda1bad3e3fda891e67ccdcfc7b4410c1790923de2ccc9f7f | python3 -m json.tool | grep boxId
+# against the operator node ($NODE = serverUrl in OffchainUtils)
+curl -s $NODE/blockchain/box/unspent/byTokenId/78c24bdf41283f45208664cd8eb78e2ffa7fbb29f26ebb43e6b31a46b3b975ae | python3 -m json.tool | grep boxId
+curl -s $NODE/blockchain/box/unspent/byTokenId/75d7bfbfa6d165bfda1bad3e3fda891e67ccdcfc7b4410c1790923de2ccc9f7f | python3 -m json.tool | grep boxId
 ```
 
 If either bank box id differs from the snapshot, use the fresh id in the commands below.
@@ -87,9 +88,10 @@ Safety notes
 
 * The drain transaction needs ONLY the operator's signature; the signed transaction commits to its outputs, so
   it cannot be redirected or front-run in the mempool. The bank script path requires no secrets.
-* The tool fetches boxes from the explorer and refuses to build the transaction if a box is already spent or
-  if the expected NFT is not at tokens(0); the `--dry` run lets you review the exact unsigned tx before any
-  signature is produced. Signing happens locally; only the final signed bytes are broadcast.
+* The tool fetches boxes from the node's `/blockchain` extra index and refuses to build the transaction if a box
+  is already spent or if the expected NFT is not at tokens(0); the `--dry` run lets you review the exact
+  unsigned tx before any signature is produced. Signing happens locally; only the final signed bytes are
+  broadcast to the node.
 * Miner fee is 0.002 ERG per transaction.
 
 Verification (after each broadcast)

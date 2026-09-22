@@ -30,7 +30,7 @@ import scala.collection.mutable.ArrayBuffer
 import scala.util.Try
 
 /**
- * Minimal JSON decoder for ErgoBox from node / explorer box JSON (replaces the ergo-core ApiCodecs).
+ * Minimal JSON decoder for ErgoBox from node box JSON (replaces the ergo-core ApiCodecs).
  * Register values are deserialized with sigmastate's ValueSerializer.
  */
 object ErgoBoxCodecs {
@@ -98,18 +98,19 @@ object Tracker101 extends TrackerType {
   override val name: String = "101% tracker"
 }
 
-case class DexyScanIds(tracking95ScanId: Int,
-                       tracking98ScanId: Int,
-                       tracking101ScanId: Int,
-                       oraclePoolScanId: Int,
-                       lpScanId: Int,
-                       lpSwapScanId: Int)
+// identifies protocol boxes by the NFT they hold, via the node's /blockchain extra indices
+case class DexyNftIds(tracking95NFT: String,
+                      tracking98NFT: String,
+                      tracking101NFT: String,
+                      oraclePoolNFT: String,
+                      lpNFT: String,
+                      lpSwapNFT: String)
 
 case class OffchainUtils(serverUrl: String,
                     apiKey: String,
                     localSecretStoragePath: String,
                     localSecretUnlockPass: String,
-                    dexyScanIds: DexyScanIds) {
+                    dexyNftIds: DexyNftIds) {
   val defaultFee = 1000000L
   val eae = new ErgoAddressEncoder(ErgoAddressEncoder.MainnetNetworkPrefix)
   //todo: get change address via api from server
@@ -117,11 +118,6 @@ case class OffchainUtils(serverUrl: String,
 
   def feeOut(creationHeight: Int, providedFeeOpt: Option[Long] = None): ErgoBoxCandidate = {
     new ErgoBoxCandidate(providedFeeOpt.getOrElse(defaultFee), ErgoTreePredef.feeProposition(720), creationHeight) // 0.001 ERG
-  }
-
-  def explorerHeight(): Int = {
-    val json = parse(getJsonAsString("https://api.ergoplatform.com/api/v1/networkState")).toOption.get
-    json.hcursor.downField("height").as[Int].getOrElse(throw new Exception("no height in explorer networkState"))
   }
 
   def getJsonAsString(url: String): String = {
@@ -153,23 +149,24 @@ case class OffchainUtils(serverUrl: String,
     json.\\("fullHeight").head.asNumber.get.toInt.get
   }
 
-  val explorerUrl = "https://api.ergoplatform.com/api/v1/boxes"
-
+  // the node's extra index serves boxes even after they are spent (with spentTransactionId set)
   def fetchBoxById(boxId: String): ErgoBox = {
-    val json = parse(getJsonAsString(s"$explorerUrl/$boxId")).toOption.get
+    val json = parse(getJsonAsString(s"$serverUrl/blockchain/box/byId/$boxId")).toOption.get
     require(json.hcursor.downField("spentTransactionId").focus.flatMap(_.asString).isEmpty,
-      s"box $boxId is already spent (per explorer)")
+      s"box $boxId is already spent (per node extra index)")
     json.as[ErgoBox](ErgoBoxCodecs.decodeErgoBox).toOption.get
   }
 
-  def unspentScanBoxes(scanId: Int): Seq[ErgoBox] = {
-    val scanUnspentUrl = s"$serverUrl/scan/unspentBoxes/$scanId?minConfirmations=0&maxConfirmations=-1&minInclusionHeight=0&maxInclusionHeight=-1"
-    val boxesUnspentJson = parse(getJsonAsString(scanUnspentUrl)).toOption.get
-    boxesUnspentJson.\\("box").map(_.as[ErgoBox](ErgoBoxCodecs.decodeErgoBox).toOption.get)
+  // GET /blockchain/box/unspent/byTokenId/{tokenId} returns a plain array of IndexedErgoBox
+  def unspentBoxesByTokenId(tokenId: String): Seq[ErgoBox] = {
+    val url = s"$serverUrl/blockchain/box/unspent/byTokenId/$tokenId?offset=0&limit=50"
+    val json = parse(getJsonAsString(url)).toOption.get
+    json.asArray.getOrElse(throw new Exception(s"unexpected response for unspent boxes by token $tokenId: $json"))
+      .map(_.as[ErgoBox](ErgoBoxCodecs.decodeErgoBox).toOption.get)
   }
 
-  def fetchSingleBox(scanId: Int): ErgoBox =  {
-    unspentScanBoxes(scanId).head
+  def fetchSingleBoxByTokenId(tokenId: String): ErgoBox =  {
+    unspentBoxesByTokenId(tokenId).head
   }
 
   def fetchWalletInputs(): Seq[ErgoBox] = {
@@ -179,15 +176,15 @@ case class OffchainUtils(serverUrl: String,
     boxesUnspentJson.\\("box").map(_.as[ErgoBox](ErgoBoxCodecs.decodeErgoBox).toOption.get)
   }
 
-  def tracking95Box(): Option[ErgoBox] = unspentScanBoxes(dexyScanIds.tracking95ScanId).headOption
+  def tracking95Box(): Option[ErgoBox] = unspentBoxesByTokenId(dexyNftIds.tracking95NFT).headOption
 
-  def tracking98Box(): Option[ErgoBox] = unspentScanBoxes(dexyScanIds.tracking98ScanId).headOption
+  def tracking98Box(): Option[ErgoBox] = unspentBoxesByTokenId(dexyNftIds.tracking98NFT).headOption
 
-  def tracking101Box(): Option[ErgoBox] = unspentScanBoxes(dexyScanIds.tracking101ScanId).headOption
+  def tracking101Box(): Option[ErgoBox] = unspentBoxesByTokenId(dexyNftIds.tracking101NFT).headOption
 
-  def oraclePoolBox(): Option[ErgoBox] = unspentScanBoxes(dexyScanIds.oraclePoolScanId).headOption
+  def oraclePoolBox(): Option[ErgoBox] = unspentBoxesByTokenId(dexyNftIds.oraclePoolNFT).headOption
 
-  def lpBox(): Option[ErgoBox] = unspentScanBoxes(dexyScanIds.lpScanId).headOption
+  def lpBox(): Option[ErgoBox] = unspentBoxesByTokenId(dexyNftIds.lpNFT).headOption
 
   def dexPrice = {
     val lpState = lpBox().get
@@ -357,7 +354,15 @@ todo: uncomment and fix
 }
 
 object OffchainUtils {
-  val scanIds = DexyScanIds(126, 127, 128, 85, 138, 134)
+  import dexy.chainutils.MainnetUseTokenIds
+
+  val nftIds = DexyNftIds(
+    tracking95NFT = MainnetUseTokenIds.tracking95NFT,
+    tracking98NFT = MainnetUseTokenIds.tracking98NFT,
+    tracking101NFT = MainnetUseTokenIds.tracking101NFT,
+    oraclePoolNFT = MainnetUseTokenIds.oraclePoolNFT,
+    lpNFT = MainnetUseTokenIds.lpNFT,
+    lpSwapNFT = MainnetUseTokenIds.lpSwapNFT)
 }
 
 object Test extends App {
@@ -367,7 +372,7 @@ object Test extends App {
     apiKey = "",
     localSecretStoragePath = "/home/kushti/ergo/backup/176keystore",
     localSecretUnlockPass = "",
-    dexyScanIds = OffchainUtils.scanIds)
+    dexyNftIds = OffchainUtils.nftIds)
 
   def lpBox = utils.lpBox().get
   def lpPrice = lpBox.value / lpBox.additionalTokens.apply(2)._2
