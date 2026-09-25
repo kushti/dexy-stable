@@ -124,11 +124,14 @@ position without an identity check):
   equality and aligns payout with the other action contracts.
 
 
-Recommended fixes (specification only)
---------------------------------------
+Recommended fixes (APPLIED in the afterhack branch, September 2026)
+------------------------------------------------------------------
 
-The following changes are specified here but intentionally **not applied** to the contract templates yet. When
-they are applied, matching regression tests must be added and all existing suites re-run.
+The changes below are applied to the contract templates, with regression tests in
+`src/test/scala/dexy/lp/LpHackSpec.scala` that replay the exploit shape (fake LP box at INPUTS(0), real
+LP box at the unexpected INPUTS(2) position, reserve-stripped LP successor at OUTPUTS(0)). Verified
+against a pre-fix worktree: the exploit transactions succeed without the fixes and are rejected with
+them.
 
 1. `contracts/lp/pool/swap.es`, `contracts/lp/pool/mint.es`, `contracts/lp/pool/redeem.es`:
    add the LP NFT check on the pool input and output, mirroring `extract.es`:
@@ -170,7 +173,7 @@ Deployment impact
 
 Smart contracts on Ergo are immutable: the pools deployed on mainnet cannot be patched in place. The deployed
 USE and DexyGold LP sets (pool box plus swap/mint/redeem/extract action boxes) remain vulnerable to this
-exploit until the protocol is re-deployed from fixed templates. A re-deployment implies issuing a new LP NFT and
+exploit until the protocol is re-deployed from the (now fixed) templates. A re-deployment implies issuing a new LP NFT and
 new action NFTs and re-anchoring every contract that refers to them (`$lpNFT`, `$lpSwapNFT`, `$lpMintNFT`,
 `$lpRedeemNFT`, `$extractionNFT` — see the token-id lists in `spec/deployment-usd.md` and
 `spec/deployment-gold.md`, and the `*TokenIds` objects in `src/main/scala/dexy/chainutils/`). Until such a
