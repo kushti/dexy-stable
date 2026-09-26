@@ -3,15 +3,15 @@ package offchain
 import io.circe.{Decoder, Json}
 import io.circe.parser.parse
 import offchain.DexyLpSwap.tokensMapToColl
-import org.ergoplatform.{DataInput, ErgoAddressEncoder, ErgoBox, ErgoBoxCandidate, ErgoLikeTransaction, ErgoScriptPredef, ErgoTreePredef, P2PKAddress, UnsignedErgoLikeTransaction, UnsignedInput}
+import org.ergoplatform.{DataInput, ErgoAddressEncoder, ErgoBox, ErgoBoxCandidate, ErgoLikeTransaction, ErgoScriptPredef, ErgoTreePredef, Input, P2PKAddress, UnsignedErgoLikeTransaction, UnsignedInput}
 import org.ergoplatform.ErgoBox.{NonMandatoryRegisterId, R4, R7}
 import org.ergoplatform.sdk.wallet.Constants.eip3DerivationPath
 import org.ergoplatform.sdk.wallet.secrets.ExtendedSecretKey
 import org.ergoplatform.sdk.wallet.settings.EncryptionSettings
 import org.ergoplatform.wallet.boxes.BoxSelector.BoxSelectionResult
 import org.ergoplatform.wallet.boxes.DefaultBoxSelector
+import org.ergoplatform.wallet.crypto.ErgoSignature
 import org.ergoplatform.wallet.interface4j.SecretString
-import org.ergoplatform.wallet.interpreter.ErgoUnsafeProver
 import org.ergoplatform.wallet.secrets.JsonSecretStorage
 import org.ergoplatform.wallet.settings.SecretStorageSettings
 import scalaj.http.{Http, HttpOptions}
@@ -23,6 +23,7 @@ import sigmastate.Values.{ErgoTree, EvaluatedValue}
 import sigmastate.crypto.DLogProtocol
 import sigmastate.eval._
 import sigmastate.eval.Extensions._
+import sigmastate.interpreter.{ContextExtension, ProverResult}
 import sigmastate.serialization.{ErgoTreeSerializer, ValueSerializer}
 import sigma.{Coll, Colls}
 
@@ -143,6 +144,18 @@ case class OffchainUtils(serverUrl: String,
       .body
   }
 
+  // the node expects the transaction hex as a JSON string body
+  def postTransaction(txBytes: Array[Byte]): String = {
+    postString(s"$serverUrl/transactions/bytes", "\"" + Base16.encode(txBytes) + "\"")
+  }
+
+  // read a keystore password interactively; never commit passwords to source
+  def promptPassword(what: String): String = {
+    val console = System.console()
+    if (console != null) new String(console.readPassword(s"$what password: "))
+    else scala.io.StdIn.readLine(s"$what password (visible): ")
+  }
+
   def currentHeight(): Int = {
     val infoUrl = s"$serverUrl/info"
     val json = parse(getJsonAsString(infoUrl)).toOption.get
@@ -221,7 +234,8 @@ case class OffchainUtils(serverUrl: String,
   /**
    * Signs the P2PK inputs of unsignedTransaction whose script matches a key derived from the local keystore
    * (master + EIP-3 change key). Inputs with non-P2PK scripts (e.g. the bank box spent via its update path)
-   * are left with an empty proof. Set secretStorageOpt to use a keystore other than the default one.
+   * get an empty proof — the contract inputs we use require no signature. Set secretStorageOpt to use a
+   * keystore other than the default one.
    */
   def signTransaction(txName: String,
                       unsignedTransaction: UnsignedErgoLikeTransaction,
@@ -236,17 +250,26 @@ case class OffchainUtils(serverUrl: String,
     val changeKey = masterKey.derive(eip3DerivationPath).asInstanceOf[ExtendedSecretKey]
     val keys = Seq(masterKey, changeKey).map(k => new java.math.BigInteger(1, k.keyBytes))
 
-    // map from base16 box id to the secret controlling it (matching by P2PK proposition bytes)
-    val sigs: Map[String, DLogProtocol.DLogProverInput] = boxesToSpend.flatMap { box =>
-      keys.find(k => java.util.Arrays.equals(box.ergoTree.bytes, p2pkTreeBytes(k)))
-        .map(k => Base16.encode(box.id) -> new DLogProtocol.DLogProverInput(k))
-    }.toMap
+    val boxesById = boxesToSpend.map(b => Base16.encode(b.id) -> b).toMap
+    val message = unsignedTransaction.messageToSign
 
-    require(sigs.nonEmpty,
+    val inputs = unsignedTransaction.inputs.map { unsignedInput =>
+      val boxId = Base16.encode(unsignedInput.boxId)
+      val box = boxesById.getOrElse(boxId,
+        throw new Exception(s"$txName input box $boxId missing from boxesToSpend"))
+      keys.find(k => java.util.Arrays.equals(box.ergoTree.bytes, p2pkTreeBytes(k))) match {
+        case Some(w) =>
+          Input(unsignedInput.boxId, new ProverResult(ErgoSignature.sign(message, BigInt(w)), ContextExtension.empty))
+        case None =>
+          Input(unsignedInput.boxId, ProverResult(Array.emptyByteArray, ContextExtension.empty))
+      }
+    }
+
+    require(inputs.exists(_.spendingProof.proof.nonEmpty),
       s"$txName no secret in keystore $storagePath matches any input script " +
         s"(inputs: ${boxesToSpend.map(b => Base16.encode(b.id)).mkString(", ")})")
 
-    val signed = ErgoUnsafeProver.prove(unsignedTransaction, sigs)
+    val signed = new ErgoLikeTransaction(inputs, unsignedTransaction.dataInputs, unsignedTransaction.outputCandidates)
     val txBytes = ErgoLikeTransaction.serializer.toBytes(signed)
     println(s"$txName tx id: ${Base16.encode(Blake2b256(txBytes))}")
     println(s"$txName tx bytes: ${Base16.encode(txBytes)}")

@@ -51,37 +51,41 @@ If either bank box id differs from the snapshot, use the fresh id in the command
 Procedure
 ---------
 
-Do it in one session; re-fetch ids before every step. Every command first with `--dry`, inspect the printed
-unsigned transaction, then re-run without `--dry`.
+Do it in one session; re-fetch ids before every step. Every run is a dry run by default: it prints the
+inputs, outputs and the unsigned tx id without signing anything. Review them, then re-run with
+`--broadcast --txid <unsigned tx id>`; the live run refuses to proceed if the rebuilt unsigned tx id
+differs from the reviewed one. Keystore passwords are prompted (not read from source) unless set in the
+code. For the gold drain pass `--alt-keystore` (the gold carrier is under the treasury key).
 
 1. **prep-gold** — carve a carrier out of the DexyGold treasury (update NFT moved to tokens(0), everything
    else returns to the treasury P2PK):
 
    ```bash
-   sbt "runMain offchain.BankRecovery prep-gold --dry"     # inspect
-   sbt "runMain offchain.BankRecovery prep-gold"           # broadcast
+   sbt "runMain offchain.BankRecovery prep-gold"                                   # dry run, note the unsigned tx id
+   sbt "runMain offchain.BankRecovery prep-gold --broadcast --txid <unsignedTxId>" # sign + broadcast
    ```
 
    Record the new carrier box id from the transaction outputs
-   (`curl -s https://api.ergoplatform.com/api/v1/boxes/unspent/byTokenId/7a776cf75b8b3a5aac50a36c41531a4d6f1e469d2cbcaa5795a4f5b4c255bf09`).
+   (`curl -s $NODE/blockchain/box/unspent/byTokenId/7a776cf75b8b3a5aac50a36c41531a4d6f1e469d2cbcaa5795a4f5b4c255bf09`).
 
 2. **drain DexyGold bank**:
 
    ```bash
-   sbt "runMain offchain.BankRecovery drain fdcf983e9d6bf1f23429419c2e4dc1b858fddf6c05dd1f7f4e77e2be07b0c616 <carrierBoxId> <trustedAddress> 7a776cf75b8b3a5aac50a36c41531a4d6f1e469d2cbcaa5795a4f5b4c255bf09 75d7bfbfa6d165bfda1bad3e3fda891e67ccdcfc7b4410c1790923de2ccc9f7f --dry"
-   sbt "runMain offchain.BankRecovery drain fdcf983e9d6bf1f23429419c2e4dc1b858fddf6c05dd1f7f4e77e2be07b0c616 <carrierBoxId> <trustedAddress> 7a776cf75b8b3a5aac50a36c41531a4d6f1e469d2cbcaa5795a4f5b4c255bf09 75d7bfbfa6d165bfda1bad3e3fda891e67ccdcfc7b4410c1790923de2ccc9f7f"
+   sbt "runMain offchain.BankRecovery drain fdcf983e9d6bf1f23429419c2e4dc1b858fddf6c05dd1f7f4e77e2be07b0c616 <carrierBoxId> <trustedAddress> 7a776cf75b8b3a5aac50a36c41531a4d6f1e469d2cbcaa5795a4f5b4c255bf09 75d7bfbfa6d165bfda1bad3e3fda891e67ccdcfc7b4410c1790923de2ccc9f7f --alt-keystore"
+   sbt "runMain offchain.BankRecovery drain fdcf983e9d6bf1f23429419c2e4dc1b858fddf6c05dd1f7f4e77e2be07b0c616 <carrierBoxId> <trustedAddress> 7a776cf75b8b3a5aac50a36c41531a4d6f1e469d2cbcaa5795a4f5b4c255bf09 75d7bfbfa6d165bfda1bad3e3fda891e67ccdcfc7b4410c1790923de2ccc9f7f --alt-keystore --broadcast --txid <unsignedTxId>"
    ```
 
 3. **drain USE bank** (the big one — ~292,615 ERG; do it when ready):
 
    ```bash
-   sbt "runMain offchain.BankRecovery drain e6162e2aff23f7c88968cc958541bacfe3ad80d6541befb7231ac3106e966f8b 1ee201520f4353b3d619ccbca8c5432f1ab2fa855db858bfca5f56cf989f4688 <trustedAddress> f77b3cac4f77a31aeffaf716070345b3b04330bbba02e27671015129fb74e883 78c24bdf41283f45208664cd8eb78e2ffa7fbb29f26ebb43e6b31a46b3b975ae --dry"
    sbt "runMain offchain.BankRecovery drain e6162e2aff23f7c88968cc958541bacfe3ad80d6541befb7231ac3106e966f8b 1ee201520f4353b3d619ccbca8c5432f1ab2fa855db858bfca5f56cf989f4688 <trustedAddress> f77b3cac4f77a31aeffaf716070345b3b04330bbba02e27671015129fb74e883 78c24bdf41283f45208664cd8eb78e2ffa7fbb29f26ebb43e6b31a46b3b975ae"
+   sbt "runMain offchain.BankRecovery drain e6162e2aff23f7c88968cc958541bacfe3ad80d6541befb7231ac3106e966f8b 1ee201520f4353b3d619ccbca8c5432f1ab2fa855db858bfca5f56cf989f4688 <trustedAddress> f77b3cac4f77a31aeffaf716070345b3b04330bbba02e27671015129fb74e883 78c24bdf41283f45208664cd8eb78e2ffa7fbb29f26ebb43e6b31a46b3b975ae --broadcast --txid <unsignedTxId>"
    ```
 
 Transaction shape (drain): INPUTS(0) = carrier (update NFT at tokens(0), operator signature),
-INPUTS(1) = bank box (bank script passes via validUpdate, no signature needed); OUTPUTS(0) = trusted box with
-bankNFT ×1 + all bank tokens + (bank value − 0.002 ERG fee), OUTPUTS(1) = carrier change, fee box.
+INPUTS(1) = bank box (bank script passes via validUpdate, no signature needed — the tool puts an empty
+proof on it); OUTPUTS(0) = trusted box with bankNFT ×1 + all bank tokens + (bank value − 0.002 ERG fee),
+OUTPUTS(1) = carrier change, fee box.
 
 Safety notes
 ------------
@@ -89,9 +93,9 @@ Safety notes
 * The drain transaction needs ONLY the operator's signature; the signed transaction commits to its outputs, so
   it cannot be redirected or front-run in the mempool. The bank script path requires no secrets.
 * The tool fetches boxes from the node's `/blockchain` extra index and refuses to build the transaction if a box
-  is already spent or if the expected NFT is not at tokens(0); the `--dry` run lets you review the exact
-  unsigned tx before any signature is produced. Signing happens locally; only the final signed bytes are
-  broadcast to the node.
+  is already spent or if the expected NFT is not at tokens(0); the dry run (default) lets you review the exact
+  unsigned tx before any signature is produced, and the `--txid` gate forces the live run to send exactly the
+  reviewed transaction. Signing happens locally; only the final signed bytes are broadcast to the node.
 * Miner fee is 0.002 ERG per transaction.
 
 Verification (after each broadcast)

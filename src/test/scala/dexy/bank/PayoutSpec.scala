@@ -677,4 +677,121 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
       } should have message "Script reduced to false"
     }
   }
+
+  property("Payout should fail cleanly (not with long overflow) when collateralization product overflows Long") {
+    val fakeNanoErgs = 10000000000L
+
+    // circulation large enough that oracleRate * circulation * 12 overflows Long
+    // (rate 10000 * 800M USE raw * 12 = 9.6e19 > Long.MaxValue); pre-fix the payout evaluation
+    // threw ArithmeticException("long overflow"), post-fix it must evaluate to false
+    val bankReservesXIn = 10000000000L
+    val bankReservesYIn = UseSpec.initialDexyTokens - 800000000000000L // 800M USE in circulation
+    val bankReservesXOut = bankReservesXIn - bankReservesXIn / 1000  // 0.1% withdrawal
+    val bankReservesYOut = bankReservesYIn
+    val oracleRateXy = 10000L * 1000L
+
+    val dexyInCirculation = UseSpec.initialDexyTokens - bankReservesYOut
+    val requiredCollateral = BigInt(oracleRateXy / 1000L) * dexyInCirculation * 12
+    assert(requiredCollateral > BigInt(Long.MaxValue), "product should overflow Long")
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+
+      val payoutBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(payoutNFT, 1))
+          .registers(KioskInt(ctx.getHeight - 5050).getErgoValue) // Ensuring enough time has passed
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), payoutScript))
+          .build()
+          .convertToInputWith(fakeTxId4, fakeIndex)
+
+      val bankBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(bankReservesXIn)
+          .tokens(new ErgoToken(bankNFT, 1), new ErgoToken(dexyUSD, bankReservesYIn))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), bankScript))
+          .build()
+          .convertToInputWith(fakeTxId4, fakeIndex)
+
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val oracleBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
+          .registers(KioskLong(oracleRateXy).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId2, fakeIndex)
+
+      val lpBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(lpNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId3, fakeIndex)
+
+      val validPayoutOutBox = KioskBox(
+        payoutAddress,
+        minStorageRent,
+        registers = Array(KioskInt(ctx.getHeight)),
+        tokens = Array((payoutNFT, 1))
+      )
+
+      val validBankOutBox = KioskBox(
+        bankAddress,
+        bankReservesXOut,
+        registers = Array(),
+        tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
+      )
+
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + (bankReservesXIn - bankReservesXOut),
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
+      )
+
+      the[Exception] thrownBy {
+        TxUtil.createTx(
+          Array(payoutBox, bankBox, buybackBox.withContextVars(new ContextVar(0, KioskInt(1).getErgoValue)), fundingBox),
+          Array(oracleBox, lpBox),
+          Array(validPayoutOutBox, validBankOutBox, validBuybackOutBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          false
+        )
+      } should have message "Script reduced to false"
+    }
+  }
 }
