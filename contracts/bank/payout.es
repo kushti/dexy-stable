@@ -68,7 +68,7 @@
   val buffer = 5 // error margin in height
   val delayInPayments = 5040 // ~ 1 week
   val properHeight = lastPayment + delayInPayments <= HEIGHT
-  val properNewR4 = successor.R4[Int].get >= HEIGHT - buffer
+  val properNewR4 = successor.R4[Int].get >= HEIGHT - buffer && successor.R4[Int].get <= HEIGHT
 
   // bank box is bound by its NFT, and the bank script and tokens (incl. Dexy amount) are preserved
   // value is checked in validPayout
