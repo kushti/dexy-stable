@@ -1,0 +1,66 @@
+\begin{thebibliography}{10}
+
+\bibitem{ErgoDex}
+Ergo{DEX}.
+\newblock \url{https://www.ergodex.io}.
+
+\bibitem{DAI}
+The {M}aker {P}rotocol: {M}aker{DAO}'s {M}ulti-{C}ollateral {D}ai ({MCD}) {S}ystem.
+\newblock [{O}nline], 2017.
+\newblock \url{https://makerdao.com/en/whitepaper/}.
+
+\bibitem{Ampleforth}
+Ampleforth protocol.
+\newblock [{O}nline], 2018.
+\newblock \url{https://www.ampleforth.org/}.
+
+\bibitem{Neutrino}
+{XTN} - {N}eutrino {I}ndex {T}oken.
+\newblock [{O}nline], 2023.
+\newblock \url{https://github.com/waves-exchange/neutrino-contract/blob/master/docs/Neutrino%202.0.%20XTN%20Litepaper.pdf}.
+
+\bibitem{Uniswap}
+Hayden Adams, Noah Zinsmeister, River Keefer, Dan Robinson, and Moody Salem.
+\newblock Uniswap v3 core, 2021.
+\newblock \url{https://app.uniswap.org/whitepaper-v3.pdf}.
+
+\bibitem{Gyroscope}
+Andrew Breslin.
+\newblock Gyroscope: {A} {S}elf-{S}tabilizing, “{A}ll-{W}eather” {R}eserve-{B}acked {S}tablecoin.
+\newblock [{O}nline], 2022.
+\newblock \url{{https://consensys.io/blog/gyroscope-a-self-stabilizing-all-weather-reserve-backed-stablecoin}}.
+
+\bibitem{EUTXO}
+Manuel M.~T. Chakravarty, James Chapman, Kenneth MacKenzie, Orestis Melkonian, Michael~Peyton Jones, and Philip Wadler.
+\newblock The {E}xtended {UTXO} {M}odel.
+\newblock In {\em Financial Cryptography and Data Security -- FC 2020 International Workshops}, volume 12063 of {\em Lecture Notes in Computer Science}, pages 525--539. Springer, 2020.
+\newblock \url{https://doi.org/10.1007/978-3-030-54455-3_37}.
+
+\bibitem{Gluon}
+Bruno~Woltzenlogel Paleo, Luca D'Angelo, Mohammad Shaheer, and Giselle Reis.
+\newblock Gluon w: A cryptocurrency stabilization protocol.
+\newblock Cryptology {ePrint} Archive, Paper 2025/1372, 2025.
+
+\bibitem{Fei}
+Joey Santoro.
+\newblock Fei {P}rotocol: {A} {D}ecentralized, {F}air, {L}iquid, and {S}calable {S}tablecoin {P}latform.
+\newblock [{O}nline], 2021.
+\newblock \url{https://web.archive.org/web/20211215064106/https://fei.money/static/media/whitepaper.7d5e2986.pdf}.
+
+\bibitem{eip23}
+scalahub.
+\newblock Eip-0023 oracle pool 2.0.
+\newblock \url{https://github.com/ergoplatform/eips/pull/41}.
+
+\bibitem{xu2021sok}
+Jiahua Xu, Krzysztof Paruch, Simon Cousaert, and Yebo Feng.
+\newblock Sok: Decentralized exchanges (dex) with automated market maker (amm) protocols.
+\newblock {\em ACM Computing Surveys}, 2021.
+
+\bibitem{DjedEprint}
+Joachim Zahnentferner, Dmytro Kaidalov, Jean-Fr\'ed\'eric Etienne, and Javier D\'iaz.
+\newblock Djed: A formally verified crypto-backed pegged algorithmic stablecoin.
+\newblock Cryptology ePrint Archive, Report 2021/1069, 2021.
+\newblock \url{https://eprint.iacr.org/2021/1069}.
+
+\end{thebibliography}
