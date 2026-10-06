@@ -10,12 +10,12 @@ import org.ergoplatform.sdk.wallet.secrets.ExtendedSecretKey
 import org.ergoplatform.sdk.wallet.settings.EncryptionSettings
 import org.ergoplatform.wallet.boxes.BoxSelector.BoxSelectionResult
 import org.ergoplatform.wallet.boxes.DefaultBoxSelector
+import org.ergoplatform.wallet.boxes.ErgoBoxSerializer
 import org.ergoplatform.wallet.crypto.ErgoSignature
 import org.ergoplatform.wallet.interface4j.SecretString
 import org.ergoplatform.wallet.secrets.JsonSecretStorage
 import org.ergoplatform.wallet.settings.SecretStorageSettings
 import scalaj.http.{Http, HttpOptions}
-import scorex.crypto.hash.Blake2b256
 import scorex.util.encode.Base16
 import scorex.util.ModifierId
 import sigmastate.SType
@@ -149,11 +149,47 @@ case class OffchainUtils(serverUrl: String,
     postString(s"$serverUrl/transactions/bytes", "\"" + Base16.encode(txBytes) + "\"")
   }
 
+  /**
+   * Builds a /wallet/transaction/sign request (TransactionSigningRequest in the node openapi).
+   * The node wallet signs whichever inputs it holds keys for; inputs whose scripts need no
+   * secrets (e.g. the bank box spent via its update path) get empty proofs. inputsRaw carries
+   * the full input boxes, so the request is self-contained (no UTXO/extra-index lookups needed
+   * at signing time).
+   */
+  def signRequestJson(utx: UnsignedErgoLikeTransaction, inputBoxes: IndexedSeq[ErgoBox]): String = {
+    val inputs = utx.inputs.map { i =>
+      Json.obj("boxId" -> Json.fromString(Base16.encode(i.boxId)), "extension" -> Json.obj())
+    }
+    val outputs = utx.outputCandidates.map { o =>
+      Json.obj(
+        "value" -> Json.fromLong(o.value),
+        "ergoTree" -> Json.fromString(Base16.encode(o.ergoTree.bytes)),
+        "creationHeight" -> Json.fromInt(o.creationHeight),
+        "assets" -> Json.arr(o.additionalTokens.toArray.map { case (id, amount) =>
+          Json.obj("tokenId" -> Json.fromString(Base16.encode(id.toArray)), "amount" -> Json.fromLong(amount))
+        }: _*),
+        "additionalRegisters" -> Json.obj()
+      )
+    }
+    val tx = Json.obj(
+      "inputs" -> Json.arr(inputs: _*),
+      "dataInputs" -> Json.arr(),
+      "outputs" -> Json.arr(outputs: _*))
+    val inputsRaw = inputBoxes.map(b => Json.fromString(Base16.encode(ErgoBoxSerializer.toBytes(b))))
+    Json.obj(
+      "tx" -> tx,
+      "inputsRaw" -> Json.arr(inputsRaw: _*),
+      "secrets" -> Json.obj()
+    ).spaces2
+  }
+
   // read a keystore password interactively; never commit passwords to source
   def promptPassword(what: String): String = {
     val console = System.console()
-    if (console != null) new String(console.readPassword(s"$what password: "))
-    else scala.io.StdIn.readLine(s"$what password (visible): ")
+    if (console == null)
+      throw new IllegalStateException(
+        s"no console available to read the $what password safely; run from a plain terminal (not piped or from an IDE)")
+    new String(console.readPassword(s"$what password: "))
   }
 
   def currentHeight(): Int = {
@@ -241,7 +277,8 @@ case class OffchainUtils(serverUrl: String,
                       unsignedTransaction: UnsignedErgoLikeTransaction,
                       boxesToSpend: IndexedSeq[ErgoBox],
                       dataBoxes: IndexedSeq[ErgoBox],
-                      secretStorageOpt: Option[(String, String)] = None): Array[Byte] = {
+                      secretStorageOpt: Option[(String, String)] = None,
+                      printBytes: Boolean = false): Array[Byte] = {
     val (storagePath, storagePass) = secretStorageOpt.getOrElse((localSecretStoragePath, localSecretUnlockPass))
     val sss = SecretStorageSettings(storagePath, EncryptionSettings("HmacSHA256", 128000, 256))
     val jss = JsonSecretStorage.readFile(sss).get
@@ -271,8 +308,11 @@ case class OffchainUtils(serverUrl: String,
 
     val signed = new ErgoLikeTransaction(inputs, unsignedTransaction.dataInputs, unsignedTransaction.outputCandidates)
     val txBytes = ErgoLikeTransaction.serializer.toBytes(signed)
-    println(s"$txName tx id: ${Base16.encode(Blake2b256(txBytes))}")
-    println(s"$txName tx bytes: ${Base16.encode(txBytes)}")
+    println(s"$txName tx id: ${signed.id}")
+    if (printBytes) {
+      // the signed bytes authorize the spend by themselves — print them only on request
+      println(s"$txName tx bytes: ${Base16.encode(txBytes)}")
+    }
     txBytes
   }
 

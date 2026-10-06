@@ -18,6 +18,15 @@
   // 0 LP            |  LP            |   Oracle
   // 1 Bank          |  Bank          |   Tracking (98%)
   // 2 Intervention  |  Intervention  |
+contractToUpdateNFT  //
+  // [2] Update
+  //   Input         |  Output        |   Data-Input
+  // -----------------------------------------------
+  // 0 Update        |  Update        |
+  // 1 Intervention  |  Intervention  |
+  //
+  // The intervention box must be at INPUTS(1), so an update transaction can only spend this box,
+  // not drag it into another contract's update.
 
   // Oracle data:
   // R4 of the oracle contains the rate "nanoErgs per USD" in Long format
@@ -49,7 +58,7 @@
   val thresholdPercent = 98 // 98% or less value (of LP in terms of OraclePool) will trigger action (ensure less than 100)
 
   val updateNFT = fromBase64("$updateNFT")
-  val validUpdate = INPUTS(0).tokens(0)._1 == updateNFT
+  val validUpdate = INPUTS(0).tokens(0)._1 == updateNFT && INPUTS(1).id == SELF.id
 
   val validAction = if (validUpdate) {
     true
@@ -113,14 +122,13 @@
     val validMaxSpending = lpReservesXOutBigInt * 1000 <= oracleRateXy * lpReservesYOut * 995  &&   // new rate must be <= 99.5 * oracle rate
                            deltaBankErgs <= bankBoxIn.value / 100 // no more than 1% of reserves spent per intervention
 
-    // dexy price
-    val price = lpBoxIn.value / lpBoxIn.tokens(2)._2
-
-    val validDeltas = deltaBankErgs <= deltaLpX  &&  // ergs reduced in bank box must be <= ergs gained in LP
+    // the intervention must move value in one direction only: the bank spends Ergs and receives
+    // Dexy, the LP receives Ergs and loses Dexy
+    val validDeltas = deltaBankErgs > 0 && deltaBankTokens > 0 && deltaLpX > 0 && deltaLpY > 0 &&
+                      deltaBankErgs <= deltaLpX  &&  // ergs reduced in bank box must be <= ergs gained in LP
                       deltaBankTokens >= deltaLpY &&   // tokens gained in bank box must be >= tokens reduced in LP
                       deltaLpY.toBigInt * lpReservesXIn <= deltaLpX.toBigInt * lpReservesYIn && // swap condition w/out fees
-                      deltaLpX > 0 &&
-                      deltaBankErgs <= price * deltaBankTokens / 100 * 102 // max slippage 2%
+                      deltaBankErgs.toBigInt * lpReservesYIn * 100 <= lpReservesXIn.toBigInt * deltaBankTokens * 102 // max slippage 2%
 
     validMaxSpending &&
     validDeltas      &&
