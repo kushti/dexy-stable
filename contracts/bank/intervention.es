@@ -18,7 +18,7 @@
   // 0 LP            |  LP            |   Oracle
   // 1 Bank          |  Bank          |   Tracking (98%)
   // 2 Intervention  |  Intervention  |
-contractToUpdateNFT  //
+  //
   // [2] Update
   //   Input         |  Output        |   Data-Input
   // -----------------------------------------------

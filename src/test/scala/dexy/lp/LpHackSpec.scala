@@ -12,9 +12,11 @@ import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 // Regression tests for the September 2026 LP hack (see spec/postmortem-lp-hack.md).
 // Each test replays the exploit shape against one LP action: a fake LP box (trivially-true script,
 // no lpNFT) at INPUTS(0) whose math the action contract validates, the real action box at INPUTS(1),
-// the real LP box at the unexpected INPUTS(2) position, and a reserve-stripped LP successor at
-// OUTPUTS(0). Pre-fix these transactions succeed (that is how the pools were drained); post-fix the
-// action-side LP NFT check (swap/mint/redeem .es validLpBox) and main.es validPosition reject them.
+// the real LP box at the unexpected INPUTS(2) position, and a manipulated LP successor at
+// OUTPUTS(0) (reserve-stripped for swap/redeem; LP-token-inflating for mint — the pool gains ERG
+// there while the attacker takes extra LP tokens). Pre-fix these transactions succeed (that is how
+// the pools were drained); post-fix the action-side LP NFT check (swap/mint/redeem .es validLpBox)
+// and main.es validPosition reject them.
 class LpHackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChecks with HttpClientTesting with Common {
 
   import dexy.chainutils.MainnetUseTokenIds._
@@ -157,7 +159,9 @@ class LpHackSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
           .build()
           .convertToInputWith(fakeTxId4, fakeIndex)
 
-      // fake mint math holds between fakeLpBox and this output; reserves of the real LP box are drained into it
+      // fake mint math holds between fakeLpBox and this output; the pool is not drained here —
+      // it absorbs the fake box's nanoErgs while the attacker walks away with extra LP tokens
+      // minted against it (redeemable against real reserves later, diluting honest LP holders)
       val validLpOutBox = KioskBox(
         lpAddress,
         2000000000000L,

@@ -35,3 +35,7 @@ libraryDependencies ++= Seq(
 
 // scrypto snapshot that sigma-state 5.0.13 points to was purged from Sonatype; force the identical release
 dependencyOverrides += "org.scorexfoundation" %% "scrypto" % "2.3.0"
+
+// sigmastate class initialization is not safe under parallel test suites on this toolchain
+// (circular <clinit> across SType$/Values$/SCollection$ deadlocks); run suites sequentially
+Test / parallelExecution := false
