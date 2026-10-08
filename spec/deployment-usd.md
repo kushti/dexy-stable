@@ -144,3 +144,14 @@ Bank tokens:
 
 * Bank deployment transaction:
   https://explorer.ergoplatform.com/en/transactions/2ab9da11fc216660e974842cc3b7705e62ebb9e0bf5ff78e53f9cd40abadd117
+
+#### Current bank box
+
+Snapshot as of 2026-09-08 (block 1868825); the bank box changes with every bank action (mint, intervention, payout), so re-query before relying on it. Explorer API: `https://api.ergoplatform.com/api/v1/boxes/unspent/byTokenId/78c24bdf41283f45208664cd8eb78e2ffa7fbb29f26ebb43e6b31a46b3b975ae`
+
+* boxId: `e6162e2aff23f7c88968cc958541bacfe3ad80d6541befb7231ac3106e966f8b`
+  https://explorer.ergoplatform.com/en/boxes/e6162e2aff23f7c88968cc958541bacfe3ad80d6541befb7231ac3106e966f8b
+* creating transaction: `4180dacbe957126dc3146e78664e7f452ee16e53fb0a7805534c086c0f6f082c`
+* value: 292,615.11 ERG (292615109709675 nanoERG)
+* tokens: useBankNFT x 1, USE x 999999999857417104
+* creation height 1867723 (settled at 1867725)

@@ -23,6 +23,7 @@
   val oracleNFT = fromBase64("$oracleNFT") // to identify oracle pool box
   val lpNFT = fromBase64("$lpNFT")
   val buybackNft = fromBase64("$buybackNFT")
+  val bankNFT = fromBase64("$bankNFT") // to identify bank box
 
   // inputs indices
   val bankInIndex = 1
@@ -56,7 +57,7 @@
   val oracleRate = oracleBox.R4[Long].get / 1000L
 
   val dexyInCirculation = $initialDexyTokens - bankDexy
-  val collateralized = oracleRate * dexyInCirculation * 12L < bankBoxIn.value // > 1200% collateralization
+  val collateralized = oracleRate.toBigInt * dexyInCirculation * 12L < bankBoxIn.value // > 1200% collateralization
 
   val maxPaymentAmount = bankBoxIn.value / 1000 // 0.1 % max can be taken
   val paymentAmount = bankBoxIn.value - bankBoxOut.value
@@ -67,11 +68,13 @@
   val buffer = 5 // error margin in height
   val delayInPayments = 5040 // ~ 1 week
   val properHeight = lastPayment + delayInPayments <= HEIGHT
-  val properNewR4 = successor.R4[Int].get >= HEIGHT - buffer
+  val properNewR4 = successor.R4[Int].get >= HEIGHT - buffer && successor.R4[Int].get <= HEIGHT
 
-  // no need to validate bank NFT and proposition here
+  // bank box is bound by its NFT, and the bank script and tokens (incl. Dexy amount) are preserved
   // value is checked in validPayout
-  val validBank = bankBoxOut.tokens == bankBoxIn.tokens                     // tokens preserved
+  val validBank = bankBoxOut.tokens == bankBoxIn.tokens                     && // tokens preserved
+                  bankBoxIn.tokens(0)._1 == bankNFT                         && // input is the real bank box
+                  bankBoxOut.propositionBytes == bankBoxIn.propositionBytes    // script preserved
 
   // payout script box preservation
   val validSuccessor = successor.propositionBytes == SELF.propositionBytes && // script preserved

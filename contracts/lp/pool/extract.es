@@ -23,6 +23,15 @@
     // -----------------------------------------------
     // 0 LP            |  LP            |   Oracle
     // 1 Extract       |  Extract       |   Tracking (101%)
+    //
+    // [3] Update
+    //   Input         |  Output        |   Data-Input
+    // -----------------------------------------------
+    // 0 Update        |  Update        |
+    // 1 Extract       |  Extract       |
+    //
+    // The extract box must be at INPUTS(1), so an update transaction can only spend this box,
+    // not drag it into another contract's update.
 
     // ToDo: verify following in tests
     //   cannot change prop bytes for LP, Extract and Tracking box
@@ -60,7 +69,7 @@
     val buffer = 5 // allowable error in setting height due to congestion
 
     val updateNFT = fromBase64("$updateNFT")
-    val validUpdate = INPUTS(0).tokens(0)._1 == updateNFT
+    val validUpdate = INPUTS(0).tokens(0)._1 == updateNFT && INPUTS(1).id == SELF.id
 
     val validAction = if (validUpdate) {
       true
