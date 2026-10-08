@@ -19,13 +19,15 @@ Timeline and on-chain facts (from [1]):
   `94e9396a225d627f8609cbf35d93e5533ace01849156d58ec0faae6fdd6b5682` and
   `7f18ca9595e380124989368030cce8f495e808702201e79ceafb6938beea3732` (used to construct the fake "LP" input,
   see below).
-* The exploit was then executed repeatedly against the USE LP swap contract. 25,000 ERG were sent to a MEXC
-  deposit address in transaction
+* The USE LP was then drained in a single transaction against the LP swap contract,
+  `5371373d346aade57f684ead23f386e3441ffb2cb7a860babe96e3c5048b2725` (height 1868204). Of the proceeds,
+  25,000 ERG were sent to a MEXC deposit address in transaction
   `471ead780bee74f3a3cc6bba1cf86f6ad175613d14834b029af2d0755db6b90a`, and 180,000 ERG to a Kucoin deposit
   address in transaction
   `c1fcfedb7f184af4c3c54e912343dee9d44ddf26d1725d2852786d914cc6ac66`.
-* The DexyGold LP was then emptied with the same technique, and 83,118 ERG were sent to the same Kucoin deposit
-  address in transaction
+* The DexyGold LP was then emptied with the same technique in a single transaction,
+  `51420a50331179c3130c4edf73f970786eeccf8c69cc7517a851e143c3ed` (height 1868221), and 83,118 ERG were sent
+  to the same Kucoin deposit address in transaction
   `59dbc1c54e7926234fec1ee50e850354ac91c3f739e9a5c4c1460991998e0a80`.
 
 The incident report summarizes the root cause as follows: "the absence of LP input NFT check in expected position
@@ -77,23 +79,26 @@ A draining transaction has the following shape:
     0 Fake LP box | 0 "LP" out     |
     1 Swap box    | 1 Swap box    |
     2 Real LP box | 2 Hacker out  |
-    ...           | 3 Hacker out  |
+    ...           | 3 Miner fee   |
 
-* **INPUTS(0)** is a fake "LP" box created by the attacker: a box paying to a trivially-true script (e.g.
-  `sigmaProp(true)`), holding dust Ergs and arbitrary tokens (including the tokens minted in the preparation
-  step, so that `tokens(1)`/`tokens(2)` accesses succeed). Its script imposes no conditions, so the attacker
-  controls its successor entirely.
+* **INPUTS(0)** is a fake "LP" box created by the attacker: on-chain it is a P2PK box of the attacker
+  address `9iFabq3wQKsybeF2b6G4JN4Coq3avPFmMV7M5cvy479su4QGPL8`, holding 0.002 ERG and the tokens minted in
+  the preparation step (so that `tokens(1)`/`tokens(2)` accesses succeed). The attacker signs for it, so any
+  attacker-controlled box works here; the point is that its contents and its successor are fully under the
+  attacker's control.
 * **INPUTS(1)** is the genuine swap action box, spent and preserved at OUTPUTS(1) as the contract requires
   (`selfPreserved`, swap.es:80-82). This satisfies main.es's `validSwap` (`INPUTS(1).tokens(0)._1 == swapNFT`).
 * **INPUTS(2)** is the **real LP box**. Its script (main.es) evaluates against OUTPUTS(0): the LP NFT is
   preserved, the LP-token and Dexy token *ids* are preserved, the script is preserved, there are exactly three
   tokens — but the Ergs value and the Dexy quantity on OUTPUTS(0) can be slashed almost to zero, because main.es
   never checks them (quantities and value were supposed to be guarded by the action contract — which is looking
-  at the fake box instead). The main.es condition `(lpAction || dexyAction)` holds via `validSwap`.
-* **swap.es** evaluates its invariant between the fake INPUTS(0) and fake OUTPUTS(0); with zero (or freely
-  crafted) deltas the inequality passes, and the swap box is preserved.
-* The difference between the real LP box's reserves and the stripped OUTPUTS(0) is paid to attacker outputs
-  (exchanges' deposit addresses).
+  at the fake box instead). The main.es condition `(lpAction || dexyAction)` holds via `validSwap`. On-chain,
+  OUTPUTS(0) kept 0.002 ERG and 1 unit of each pool token.
+* **swap.es** evaluates its invariant between the fake INPUTS(0) and OUTPUTS(0) — the real LP successor,
+  whose reserves were stripped as described above; with freely crafted deltas the inequality passes, and the
+  swap box is preserved.
+* The difference between the real LP box's reserves and the stripped OUTPUTS(0) is paid to the attacker's
+  only output, OUTPUTS(2), which received the Ergs, the Dexy tokens, and all but 1 unit of the LP-token reserve.
 
 Both LP deployments (USE and DexyGold) used the same templates, so the same transaction shape drained the second
 pool immediately after the first.
@@ -173,11 +178,29 @@ Deployment impact
 
 Smart contracts on Ergo are immutable: the pools deployed on mainnet cannot be patched in place. The deployed
 USE and DexyGold LP sets (pool box plus swap/mint/redeem/extract action boxes) remain vulnerable to this
-exploit until the protocol is re-deployed from the (now fixed) templates. A re-deployment implies issuing a new LP NFT and
-new action NFTs and re-anchoring every contract that refers to them (`$lpNFT`, `$lpSwapNFT`, `$lpMintNFT`,
-`$lpRedeemNFT`, `$extractionNFT` — see the token-id lists in `spec/deployment-usd.md` and
-`spec/deployment-gold.md`, and the `*TokenIds` objects in `src/main/scala/dexy/chainutils/`). Until such a
-re-deployment, any liquidity held behind the current LP contracts should be considered at risk.
+exploit until the protocol is re-deployed from the (now fixed) templates. Until such a re-deployment, any
+liquidity held behind the current LP contracts should be considered at risk.
+
+Redeploy checklist
+------------------
+
+1. **Sweep the bank reserves first**, per `spec/recovery.md`. The deployed bank boxes can be spent via the
+   update path at any time; the carrier drain also remains valid against the fixed (binding-only) templates.
+2. **Mint each new NFT with supply exactly 1 and pay it directly into its contract box**: the new LP NFT and
+   the LP action NFTs (swap/mint/redeem/extraction), and the bank-side NFTs. The pool is protected by the
+   box-id check in `main.es`, but the action contracts, `extract.es` and `intervention.es` still trust NFTs
+   by id, so a duplicated or misplaced NFT silently weakens the deployment.
+3. **Mint all update NFT units directly into the `update.es` boxes** (bank, extract and intervention
+   flavors). Any unit left in a P2PK box is a unilateral update/recovery key for the corresponding contract
+   (accepted trade-off: it preserves the emergency carrier path, see `spec/recovery.md`).
+4. **Re-anchor every contract reading the LP ids.** Readers of `$lpNFT`: `lp/pool/main.es` and the action
+   contracts `swap.es`, `mint.es`, `redeem.es`, `extract.es`; `bank/intervention.es`, `bank/freemint.es`,
+   `bank/arbmint.es`, `bank/payout.es`; `tracking.es`; the live proxies `lp/proxy/SwapBuyV1.es` and
+   `lp/proxy/SwapSellV1.es`. The action NFTs (`$lpSwapNFT`, `$lpMintNFT`, `$lpRedeemNFT`, `$extractionNFT`)
+   are read by `lp/pool/main.es`.
+5. **Update all id lists together**: `spec/deployment-usd.md` / `spec/deployment-gold.md`, the `*TokenIds`
+   objects in `src/main/scala/dexy/chainutils/`, and the ids hardcoded in the test specs — then run the full
+   suite (`sbt test`) before deploying.
 
 
 References

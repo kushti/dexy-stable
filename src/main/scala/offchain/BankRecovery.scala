@@ -44,7 +44,7 @@ import java.nio.file.{Files, Paths}
 object BankRecovery extends App {
 
   val utils = new OffchainUtils(
-    serverUrl = "http://176.9.15.237:9052",
+    serverUrl = "http://127.0.0.1:9053",
     apiKey = "",
     localSecretStoragePath = "",
     localSecretUnlockPass = "",
