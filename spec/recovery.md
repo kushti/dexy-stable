@@ -86,15 +86,15 @@ curl -X POST -H "api_key: $API_KEY" -H "Content-Type: application/json" -d @<nam
 
    ```bash
    sbt "runMain offchain.BankRecovery drain fdcf983e9d6bf1f23429419c2e4dc1b858fddf6c05dd1f7f4e77e2be07b0c616 <carrierBoxId> <trustedAddress> 7a776cf75b8b3a5aac50a36c41531a4d6f1e469d2cbcaa5795a4f5b4c255bf09 75d7bfbfa6d165bfda1bad3e3fda891e67ccdcfc7b4410c1790923de2ccc9f7f"
-   # sign + submit drain-sign-request.json as above
+   # sign + submit dexy-drain-sign-request.json as above
    ```
 
-3. **drain USE bank** (the big one — ~292,615 ERG; move or rename the gold `drain-sign-request.json`
+3. **drain USE bank** (the big one — ~292,615 ERG; move or rename the gold `../dexy-drain-sign-request.json`
    first, it is overwritten):
 
    ```bash
    sbt "runMain offchain.BankRecovery drain e6162e2aff23f7c88968cc958541bacfe3ad80d6541befb7231ac3106e966f8b 1ee201520f4353b3d619ccbca8c5432f1ab2fa855db858bfca5f56cf989f4688 <trustedAddress> f77b3cac4f77a31aeffaf716070345b3b04330bbba02e27671015129fb74e883 78c24bdf41283f45208664cd8eb78e2ffa7fbb29f26ebb43e6b31a46b3b975ae"
-   # sign + submit drain-sign-request.json as above
+   # sign + submit dexy-drain-sign-request.json as above
    ```
 
 Transaction shape (drain): INPUTS(0) = carrier (update NFT at tokens(0), signed by the node wallet),
