@@ -129,7 +129,10 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
     }
   }
 
-  property("Payout should be ok if less taken") {
+  property("Payout should fail if less than the exact 0.1% is taken") {
+    // with the exact-amount rule (paymentAmount == maxPaymentAmount), a smaller payment is
+    // rejected: it would reset R4 and block the next payout for delayInPayments blocks while
+    // paying out almost nothing
 
     val fakeNanoErgs = 10000000000000L
 
@@ -226,7 +229,7 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
       )
 
 
-      noException shouldBe thrownBy {
+      the[Exception] thrownBy {
         TxUtil.createTx(
           Array(payoutBox, bankBox, buybackBox.withContextVars(new ContextVar(0, KioskInt(1).getErgoValue)), fundingBox),
           Array(oracleBox, lpBox),
@@ -237,7 +240,119 @@ class PayoutSpec extends PropSpec with Matchers with ScalaCheckDrivenPropertyChe
           Array[DhtData](),
           false
         )
-      }
+      } should have message "Script reduced to false"
+    }
+  }
+
+  property("Payout should fail for a dust payment (exact-amount rule)") {
+    // a 1-nanoERG payment was accepted by the old code (paymentAmount > 0) and reset R4, blocking
+    // the next payout for delayInPayments blocks; the exact-amount rule rejects it
+    val fakeNanoErgs = 10000000000000L
+
+    val bankReservesXIn = 1000000000000L
+    val bankReservesYIn = UseSpec.initialDexyTokens - 100000L
+    val bankReservesXOut = bankReservesXIn - 1L // dust: 1 nanoERG instead of the exact 0.1%
+    val bankReservesYOut = bankReservesYIn
+    val oracleRateXy = 10000L * 1000L
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+
+      val payoutBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(payoutNFT, 1))
+          .registers(KioskInt(0).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), payoutScript))
+          .build()
+          .convertToInputWith(fakeTxId4, fakeIndex)
+
+      val bankBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(bankReservesXIn)
+          .tokens(new ErgoToken(bankNFT, 1), new ErgoToken(dexyUSD, bankReservesYIn))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), bankScript))
+          .build()
+          .convertToInputWith(fakeTxId4, fakeIndex)
+
+      val buybackBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(buybackNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), buybackScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      val oracleBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(oraclePoolNFT, 1))
+          .registers(KioskLong(oracleRateXy).getErgoValue)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId2, fakeIndex)
+
+      val lpBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(minStorageRent)
+          .tokens(new ErgoToken(lpNFT, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId3, fakeIndex)
+
+      val validPayoutOutBox = KioskBox(
+        payoutAddress,
+        minStorageRent,
+        registers = Array(KioskInt(ctx.getHeight)),
+        tokens = Array((payoutNFT, 1))
+      )
+
+      val validBankOutBox = KioskBox(
+        bankAddress,
+        bankReservesXOut,
+        registers = Array(),
+        tokens = Array((bankNFT, 1), (dexyUSD, bankReservesYOut))
+      )
+
+      val validBuybackOutBox = KioskBox(
+        buybackAddress,
+        fakeNanoErgs + 1L,
+        registers = Array(KioskCollByte(buybackBox.getId.getBytes)),
+        tokens = Array(
+          (buybackNFT, 1)
+        )
+      )
+
+      the[Exception] thrownBy {
+        TxUtil.createTx(
+          Array(payoutBox, bankBox, buybackBox.withContextVars(new ContextVar(0, KioskInt(1).getErgoValue)), fundingBox),
+          Array(oracleBox, lpBox),
+          Array(validPayoutOutBox, validBankOutBox, validBuybackOutBox),
+          fee = 1000000L,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          false
+        )
+      } should have message "Script reduced to false"
     }
   }
 

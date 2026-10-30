@@ -124,7 +124,13 @@
 
     // the intervention must move value in one direction only: the bank spends Ergs and receives
     // Dexy, the LP receives Ergs and loses Dexy
+    // the lower bound prevents dust interventions from resetting the 360-block gap (validGap):
+    // at least 1% of bank reserves, or 0.5% of LP Ergs when that is smaller (so interventions
+    // remain possible when the 2% slippage limit binds)
+    val minIntervention = if (bankBoxIn.value / 100 < lpReservesXIn / 200) bankBoxIn.value / 100
+                          else lpReservesXIn / 200
     val validDeltas = deltaBankErgs > 0 && deltaBankTokens > 0 && deltaLpX > 0 && deltaLpY > 0 &&
+                      deltaBankErgs >= minIntervention                  && // no dust interventions
                       deltaBankErgs <= deltaLpX  &&  // ergs reduced in bank box must be <= ergs gained in LP
                       deltaBankTokens >= deltaLpY &&   // tokens gained in bank box must be >= tokens reduced in LP
                       deltaLpY.toBigInt * lpReservesXIn <= deltaLpX.toBigInt * lpReservesYIn && // swap condition w/out fees

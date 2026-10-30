@@ -61,7 +61,9 @@
 
   val maxPaymentAmount = bankBoxIn.value / 1000 // 0.1 % max can be taken
   val paymentAmount = bankBoxIn.value - bankBoxOut.value
-  val properPayment = (paymentAmount > 0) && (paymentAmount <= maxPaymentAmount) &&
+  // exact payment: a smaller (e.g. dust) payment would reset R4 and block the next payout for
+  // delayInPayments blocks without paying out anything meaningful
+  val properPayment = (paymentAmount == maxPaymentAmount) &&
                         (buybackBoxOut.value - buybackBoxIn.value == paymentAmount)
 
   val lastPayment = SELF.R4[Int].get

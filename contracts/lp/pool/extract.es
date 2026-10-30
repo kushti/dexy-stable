@@ -133,7 +133,11 @@
       val validExtractAmount = oracleRateXY * 97 < lpRateXYOut * 100 &&  // oracleRate must be > 0.97 * lpRate at output
                                  oracleRateXY * 98 > lpRateXYOut * 100   // oracleRate must be < 0.98 * oracleRate at output
 
-      val validReleaseAmount = oracleRateXY * 101 > lpRateXYOut * 100    // oracleRate must be > 1.01 * lpRate at output to release
+      // release must leave the LP rate in [99%, 101%) of the oracle rate: the upper bound makes a
+      // release happen only above the peg; the lower bound prevents a release from crashing the LP
+      // rate (a release to e.g. 85% would block redemptions, which need >= 98%)
+      val validReleaseAmount = oracleRateXY * 101 > lpRateXYOut * 100  &&  // oracleRate must be > 1.01 * lpRate at output to release
+                                 lpRateXYOut * 100 >= oracleRateXY * 99    // lpRate at output must be >= 0.99 * oracleRate
 
       val validExtract  = deltaDexy > 0                           &&
                           validTracking95Box                      &&

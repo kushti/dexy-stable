@@ -43,7 +43,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -183,7 +183,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val preWithdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
     val withdrawY = preWithdrawY * 98 / 100
 
@@ -324,7 +324,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val preWithdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
     val withdrawY = preWithdrawY * 1001 / 1000
 
@@ -468,7 +468,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -608,7 +608,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -748,7 +748,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -888,7 +888,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -1028,7 +1028,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -1168,7 +1168,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -1308,7 +1308,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -1448,7 +1448,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -1588,7 +1588,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -1728,7 +1728,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -1864,7 +1864,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -2008,7 +2008,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -2148,7 +2148,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -2288,7 +2288,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -2850,7 +2850,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = lpRateXyIn * 100 / thresholdPercent * 1000L // oracle rate is one less than needed
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -3540,6 +3540,44 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
           bankErgsOut = 1000000000000000L + 10200000000L, // bank receives 102% of spot from the caller
           bankDexyOut = 9999000000L,              // bank loses 1,000,000 Dexy
           oracleRateXy = 10205000L                // LP at ~97.9999% of oracle (below 98% threshold)
+        )
+      } should have message "Script reduced to false"
+    }
+  }
+
+  property("Intervention should fail for a dust intervention (lower bound)") {
+    // 1 dexy unit at spot (~0.0018 ERG of bank funds, LP at 90% of oracle): accepted by the old
+    // code and resets the 360-block intervention gap, so it can block real interventions forever
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      // reuse the reverse-direction helper's layout, but in the normal direction with dust amounts
+      val lpReservesXIn = 1800000000000L
+      val lpReservesYIn = 1000000000L // LP price 1800 nanoErgs per Dexy (= 90% of oracle 2000)
+      the[Exception] thrownBy {
+        reverseDirectionTx(
+          lpReservesXIn = lpReservesXIn,
+          lpReservesYIn = lpReservesYIn,
+          lpReservesXOut = lpReservesXIn + 1800L,   // LP gains 1800 nanoErgs
+          lpReservesYOut = lpReservesYIn - 1L,      // LP loses 1 Dexy unit
+          bankErgsOut = 1000000000000000L - 1800L,  // bank spends the 1800 nanoErgs
+          bankDexyOut = 10000000000L + 1L,          // bank receives the 1 Dexy unit
+          oracleRateXy = 2000000L
+        )
+      } should have message "Script reduced to false"
+    }
+  }
+
+  property("Intervention should fail just below the minimum intervention amount") {
+    // min(bank / 100, lpReservesX / 200) = min(10000 ERG, 500 ERG) = 500 ERG here; one nanoErg less
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      the[Exception] thrownBy {
+        reverseDirectionTx(
+          lpReservesXIn = 100000000000000L,
+          lpReservesYIn = 10000000000L,
+          lpReservesXOut = 100000000000000L + 499999999999L,
+          lpReservesYOut = 10000000000L - 49999999L,
+          bankErgsOut = 1000000000000000L - 499999999999L,
+          bankDexyOut = 10000000000L + 49999999L,
+          oracleRateXy = 10205000L
         )
       } should have message "Script reduced to false"
     }
