@@ -1,0 +1,71 @@
+{
+  "tx" : {
+    "inputs" : [
+      {
+        "boxId" : "261cd9e7307e286c775659c356934186ced2a1f089632daba8adcae65984a419",
+        "extension" : {
+          
+        }
+      },
+      {
+        "boxId" : "fdcf983e9d6bf1f23429419c2e4dc1b858fddf6c05dd1f7f4e77e2be07b0c616",
+        "extension" : {
+          
+        }
+      }
+    ],
+    "dataInputs" : [
+    ],
+    "outputs" : [
+      {
+        "value" : 4760454285314,
+        "ergoTree" : "0008cd030c8f9c4dc08f3c006fa85a47c9156dedbede000a8b764c6e374fd097e873ba04",
+        "creationHeight" : 1896024,
+        "assets" : [
+          {
+            "tokenId" : "75d7bfbfa6d165bfda1bad3e3fda891e67ccdcfc7b4410c1790923de2ccc9f7f",
+            "amount" : 1
+          },
+          {
+            "tokenId" : "6122f7289e7bb2df2de273e09d4b2756cda6aeb0f40438dc9d257688f45183ad",
+            "amount" : 9999999972184
+          }
+        ],
+        "additionalRegisters" : {
+          
+        }
+      },
+      {
+        "value" : 1000000000,
+        "ergoTree" : "0008cd030c8f9c4dc08f3c006fa85a47c9156dedbede000a8b764c6e374fd097e873ba04",
+        "creationHeight" : 1896024,
+        "assets" : [
+          {
+            "tokenId" : "7a776cf75b8b3a5aac50a36c41531a4d6f1e469d2cbcaa5795a4f5b4c255bf09",
+            "amount" : 1
+          }
+        ],
+        "additionalRegisters" : {
+          
+        }
+      },
+      {
+        "value" : 2000000,
+        "ergoTree" : "1005040004000e36100204a00b08cd0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798ea02d192a39a8cc7a701730073011001020402d19683030193a38cc7b2a57300000193c2b2a57301007473027303830108cdeeac93b1a57304",
+        "creationHeight" : 1896024,
+        "assets" : [
+        ],
+        "additionalRegisters" : {
+          
+        }
+      }
+    ]
+  },
+  "inputsRaw" : [
+    "8094ebdc030008cd030c8f9c4dc08f3c006fa85a47c9156dedbede000a8b764c6e374fd097e873ba04d8dc73017a776cf75b8b3a5aac50a36c41531a4d6f1e469d2cbcaa5795a4f5b4c255bf090100b46b118a0c1c7092fc819e22ad7ce7a880f88584451a45e6c0368be75641ee7600",
+    "8299b98ac68a01100e04020400040004000400040204020e2074f906985e763192fc1d8d461e29406c75b7952da3a89dbc83fe1b889971e4550e203fefa1e3fef4e7abbdc074a20bdf751675f058e4bcce5cef0b38bb9460be5c6a040404000e206597acef421c21a6468a2b58017df6577b23f00099d9e0772c0608deabdf6d130e2026ef992a598eadfddabfd3c51509fb277b075c943b17199407f68c467b9de1ae0e207a776cf75b8b3a5aac50a36c41531a4d6f1e469d2cbcaa5795a4f5b4c255bf09d804d601b2a5730000d602db63087201d603db6308a7d6048cb2db6308b2a473010073020001d1ecededed93b27202730300b2720373040093c27201c2a7938cb27202730500018cb2720373060001ececec93720473079372047308938cb2db6308b2a4730900730a0001730b937204730c937204730db1ed710275d7bfbfa6d165bfda1bad3e3fda891e67ccdcfc7b4410c1790923de2ccc9f7f016122f7289e7bb2df2de273e09d4b2756cda6aeb0f40438dc9d257688f45183add8e6c8f384a3020092e798a5b699fc96bd87bb2e63a3a0ef9aaa0b3871c8f01d412a51b3e11867e901"
+  ],
+  "secrets" : {
+    
+  }
+}

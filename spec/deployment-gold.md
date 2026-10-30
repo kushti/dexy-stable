@@ -120,6 +120,17 @@ https://explorer.ergoplatform.com/en/transactions/a221696d22f79cb421cf9a9769dbcd
 * Bank deployment transaction:
   https://explorer.ergoplatform.com/en/transactions/06ac93ab316aa64576dcc1cfefd2080cf55d04d2423b6b73271ba6a0742322e7
 
+#### Current bank box
+
+Snapshot as of 2026-09-08 (block 1868825); the bank box changes with every bank action (mint, intervention, payout), so re-query before relying on it. Explorer API: `https://api.ergoplatform.com/api/v1/boxes/unspent/byTokenId/75d7bfbfa6d165bfda1bad3e3fda891e67ccdcfc7b4410c1790923de2ccc9f7f`
+
+* boxId: `fdcf983e9d6bf1f23429419c2e4dc1b858fddf6c05dd1f7f4e77e2be07b0c616`
+  https://explorer.ergoplatform.com/en/boxes/fdcf983e9d6bf1f23429419c2e4dc1b858fddf6c05dd1f7f4e77e2be07b0c616
+* creating transaction: `92e798a5b699fc96bd87bb2e63a3a0ef9aaa0b3871c8f01d412a51b3e11867e9`
+* value: 4,760.46 ERG (4760456285314 nanoERG)
+* tokens: DexyBank NFT x 1, DexyGold x 9999999972184
+* creation height 1865393 (settled at 1865396)
+
 ## Testnet
 
 ### Tokens

@@ -6,6 +6,8 @@
     // TOKENS
     //   Tokens(0): NFT to uniquely identify this box
 
+    val lpNFT = fromBase64("$lpNFT") // to identify LP box
+
     val lpBoxInIndex = 0
     val lpBoxOutIndex = 0
 
@@ -51,5 +53,9 @@
                         successor.value >= SELF.value                        &&
                         successor.tokens == SELF.tokens
 
-    sigmaProp(validMintLp && selfPreserved)
+    // the pool box at input/output position must be the real LP box (see LP hack postmortem)
+    val validLpBox = lpBoxIn.tokens(0)._1 == lpNFT &&
+                     lpBoxOut.tokens(0)._1 == lpNFT
+
+    sigmaProp(validMintLp && selfPreserved && validLpBox)
 }

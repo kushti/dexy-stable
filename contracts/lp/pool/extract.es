@@ -23,6 +23,15 @@
     // -----------------------------------------------
     // 0 LP            |  LP            |   Oracle
     // 1 Extract       |  Extract       |   Tracking (101%)
+    //
+    // [3] Update
+    //   Input         |  Output        |   Data-Input
+    // -----------------------------------------------
+    // 0 Update        |  Update        |
+    // 1 Extract       |  Extract       |
+    //
+    // The extract box must be at INPUTS(1), so an update transaction can only spend this box,
+    // not drag it into another contract's update.
 
     // ToDo: verify following in tests
     //   cannot change prop bytes for LP, Extract and Tracking box
@@ -60,7 +69,7 @@
     val buffer = 5 // allowable error in setting height due to congestion
 
     val updateNFT = fromBase64("$updateNFT")
-    val validUpdate = INPUTS(0).tokens(0)._1 == updateNFT
+    val validUpdate = INPUTS(0).tokens(0)._1 == updateNFT && INPUTS(1).id == SELF.id
 
     val validAction = if (validUpdate) {
       true
@@ -124,7 +133,11 @@
       val validExtractAmount = oracleRateXY * 97 < lpRateXYOut * 100 &&  // oracleRate must be > 0.97 * lpRate at output
                                  oracleRateXY * 98 > lpRateXYOut * 100   // oracleRate must be < 0.98 * oracleRate at output
 
-      val validReleaseAmount = oracleRateXY * 101 > lpRateXYOut * 100    // oracleRate must be > 1.01 * lpRate at output to release
+      // release must leave the LP rate in [99%, 101%) of the oracle rate: the upper bound makes a
+      // release happen only above the peg; the lower bound prevents a release from crashing the LP
+      // rate (a release to e.g. 85% would block redemptions, which need >= 98%)
+      val validReleaseAmount = oracleRateXY * 101 > lpRateXYOut * 100  &&  // oracleRate must be > 1.01 * lpRate at output to release
+                                 lpRateXYOut * 100 >= oracleRateXY * 99    // lpRate at output must be >= 0.99 * oracleRate
 
       val validExtract  = deltaDexy > 0                           &&
                           validTracking95Box                      &&

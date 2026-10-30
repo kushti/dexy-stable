@@ -68,6 +68,9 @@
     val extractBoxIndex = 1
     val lpActionBoxIndex = 1 // swap/redeem/mint
 
+    // this box must be the first input in every flow above (see LP hack postmortem)
+    val validPosition = INPUTS(0).id == SELF.id
+
     // outputs
     val selfOutIndex = 0
 
@@ -123,11 +126,12 @@
     val dexyAction = (validIntervention || validExtraction) &&
                       deltaSupplyLp == 0 // ensure Lp tokens are not extracted during dexyAction
     sigmaProp(
-        preservedScript           &&
-        preservedLpNft            &&
-        preservedLpTokenId        &&
-        preservedDexyTokenId      &&
-        noMoreTokens              &&
+        validPosition              &&
+        preservedScript            &&
+        preservedLpNft             &&
+        preservedLpTokenId         &&
+        preservedDexyTokenId       &&
+        noMoreTokens               &&
         (lpAction || dexyAction)
     )
 }

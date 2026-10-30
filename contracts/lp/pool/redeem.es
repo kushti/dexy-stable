@@ -15,6 +15,7 @@
     val selfOutIndex = 1 // output
 
     val oracleNFT = fromBase64("$oracleNFT") // to identify oracle pool box
+    val lpNFT = fromBase64("$lpNFT") // to identify LP box
 
     val lpBoxIn = INPUTS(lpBoxInIndex)
 
@@ -68,5 +69,9 @@
                         successor.value >= SELF.value                        &&
                         successor.tokens == SELF.tokens
 
-    sigmaProp(validRedemption && selfPreserved)
+    // the pool box at input/output position must be the real LP box (see LP hack postmortem)
+    val validLpBox = lpBoxIn.tokens(0)._1 == lpNFT &&
+                     lpBoxOut.tokens(0)._1 == lpNFT
+
+    sigmaProp(validRedemption && selfPreserved && validLpBox)
 }
