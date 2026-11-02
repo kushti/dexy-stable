@@ -6,6 +6,10 @@
     //
     // valid swap is as follows
     //
+    // By default the LP box is at INPUTS(0)/OUTPUTS(0) and this box's successor at OUTPUTS(1).
+    // Context extension var 0 (Int) on this input selects a different LP position (same index in
+    // inputs and outputs), var 1 (Int) selects a different successor output index.
+    //
     // the value feeNum / feeDenom is the fraction of fee
     // for example if feeNum = 3 and feeDenom = 1000 then fee is 0.003 = 0.3%
 
@@ -41,14 +45,18 @@
 
     val lpNFT = fromBase64("$lpNFT") // to identify LP box
 
-    val lpBoxInIndex = 0
-    val lpBoxOutIndex = 0
+    // composable positioning: context extension var 0 on this input selects the LP box position
+    // (same index in inputs and outputs); var 1 selects this box's successor output. Defaults
+    // (no vars) reproduce the legacy fixed layout (LP at INPUTS(0)/OUTPUTS(0), successor at
+    // OUTPUTS(1)). Every box reached through the vars is authenticated by the NFT/script/value
+    // checks below, so a wrong, missing or out-of-range var fails the script.
+    val lpIndex = getVar[Int](0).getOrElse(0)
+    val selfOutIndex = getVar[Int](1).getOrElse(1)
 
-    val selfOutIndex = 1
     val successor = OUTPUTS(selfOutIndex)
 
-    val lpBoxIn = INPUTS(lpBoxInIndex)
-    val lpBoxOut = OUTPUTS(lpBoxOutIndex)
+    val lpBoxIn = INPUTS(lpIndex)
+    val lpBoxOut = OUTPUTS(lpIndex)
 
     val lpReservesIn = lpBoxIn.tokens(1)
     val lpReservesOut = lpBoxOut.tokens(1)

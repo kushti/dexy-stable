@@ -56,6 +56,10 @@
     // 1 Extract       |  Extract       |   Tracking (101%)
     //
     // -------------------------------------------------------------
+    // Composable positioning: by default this box is at INPUTS(0) and its successor at
+    // OUTPUTS(0), as in the tables above. Context extension var 0 (Int) on this input selects
+    // a different position; the successor then sits at the same index in outputs.
+    //
     // Notation:
     //
     // X is the primary token
@@ -68,11 +72,16 @@
     val extractBoxIndex = 1
     val lpActionBoxIndex = 1 // swap/redeem/mint
 
-    // this box must be the first input in every flow above (see LP hack postmortem)
-    val validPosition = INPUTS(0).id == SELF.id
+    // this box position is selected by context extension var 0 on this (LP) input; the
+    // successor must sit at the same index in outputs. Default (no var) reproduces the legacy
+    // fixed layout (INPUTS(0) -> OUTPUTS(0)). When the LP input floats, it must not occupy
+    // action slots INPUTS(1)/INPUTS(2) (such a tx fails the action-NFT checks below).
+    // (see LP hack postmortem for why the position must be bound at all)
+    val selfIndex = getVar[Int](0).getOrElse(0)
+    val validPosition = INPUTS(selfIndex).id == SELF.id
 
     // outputs
-    val selfOutIndex = 0
+    val selfOutIndex = selfIndex
 
     val interventionNFT = fromBase64("$interventionNFT")
     val extractionNFT = fromBase64("$extractionNFT")
