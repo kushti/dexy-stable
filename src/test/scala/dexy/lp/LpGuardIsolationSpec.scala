@@ -2,9 +2,9 @@ package dexy.lp
 
 import dexy.Common
 import dexy.chainutils.UseSpec._
-import org.ergoplatform.kiosk.ergo.{DhtData, KioskBox}
+import org.ergoplatform.kiosk.ergo.{DhtData, KioskBox, KioskInt}
 import org.ergoplatform.kiosk.tx.TxUtil
-import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, HttpClientTesting, InputBox}
+import org.ergoplatform.appkit.{BlockchainContext, ConstantsBuilder, ContextVar, HttpClientTesting, InputBox}
 import org.ergoplatform.sdk.ErgoToken
 import org.scalatest.{Matchers, PropSpec}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
@@ -92,6 +92,62 @@ class LpGuardIsolationSpec extends PropSpec with Matchers with ScalaCheckDrivenP
   property("swap.es accepts the same transaction when the pool box holds the LP NFT (control)") {
     ergoClient.execute { implicit ctx: BlockchainContext =>
       noException shouldBe thrownBy(signSwapOnly(lpNFT))
+    }
+  }
+
+  // Like signLp, but the LP input carries context var 0 pointing at its own position and the LP
+  // successor sits at the same output index, so validPosition passes and only the
+  // swapOnlyFloating clause (selfIndex == 0 || validSwap) can reject the transaction.
+  // If input0Nft is set, INPUTS(0) carries that NFT (e.g. updateNFT for the update-tx shape).
+  private def signLpFloated(actionNft: String, actionIndex: Int, lpIndex: Int,
+                            input0Nft: Option[String] = None)(implicit ctx: BlockchainContext) = {
+    val fillerTxIds = Iterator(fakeTxId2, fakeTxId5, fakeTxId6)
+    val size = math.max(actionIndex, lpIndex) + 1
+    val inputs: Array[InputBox] = (0 until size).map { i =>
+      if (i == lpIndex)
+        box(reservesXIn, lpScript,
+          Seq(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalance), new ErgoToken(dexyUSD, reservesYIn)), fakeTxId4)
+          .withContextVars(new ContextVar(0, KioskInt(lpIndex).getErgoValue))
+      else if (i == actionIndex) box(minStorageRent, fakeScript, Seq(new ErgoToken(actionNft, 1)), fakeTxId3)
+      else if (i == 0 && input0Nft.isDefined) box(minStorageRent, fakeScript, Seq(new ErgoToken(input0Nft.get, 1)), fakeTxId7)
+      // main.es reads INPUTS(1).tokens(0) on every path, so fillers carry a dummy token
+      else box(minStorageRent, fakeScript, Seq(new ErgoToken(dummyTokenId, 1)), fillerTxIds.next())
+    }.toArray :+ box(fakeNanoErgs, fakeScript, Nil, fakeTxId1)
+    val lpOut = KioskBox(lpAddress, reservesXIn, registers = Array(),
+      tokens = Array((lpNFT, 1), (lpToken, lpBalance), (dexyUSD, reservesYIn)))
+    val dummyOut = KioskBox(changeAddress, minStorageRent, registers = Array(), tokens = Array())
+    val outputs = Array.tabulate(lpIndex + 1)(i => if (i == lpIndex) lpOut else dummyOut)
+    TxUtil.createTx(inputs, Array(), outputs, fee = 1000000L, changeAddress, Array[String](), Array[DhtData](), false)
+  }
+
+  // (action NFT, index where main.es looks for it, floated LP index)
+  private val floatedPaths = Seq(
+    ("mint", lpMintNFT, 1, 2),
+    ("redeem", lpRedeemNFT, 1, 2),
+    ("extract", extractionNFT, 1, 2),
+    ("intervention", interventionNFT, 2, 3)
+  )
+
+  floatedPaths.foreach { case (name, nft, actionIndex, lpIndex) =>
+    property(s"main.es rejects the LP box floated to INPUTS($lpIndex) on the $name path (position var set)") {
+      ergoClient.execute { implicit ctx: BlockchainContext =>
+        the[Exception] thrownBy signLpFloated(nft, actionIndex, lpIndex) should have message "Script reduced to false"
+      }
+    }
+  }
+
+  property("main.es rejects a floated LP box in an extract update transaction") {
+    // INPUTS(0) = update box, INPUTS(1) = extract box, LP floated to INPUTS(3)/OUTPUTS(3):
+    // extract.es would pass vacuously via validUpdate, so only the swapOnlyFloating clause
+    // keeps the LP reserves checked
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      the[Exception] thrownBy signLpFloated(extractionNFT, 1, 3, input0Nft = Some(updateNFT)) should have message "Script reduced to false"
+    }
+  }
+
+  property("main.es accepts the LP box floated to INPUTS(2) on the swap path (control)") {
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      noException shouldBe thrownBy(signLpFloated(lpSwapNFT, 1, 2))
     }
   }
 }

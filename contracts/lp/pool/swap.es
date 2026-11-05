@@ -10,8 +10,10 @@
     // Context extension var 0 (Int) on this input selects a different LP position (same index in
     // inputs and outputs), var 1 (Int) selects a different successor output index.
     //
-    // the value feeNum / feeDenom is the fraction of fee
-    // for example if feeNum = 3 and feeDenom = 1000 then fee is 0.003 = 0.3%
+    // the value feeNum / feeDenom is the fraction of the sold amount taken as fee, i.e. the
+    // trader keeps (feeDenom - feeNum) / feeDenom of it
+    // for example if feeNum = 3 and feeDenom = 1000 then the fee is 0.003 = 0.3% and the trader
+    // keeps 997/1000
 
     // Note "sold" = sold by user (and added to LP, thus the reserves of LP box of sold currency will increase)
     // Fee is taken as follows:
@@ -46,10 +48,10 @@
     val lpNFT = fromBase64("$lpNFT") // to identify LP box
 
     // composable positioning: context extension var 0 on this input selects the LP box position
-    // (same index in inputs and outputs); var 1 selects this box's successor output. Defaults
-    // (no vars) reproduce the legacy fixed layout (LP at INPUTS(0)/OUTPUTS(0), successor at
-    // OUTPUTS(1)). Every box reached through the vars is authenticated by the NFT/script/value
-    // checks below, so a wrong, missing or out-of-range var fails the script.
+    // (same index in inputs and outputs); var 1 selects this box's successor output. A missing
+    // var reproduces the legacy fixed layout (LP at INPUTS(0)/OUTPUTS(0), successor at
+    // OUTPUTS(1)); a wrong or out-of-range var fails the script, since every box reached
+    // through the vars is authenticated by the NFT/script/value checks below.
     val lpIndex = getVar[Int](0).getOrElse(0)
     val selfOutIndex = getVar[Int](1).getOrElse(1)
 

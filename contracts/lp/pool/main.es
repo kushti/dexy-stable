@@ -58,7 +58,8 @@
     // -------------------------------------------------------------
     // Composable positioning: by default this box is at INPUTS(0) and its successor at
     // OUTPUTS(0), as in the tables above. Context extension var 0 (Int) on this input selects
-    // a different position; the successor then sits at the same index in outputs.
+    // a different position; the successor then sits at the same index in outputs. Only the
+    // swap flow ([2]) may use a non-zero position.
     //
     // Notation:
     //
@@ -74,8 +75,11 @@
 
     // this box position is selected by context extension var 0 on this (LP) input; the
     // successor must sit at the same index in outputs. Default (no var) reproduces the legacy
-    // fixed layout (INPUTS(0) -> OUTPUTS(0)). When the LP input floats, it must not occupy
-    // action slots INPUTS(1)/INPUTS(2) (such a tx fails the action-NFT checks below).
+    // fixed layout (INPUTS(0) -> OUTPUTS(0)). Only the swap path may use a non-zero index (see
+    // the swapOnlyFloating conjunct below): swap.es validates the LP reserves at the floated
+    // position, while the other action scripts always validate INPUTS(0) and their update paths
+    // validate nothing, so a floated LP would be unchecked there. On the swap path the LP box
+    // may also sit at INPUTS(2) (only INPUTS(1) is the swap action slot).
     // (see LP hack postmortem for why the position must be bound at all)
     val selfIndex = getVar[Int](0).getOrElse(0)
     val validPosition = INPUTS(selfIndex).id == SELF.id
@@ -134,6 +138,11 @@
 
     val dexyAction = (validIntervention || validExtraction) &&
                       deltaSupplyLp == 0 // ensure Lp tokens are not extracted during dexyAction
+
+    // only the swap path may move this box off INPUTS(0): swap.es validates the LP reserves at
+    // the var-selected position, while on the other paths (incl. update transactions, where the
+    // action scripts run no reserve checks) a floated LP box would be unchecked
+    val swapOnlyFloating = selfIndex == 0 || validSwap
     sigmaProp(
         validPosition              &&
         preservedScript            &&
@@ -141,6 +150,7 @@
         preservedLpTokenId         &&
         preservedDexyTokenId       &&
         noMoreTokens               &&
-        (lpAction || dexyAction)
+        (lpAction || dexyAction)   &&
+        swapOnlyFloating
     )
 }
