@@ -22,7 +22,7 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
   val dummyNanoErgs = 100000L
 
   property("Reverse Extract (remove Dexy from extract box and put in Lp box) should work") {
-    val oracleRateXy = 10000L * 1000000L
+    val oracleRateXy = 10000L * 1000L // contract-side rate = 10000, same scale as the LP rate
     val lpBalanceIn = 100000000L
 
     val T_delay = 360 // delay between any burn/release operation  ("T_burn" in the paper)
@@ -33,23 +33,23 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
     // initial ratio of X/Y = 10000
     assert(lpReservesXIn / lpReservesYIn == 10000)
 
-    val deltaDexy = -350000000L // -ve that means we are reversing extract.
+    val deltaDexy = -50251256L // -ve that means we are reversing extract.
     // There is a certain value of deltaDexy above/below which it should fail. To test this
 
     val lpReservesXOut = lpReservesXIn
     val lpReservesYOut = lpReservesYIn - deltaDexy
 
-    // final ratio of X/Y = 10204
+    // final ratio of X/Y = 9950 (99.5% of the oracle rate — inside the [99%, 101%) release band)
     val lpRateXYOut = lpReservesXOut / lpReservesYOut
     val lpBalanceOut = lpBalanceIn
 
     val extractBoxDexyIn = 90200000100L
     val extractBoxDexyOut = extractBoxDexyIn + deltaDexy
 
-    assert(oracleRateXy * 100 / 1000000L > lpRateXYOut * 101 && oracleRateXy * 100 / 1000000L < lpRateXYOut * 104)
-    assert(lpRateXYOut == 9661)
-    assert(extractBoxDexyOut == 89850000100L)
-    assert(lpReservesYOut == 10350000000L)
+    assert(lpRateXYOut * 100 >= oracleRateXy / 1000L * 99 && oracleRateXy / 1000L * 101 > lpRateXYOut * 100)
+    assert(lpRateXYOut == 9950)
+    assert(extractBoxDexyOut == 90149748844L)
+    assert(lpReservesYOut == 10050251256L)
 
     ergoClient.execute { implicit ctx: BlockchainContext =>
       val trackingHeight = ctx.getHeight - T_release - 1 // any bigger value should fail
@@ -2977,6 +2977,130 @@ class ReverseExtractSpec extends PropSpec with Matchers with ScalaCheckDrivenPro
           false
         )
       }
+    }
+  }
+
+  // release tx: moves `releasedDexy` from the extract box into the LP box; the post-release LP
+  // rate is lpReservesX / (lpReservesYIn + releasedDexy). Same shape as the positive test:
+  // scale-consistent oracle (contract-side rate 10000), LP at 100% of the oracle, tracker101
+  // triggered, extract box outside the delay window. The extract box holds enough Dexy for any
+  // release amount used here.
+  private def releaseTx(releasedDexy: Long)(implicit ctx: BlockchainContext) = {
+    val oracleRateXy = 10000L * 1000L // contract-side rate = 10000
+    val lpBalanceIn = 100000000L
+    val lpReservesXIn = 100000000000000L
+    val lpReservesYIn = 10000000000L // LP at 100% of the oracle
+
+    val T_delay = 360
+    val T_release = 2
+    val trackingHeight = ctx.getHeight - T_release - 1
+    val extractBoxCreationHeightIn = ctx.getHeight - T_delay - 1
+
+    val lpReservesYOut = lpReservesYIn + releasedDexy
+    val extractBoxDexyIn = 90200000100L
+    val extractBoxDexyOut = extractBoxDexyIn - releasedDexy
+
+    val fundingBox =
+      ctx
+        .newTxBuilder()
+        .outBoxBuilder
+        .value(fakeNanoErgs)
+        .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+        .build()
+        .convertToInputWith(fakeTxId1, fakeIndex)
+
+    val oracleBox =
+      ctx
+        .newTxBuilder()
+        .outBoxBuilder
+        .value(minStorageRent)
+        .tokens(new ErgoToken(oraclePoolNFT, 1))
+        .registers(KioskLong(oracleRateXy).getErgoValue)
+        .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+        .build()
+        .convertToInputWith(fakeTxId2, fakeIndex)
+
+    val tracking101Box =
+      ctx
+        .newTxBuilder()
+        .outBoxBuilder
+        .value(minStorageRent)
+        .tokens(new ErgoToken(tracking101NFT, 1))
+        .registers(
+          KioskInt(101).getErgoValue,
+          KioskInt(100).getErgoValue,
+          KioskBoolean(false).getErgoValue, // isBelow is false
+          KioskInt(trackingHeight).getErgoValue
+        )
+        .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
+        .build()
+        .convertToInputWith(fakeTxId4, fakeIndex)
+
+    val lpBox =
+      ctx
+        .newTxBuilder()
+        .outBoxBuilder
+        .value(lpReservesXIn)
+        .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalanceIn), new ErgoToken(dexyUSD, lpReservesYIn))
+        .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
+        .build()
+        .convertToInputWith(fakeTxId3, fakeIndex)
+
+    val extractBox =
+      ctx
+        .newTxBuilder()
+        .outBoxBuilder
+        .value(minStorageRent)
+        .tokens(new ErgoToken(extractionNFT, 1), new ErgoToken(dexyUSD, extractBoxDexyIn))
+        .creationHeight(extractBoxCreationHeightIn)
+        .contract(ctx.compileContract(ConstantsBuilder.empty(), extractScript))
+        .build()
+        .convertToInputWith(fakeTxId4, fakeIndex)
+
+    val validLpOutBox = KioskBox(
+      lpAddress,
+      lpReservesXIn,
+      registers = Array(),
+      tokens = Array((lpNFT, 1), (lpToken, lpBalanceIn), (dexyUSD, lpReservesYOut))
+    )
+
+    val validExtractOutBox = KioskBox(
+      extractAddress,
+      minStorageRent,
+      registers = Array(),
+      tokens = Array((extractionNFT, 1), (dexyUSD, extractBoxDexyOut))
+    )
+
+    TxUtil.createTx(
+      Array(lpBox, extractBox, fundingBox),
+      Array(oracleBox, tracking101Box),
+      Array(validLpOutBox, validExtractOutBox),
+      fee = 1000000L,
+      changeAddress,
+      Array[String](),
+      Array[DhtData](),
+      false
+    )
+  }
+
+  property("Reverse Extract should fail if the release crashes the LP rate below 99% of the oracle") {
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      the[Exception] thrownBy {
+        // releasing 1,764,705,882 Dexy units pushes the LP rate from 10000 down to 8500 (85%):
+        // the old upper-only bound accepted this, and the crashed rate would block redemptions
+        // (redeem.es needs the LP rate above 98% of the oracle)
+        releaseTx(1764705882L)
+      } should have message "Script reduced to false"
+    }
+  }
+
+  property("Reverse Extract should fail if the release lands just below the 99% band edge") {
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      the[Exception] thrownBy {
+        // 102,030,407 Dexy units released: post-release rate = 9899, one unit below the bound
+        // (9899 * 100 < oracleRate * 99)
+        releaseTx(102030407L)
+      } should have message "Script reduced to false"
     }
   }
 

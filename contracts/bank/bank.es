@@ -44,6 +44,9 @@
   // -----------------------------------------------
   // 0 Update        |  Update        |
   // 1 Bank          |  Bank          |
+  //
+  // The bank box must be at INPUTS(1), so an update transaction can only spend this box,
+  // not drag it into another contract's update.
 
   // This box emits DexyUSD. The contract only enforces some basic rules (such as the contract and token Ids) are preserved.
   // It does not does not encode the emission logic. It just requires certain boxes in the inputs to contain certain NFTs.
@@ -80,7 +83,7 @@
   val validPayout = INPUTS(payoutInIndex).tokens(0)._1 == payoutNFT
 
   val updateNFT = fromBase64("$updateNFT")
-  val validUpdate = INPUTS(0).tokens(0)._1 == updateNFT
+  val validUpdate = INPUTS(0).tokens(0)._1 == updateNFT && INPUTS(1).id == SELF.id
 
   sigmaProp((validSuccessor && (validMint || validIntervention || validPayout)) || validUpdate)
 }

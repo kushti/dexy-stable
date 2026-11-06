@@ -43,7 +43,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -183,7 +183,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val preWithdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
     val withdrawY = preWithdrawY * 98 / 100
 
@@ -324,7 +324,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val preWithdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
     val withdrawY = preWithdrawY * 1001 / 1000
 
@@ -468,7 +468,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -608,7 +608,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -748,7 +748,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -888,7 +888,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -1028,7 +1028,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -1168,7 +1168,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -1308,7 +1308,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -1448,7 +1448,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -1588,7 +1588,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -1728,7 +1728,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -1864,7 +1864,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -2008,7 +2008,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -2148,7 +2148,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -2288,7 +2288,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = (lpRateXyIn * 100 / thresholdPercent + 1) * 1000L
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -2850,7 +2850,7 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
     val lpRateXyIn = lpReservesXIn / lpReservesYIn
     val oracleRateXy = lpRateXyIn * 100 / thresholdPercent * 1000L // oracle rate is one less than needed
 
-    val depositX = 50000000000L
+    val depositX = 500000000000L
     val withdrawY = (BigInt(depositX) * lpReservesYIn / lpReservesXIn).toLong
 
     val lpReservesXOut = lpReservesXIn + depositX
@@ -3273,6 +3273,313 @@ class InterventionSpec extends PropSpec with Matchers with ScalaCheckDrivenPrope
           false
         )
       }
+    }
+  }
+
+  property("Bank box cannot be drained as an extra input of an intervention update transaction") {
+    // PR #12 review PoC: a valid intervention update transaction, with the bank box attached as an
+    // extra input and its contents paid to an arbitrary address. bank.es must reject it: INPUTS(0)
+    // runs the intervention-flavor update script (hash != bankUpdateScriptHash) and INPUTS(1) is the
+    // intervention box, not the bank.
+    val fee = 1500000
+
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      object Voters {
+        val addresses = Seq(
+          "9eiuh5bJtw9oWDVcfJnwTm1EHfK5949MEm5DStc2sD1TLwDSrpx", // private key is 37cc5cb5b54f98f92faef749a53b5ce4e9921890d9fb902b4456957d50791bd0
+          "9f9q6Hs7vXZSQwhbrptQZLkTx15ApjbEkQwWXJqD2NpaouiigJQ", // private key is 5878ae48fe2d26aa999ed44437cffd2d4ba1543788cff48d490419aef7fc149d
+          "9fGp73EsRQMpFC7xaYD5JFy2abZeKCUffhDBNbQVtBtQyw61Vym", // private key is 3ffaffa96b2fd6542914d3953d05256cd505d4beb6174a2601a4e014c3b5a78e
+        ).toArray
+
+        val privateKey0 = "37cc5cb5b54f98f92faef749a53b5ce4e9921890d9fb902b4456957d50791bd0"
+        val privateKey1 = "5878ae48fe2d26aa999ed44437cffd2d4ba1543788cff48d490419aef7fc149d"
+        val privateKey2 = "3ffaffa96b2fd6542914d3953d05256cd505d4beb6174a2601a4e014c3b5a78e"
+
+        val r4voter0 = KioskGroupElement(stringToGroupElement(ErgoUtil.addressToGroupElement(addresses(0))))
+        val r4voter1 = KioskGroupElement(stringToGroupElement(ErgoUtil.addressToGroupElement(addresses(1))))
+        val r4voter2 = KioskGroupElement(stringToGroupElement(ErgoUtil.addressToGroupElement(addresses(2))))
+
+        val ballot0Box = KioskBox(ballotAddress, value = 200000000, registers = Array(r4voter0), tokens = Array((ballotTokenId, 1L)))
+        val ballot1Box = KioskBox(ballotAddress, value = 200000000, registers = Array(r4voter1), tokens = Array((ballotTokenId, 1L)))
+        val ballot2Box = KioskBox(ballotAddress, value = 200000000, registers = Array(r4voter2), tokens = Array((ballotTokenId, 1L)))
+      }
+
+      val valueVotedFor = KioskCollByte(Blake2b256.hash(bankErgoTree.bytes))
+
+      val fundingBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+          .build()
+          .convertToInputWith(fakeTxId1, fakeIndex)
+
+      // current update box (intervention flavor)
+      val updateBox = ctx
+        .newTxBuilder()
+        .outBoxBuilder
+        .value(minStorageRent)
+        .tokens(new ErgoToken(updateNFT, 1))
+        .contract(ctx.newContract(ScalaErgoConverters.getAddressFromString(interventionUpdateAddress).script))
+        .build()
+        .convertToInputWith(fakeTxId3, fakeIndex)
+
+      val ballot0InputToCreate = Voters.ballot0Box.copy(
+        registers = Array(Voters.ballot0Box.registers(0), KioskCollByte(updateBox.getId.getBytes), valueVotedFor))
+      val ballot1InputToCreate = Voters.ballot1Box.copy(
+        registers = Array(Voters.ballot1Box.registers(0), KioskCollByte(updateBox.getId.getBytes), valueVotedFor))
+      val ballot2InputToCreate = Voters.ballot2Box.copy(
+        registers = Array(Voters.ballot2Box.registers(0), KioskCollByte(updateBox.getId.getBytes), valueVotedFor))
+
+      val ballot0 = TxUtil.createTx(Array(Voters.ballot0Box.toInBox(fakeTxId5, 0), fundingBox), Array(),
+        Array(ballot0InputToCreate), fee, changeAddress, Array[String](Voters.privateKey0), Array[DhtData](), false
+      ).getOutputsToSpend.get(0)
+      val ballot1 = TxUtil.createTx(Array(Voters.ballot1Box.toInBox(fakeTxId6, 0), fundingBox), Array(),
+        Array(ballot1InputToCreate), fee, changeAddress, Array[String](Voters.privateKey1), Array[DhtData](), false
+      ).getOutputsToSpend.get(0)
+      val ballot2 = TxUtil.createTx(Array(Voters.ballot2Box.toInBox(fakeTxId7, 0), fundingBox), Array(),
+        Array(ballot2InputToCreate), fee, changeAddress, Array[String](Voters.privateKey2), Array[DhtData](), false
+      ).getOutputsToSpend.get(0)
+
+      val interventionBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(interventionNFT, 1), new ErgoToken(dexyUSD, 1))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), interventionScript))
+          .build()
+          .convertToInputWith(fakeTxId4, fakeIndex)
+
+      // the bank box, attached as an extra input
+      val bankBox =
+        ctx
+          .newTxBuilder()
+          .outBoxBuilder
+          .value(fakeNanoErgs)
+          .tokens(new ErgoToken(bankNFT, 1), new ErgoToken(dexyUSD, fakeNanoErgs))
+          .contract(ctx.compileContract(ConstantsBuilder.empty(), bankScript))
+          .build()
+          .convertToInputWith(fakeTxId2, fakeIndex)
+
+      val validUpdateOutBox = KioskBox(interventionUpdateAddress, minStorageRent, registers = Array(),
+        tokens = Array((updateNFT, 1)))
+      val validInterventionOutBox = KioskBox(bankAddress, fakeNanoErgs, registers = Array(),
+        tokens = Array((interventionNFT, 1), (dexyUSD, 1)))
+      val validBallot0Output = Voters.ballot0Box.copy(registers = Array(Voters.ballot0Box.registers(0)))
+      val validBallot1Output = Voters.ballot1Box.copy(registers = Array(Voters.ballot1Box.registers(0)))
+      val validBallot2Output = Voters.ballot2Box.copy(registers = Array(Voters.ballot2Box.registers(0)))
+
+      // the bank's contents paid to an arbitrary address
+      val attackerOutBox = KioskBox(changeAddress, fakeNanoErgs, registers = Array(),
+        tokens = Array((bankNFT, 1), (dexyUSD, fakeNanoErgs)))
+
+      the[Exception] thrownBy {
+        TxUtil.createTx(
+          Array(updateBox, interventionBox, ballot0, ballot1, ballot2, bankBox, fundingBox),
+          Array(),
+          Array(validUpdateOutBox, validInterventionOutBox, validBallot0Output, validBallot1Output, validBallot2Output, attackerOutBox),
+          fee,
+          changeAddress,
+          Array[String](),
+          Array[DhtData](),
+          false
+        )
+      } should have message "Script reduced to false"
+    }
+  }
+
+  // PR #12 review (arkadianet): the intervention must move value in one direction only — the bank
+  // spends Ergs and receives Dexy. Both reverse-direction shapes below were accepted by the old
+  // validDeltas (which only required deltaLpX > 0 and used an integer price that rounds to 0).
+  private def reverseDirectionTx(lpReservesXIn: Long,
+                                 lpReservesYIn: Long,
+                                 lpReservesXOut: Long,
+                                 lpReservesYOut: Long,
+                                 bankErgsOut: Long,
+                                 bankDexyOut: Long,
+                                 oracleRateXy: Long)(implicit ctx: BlockchainContext) = {
+    val lpBalanceIn = 100000000L
+    val bankReservesXIn = 1000000000000000L
+    val bankReservesYIn = 10000000000L
+
+    val T_int = 20
+    val trackingHeightIn = ctx.getHeight - T_int - 1
+    val lastInterventionHeight = ctx.getHeight - T - 1
+
+    val fundingBox =
+      ctx
+        .newTxBuilder()
+        .outBoxBuilder
+        .value(fakeNanoErgs)
+        .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+        .build()
+        .convertToInputWith(fakeTxId1, fakeIndex)
+
+    val oracleBox =
+      ctx
+        .newTxBuilder()
+        .outBoxBuilder
+        .value(minStorageRent)
+        .tokens(new ErgoToken(oraclePoolNFT, 1))
+        .registers(KioskLong(oracleRateXy).getErgoValue)
+        .contract(ctx.compileContract(ConstantsBuilder.empty(), fakeScript))
+        .build()
+        .convertToInputWith(fakeTxId2, fakeIndex)
+
+    val tracking98Box =
+      ctx
+        .newTxBuilder()
+        .outBoxBuilder
+        .value(minStorageRent)
+        .tokens(new ErgoToken(tracking98NFT, 1))
+        .registers(
+          KioskInt(49).getErgoValue, // numerator for 98%
+          KioskInt(50).getErgoValue, // denominator for 98%
+          KioskBoolean(true).getErgoValue, // isBelow
+          KioskInt(trackingHeightIn).getErgoValue
+        )
+        .contract(ctx.compileContract(ConstantsBuilder.empty(), UseSpec.trackingScript))
+        .build()
+        .convertToInputWith(fakeTxId6, fakeIndex)
+
+    val lpBox =
+      ctx
+        .newTxBuilder()
+        .outBoxBuilder
+        .value(lpReservesXIn)
+        .tokens(new ErgoToken(lpNFT, 1), new ErgoToken(lpToken, lpBalanceIn), new ErgoToken(dexyUSD, lpReservesYIn))
+        .contract(ctx.compileContract(ConstantsBuilder.empty(), lpScript))
+        .build()
+        .convertToInputWith(fakeTxId3, fakeIndex)
+
+    val bankBox =
+      ctx
+        .newTxBuilder()
+        .outBoxBuilder
+        .value(bankReservesXIn)
+        .tokens(new ErgoToken(bankNFT, 1), new ErgoToken(dexyUSD, bankReservesYIn))
+        .contract(ctx.compileContract(ConstantsBuilder.empty(), bankScript))
+        .build()
+        .convertToInputWith(fakeTxId4, fakeIndex)
+
+    val interventionBox =
+      ctx
+        .newTxBuilder()
+        .outBoxBuilder
+        .value(minStorageRent)
+        .tokens(new ErgoToken(interventionNFT, 1))
+        .contract(ctx.compileContract(ConstantsBuilder.empty(), interventionScript))
+        .creationHeight(lastInterventionHeight)
+        .build()
+        .convertToInputWith(fakeTxId5, fakeIndex)
+
+    val lpOutBox = KioskBox(
+      lpAddress,
+      lpReservesXOut,
+      registers = Array(),
+      tokens = Array((lpNFT, 1), (lpToken, lpBalanceIn), (dexyUSD, lpReservesYOut))
+    )
+
+    val bankOutBox = KioskBox(
+      bankAddress,
+      bankErgsOut,
+      registers = Array(),
+      tokens = Array((bankNFT, 1), (dexyUSD, bankDexyOut))
+    )
+
+    val validInterventionOutBox = KioskBox(
+      interventionAddress,
+      minStorageRent,
+      registers = Array(),
+      tokens = Array((interventionNFT, 1))
+    )
+
+    TxUtil.createTx(
+      Array(lpBox, bankBox, interventionBox, fundingBox),
+      Array(oracleBox, tracking98Box),
+      Array(lpOutBox, bankOutBox, validInterventionOutBox),
+      fee = 1000000L,
+      changeAddress,
+      Array[String](),
+      Array[DhtData](),
+      false
+    )
+  }
+
+  property("Intervention should fail if bank Dexy is pushed into the LP at a zero-rounded LP price") {
+    // LP holds fewer nanoErgs than Dexy units, so the old integer price rounded to 0 and the
+    // slippage check degenerated to 0 <= 0: the bank's whole Dexy stack moved into the LP for
+    // 1 nanoErg (deltaBankTokens < 0, deltaLpY < 0)
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      the[Exception] thrownBy {
+        reverseDirectionTx(
+          lpReservesXIn = 1000000L,
+          lpReservesYIn = 10000000000L,
+          lpReservesXOut = 1000001L,              // LP gains 1 nanoErg
+          lpReservesYOut = 19999999999L,          // LP gains 9,999,999,999 Dexy
+          bankErgsOut = 1000000000000001L,        // bank receives the 1 nanoErg
+          bankDexyOut = 1L,                       // bank Dexy 10,000,000,000 -> 1
+          oracleRateXy = 1000L
+        )
+      } should have message "Script reduced to false"
+    }
+  }
+
+  property("Intervention should fail if bank Dexy is pushed into the LP with a caller-funded 102% premium") {
+    // at a nonzero price the old checks passed if the caller funded a 102%-of-spot premium into
+    // the bank box (deltaBankErgs <= price * deltaBankTokens * 102 / 100 with both negative)
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      the[Exception] thrownBy {
+        reverseDirectionTx(
+          lpReservesXIn = 100000000000000L,
+          lpReservesYIn = 10000000000L,           // LP price 10,000 nanoErgs per Dexy
+          lpReservesXOut = 100000000000001L,      // LP gains 1 nanoErg
+          lpReservesYOut = 10001000000L,          // LP gains 1,000,000 Dexy
+          bankErgsOut = 1000000000000000L + 10200000000L, // bank receives 102% of spot from the caller
+          bankDexyOut = 9999000000L,              // bank loses 1,000,000 Dexy
+          oracleRateXy = 10205000L                // LP at ~97.9999% of oracle (below 98% threshold)
+        )
+      } should have message "Script reduced to false"
+    }
+  }
+
+  property("Intervention should fail for a dust intervention (lower bound)") {
+    // 1 dexy unit at spot (~0.0018 ERG of bank funds, LP at 90% of oracle): accepted by the old
+    // code and resets the 360-block intervention gap, so it can block real interventions forever
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      // reuse the reverse-direction helper's layout, but in the normal direction with dust amounts
+      val lpReservesXIn = 1800000000000L
+      val lpReservesYIn = 1000000000L // LP price 1800 nanoErgs per Dexy (= 90% of oracle 2000)
+      the[Exception] thrownBy {
+        reverseDirectionTx(
+          lpReservesXIn = lpReservesXIn,
+          lpReservesYIn = lpReservesYIn,
+          lpReservesXOut = lpReservesXIn + 1800L,   // LP gains 1800 nanoErgs
+          lpReservesYOut = lpReservesYIn - 1L,      // LP loses 1 Dexy unit
+          bankErgsOut = 1000000000000000L - 1800L,  // bank spends the 1800 nanoErgs
+          bankDexyOut = 10000000000L + 1L,          // bank receives the 1 Dexy unit
+          oracleRateXy = 2000000L
+        )
+      } should have message "Script reduced to false"
+    }
+  }
+
+  property("Intervention should fail just below the minimum intervention amount") {
+    // min(bank / 100, lpReservesX / 200) = min(10000 ERG, 500 ERG) = 500 ERG here; one nanoErg less
+    ergoClient.execute { implicit ctx: BlockchainContext =>
+      the[Exception] thrownBy {
+        reverseDirectionTx(
+          lpReservesXIn = 100000000000000L,
+          lpReservesYIn = 10000000000L,
+          lpReservesXOut = 100000000000000L + 499999999999L,
+          lpReservesYOut = 10000000000L - 49999999L,
+          bankErgsOut = 1000000000000000L - 499999999999L,
+          bankDexyOut = 10000000000L + 49999999L,
+          oracleRateXy = 10205000L
+        )
+      } should have message "Script reduced to false"
     }
   }
 }

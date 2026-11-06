@@ -6,8 +6,14 @@
     //
     // valid swap is as follows
     //
-    // the value feeNum / feeDenom is the fraction of fee
-    // for example if feeNum = 3 and feeDenom = 1000 then fee is 0.003 = 0.3%
+    // By default the LP box is at INPUTS(0)/OUTPUTS(0) and this box's successor at OUTPUTS(1).
+    // Context extension var 0 (Int) on this input selects a different LP position (same index in
+    // inputs and outputs), var 1 (Int) selects a different successor output index.
+    //
+    // the value feeNum / feeDenom is the fraction of the sold amount taken as fee, i.e. the
+    // trader keeps (feeDenom - feeNum) / feeDenom of it
+    // for example if feeNum = 3 and feeDenom = 1000 then the fee is 0.003 = 0.3% and the trader
+    // keeps 997/1000
 
     // Note "sold" = sold by user (and added to LP, thus the reserves of LP box of sold currency will increase)
     // Fee is taken as follows:
@@ -39,14 +45,20 @@
     val feeNum = $feeNumLp // 0.3 % if feeNum is 3 and feeDenom is 1000
     val feeDenom = $feeDenomLp
 
-    val lpBoxInIndex = 0
-    val lpBoxOutIndex = 0
+    val lpNFT = fromBase64("$lpNFT") // to identify LP box
 
-    val selfOutIndex = 1
+    // composable positioning: context extension var 0 on this input selects the LP box position
+    // (same index in inputs and outputs); var 1 selects this box's successor output. A missing
+    // var reproduces the legacy fixed layout (LP at INPUTS(0)/OUTPUTS(0), successor at
+    // OUTPUTS(1)); a wrong or out-of-range var fails the script, since every box reached
+    // through the vars is authenticated by the NFT/script/value checks below.
+    val lpIndex = getVar[Int](0).getOrElse(0)
+    val selfOutIndex = getVar[Int](1).getOrElse(1)
+
     val successor = OUTPUTS(selfOutIndex)
 
-    val lpBoxIn = INPUTS(lpBoxInIndex)
-    val lpBoxOut = OUTPUTS(lpBoxOutIndex)
+    val lpBoxIn = INPUTS(lpIndex)
+    val lpBoxOut = OUTPUTS(lpIndex)
 
     val lpReservesIn = lpBoxIn.tokens(1)
     val lpReservesOut = lpBoxOut.tokens(1)
@@ -81,5 +93,9 @@
                         successor.value >= SELF.value                        &&
                         successor.tokens == SELF.tokens
 
-    sigmaProp(validSwap && selfPreserved)
+    // the pool box at input/output position must be the real LP box (see LP hack postmortem)
+    val validLpBox = lpBoxIn.tokens(0)._1 == lpNFT &&
+                     lpBoxOut.tokens(0)._1 == lpNFT
+
+    sigmaProp(validSwap && selfPreserved && validLpBox)
 }

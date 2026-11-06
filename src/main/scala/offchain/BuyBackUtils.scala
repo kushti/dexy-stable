@@ -1,6 +1,6 @@
 package offchain
 
-import org.ergoplatform.modifiers.mempool.UnsignedErgoTransaction
+import org.ergoplatform.UnsignedErgoLikeTransaction
 import org.ergoplatform.wallet.boxes.DefaultBoxSelector
 import org.ergoplatform.{ErgoBox, ErgoBoxCandidate, UnsignedInput}
 import scorex.util.ModifierId
@@ -15,21 +15,21 @@ import sigmastate.interpreter.ContextExtension
  * Offchain functions to work with GORT buyback contract
  */
 object BuyBackUtils extends App {
-  val fakeScanIds = DexyScanIds(1, 1, 1, 1, 1, 1)
 
-  val buyBackScanId = 50
-  val gortLpScanId = 23
+  // buyback box and GORT LP are identified by their NFTs via the node's /blockchain extra indices
+  val buybackNFT = dexy.chainutils.MainnetUseTokenIds.buybackNFT
+  val gortLpNFT = dexy.chainutils.MainnetUseTokenIds.gortLpNFT
 
   val utils = new OffchainUtils(
     serverUrl = "http://127.0.0.1:9053",
     apiKey = "",
     localSecretStoragePath = "/home/kushti/ergo/local/.ergo/wallet/keystore",
     localSecretUnlockPass = "",
-    dexyScanIds = fakeScanIds)
+    dexyNftIds = OffchainUtils.nftIds)
 
-  def buyBackBox(): Option[ErgoBox] = utils.unspentScanBoxes(buyBackScanId).headOption
+  def buyBackBox(): Option[ErgoBox] = utils.unspentBoxesByTokenId(buybackNFT).headOption
 
-  def gortLp(): Option[ErgoBox] = utils.unspentScanBoxes(gortLpScanId).headOption
+  def gortLp(): Option[ErgoBox] = utils.unspentBoxesByTokenId(gortLpNFT).headOption
 
   def topUp() = {
     // Top-up:
@@ -72,7 +72,7 @@ object BuyBackUtils extends App {
 
     val buyBackInput = new UnsignedInput(buybackInputBox.id, ContextExtension(Map((0: Byte) -> IntConstant(1))))
     val inputs = buyBackInput +: buyBackInputBoxes.map(b => new UnsignedInput(b.id))
-    val unsignedSwapTx = new UnsignedErgoTransaction(inputs, IndexedSeq.empty, outs)
+    val unsignedSwapTx = UnsignedErgoLikeTransaction(inputs, IndexedSeq.empty, outs)
     utils.signTransaction("Buyback: ", unsignedSwapTx, buybackInputBox +: buyBackInputBoxes, IndexedSeq.empty)
   }
 
@@ -128,7 +128,7 @@ object BuyBackUtils extends App {
 
     val outputs = IndexedSeq(lpOutput, buyBackOutput) ++ utils.changeOuts(selectionResult, creationHeight) ++ IndexedSeq(feeOut)
 
-    val unsignedSwapTx = new UnsignedErgoTransaction(inputs, IndexedSeq.empty, outputs)
+    val unsignedSwapTx = UnsignedErgoLikeTransaction(inputs, IndexedSeq.empty, outputs)
     utils.signTransaction("Buyback: ", unsignedSwapTx, inputBoxes, IndexedSeq.empty)
   }
 
